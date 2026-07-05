@@ -21,10 +21,12 @@ export async function middleware(req: NextRequest) {
   const host = (req.headers.get("host") ?? "").toLowerCase();
   const url = req.nextUrl;
 
-  // 1) Host routing — tagora.link + non-scanner path → canonical redirect
+  // 1) Host routing — tagora.link + non-scanner path → canonical redirect.
+  //    Exception: /.well-known/* (iOS/Android app link doğrulama dosyaları — redirect'i takip etmezler).
   const isScannerHost = host === SCANNER_HOST || host === `www.${SCANNER_HOST}`;
   const isScannerPath = url.pathname.startsWith("/s/");
-  if (isScannerHost && !isScannerPath) {
+  const isWellKnown = url.pathname.startsWith("/.well-known/");
+  if (isScannerHost && !isScannerPath && !isWellKnown) {
     const target = new URL(url.pathname + url.search, `https://${CANONICAL_HOST}`);
     return NextResponse.redirect(target, 308);
   }

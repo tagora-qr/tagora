@@ -31,6 +31,22 @@ const config: NextConfig = {
           },
         ],
       },
+      // .well-known dosyaları için application/json Content-Type
+      // (dosyaların uzantısı yok/JSON, iOS ve Android bu tam Content-Type'ı bekler)
+      {
+        source: "/.well-known/apple-app-site-association",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
+      {
+        source: "/.well-known/assetlinks.json",
+        headers: [
+          { key: "Content-Type", value: "application/json" },
+          { key: "Cache-Control", value: "public, max-age=3600" },
+        ],
+      },
     ];
   },
 };

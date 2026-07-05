@@ -51,10 +51,13 @@ function AuthGate() {
   // Auth state'e göre redirect
   useEffect(() => {
     if (loading) return;
-    const inAuthGroup = segments[0] === "(auth)";
-    if (!session && !inAuthGroup) {
+    const group = segments[0];
+    // Auth gerektirmeyen gruplar: (auth) onboarding/login, (public) scanner deep link
+    const inPublicGroup = group === "(auth)" || group === "(public)";
+    if (!session && !inPublicGroup) {
       router.replace("/(auth)/onboarding");
-    } else if (session && inAuthGroup) {
+    } else if (session && group === "(auth)") {
+      // Login sonrası tabs'a; ama (public) yolundaysa session olsa bile scanner'da kalsın
       router.replace("/(tabs)/");
     }
   }, [session, loading, segments, router]);
@@ -63,6 +66,7 @@ function AuthGate() {
     <Stack screenOptions={{ headerShown: false, animation: "fade" }}>
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(public)" />
       <Stack.Screen
         name="claim"
         options={{

@@ -15,6 +15,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.tagora.mobile",
+      "associatedDomains": [
+        "applinks:tagora.link",
+        "applinks:www.tagora.link"
+      ],
       "infoPlist": {
         "NSCameraUsageDescription": "Sticker'ınızı hesabınıza eşleştirmek için QR kodu okumamız gerekiyor.",
         "ITSAppUsesNonExemptEncryption": false
@@ -27,6 +31,28 @@
       },
       "permissions": [
         "CAMERA"
+      ],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "tagora.link",
+              "pathPrefix": "/s/"
+            },
+            {
+              "scheme": "https",
+              "host": "www.tagora.link",
+              "pathPrefix": "/s/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
       ]
     },
     "web": {
