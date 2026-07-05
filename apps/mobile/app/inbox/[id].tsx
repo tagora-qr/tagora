@@ -1,0 +1,326 @@
+/**
+ * Chat ekranı — sahip tarafı, real-time Supabase subscription ile.
+ */
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TextInput,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { supabase } from "@/lib/supabase";
+import { formatRelativeTime } from "@/lib/utils";
+import { USE_CASE_LABELS } from "@tagora/shared";
+import { colors, radius, spacing, typography } from "@/lib/theme";
+import type { Message, StickerUseCase } from "@tagora/db";
+
+export default function ChatScreen() {
+  const params = useLocalSearchParams<{ id: string }>();
+  const router = useRouter();
+  const conversationId = params.id;
+
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [stickerInfo, setStickerInfo] = useState<{
+    label: string | null;
+    token: string;
+    use_case: StickerUseCase | null;
+  } | null>(null);
+  const [draft, setDraft] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const listRef = useRef<FlatList<Message>>(null);
+
+  const load = useCallback(async () => {
+    // Konuşma bilgisini al (sticker_id çekmek için)
+    const { data: conv } = await supabase
+      .from("conversations")
+      .select("sticker_id")
+      .eq("id", conversationId)
+      .maybeSingle();
+
+    if (conv?.sticker_id) {
+      const { data: sticker } = await supabase
+        .from("stickers")
+        .select("label, token, use_case")
+        .eq("id", conv.sticker_id)
+        .maybeSingle();
+      setStickerInfo(sticker as typeof stickerInfo);
+    }
+
+    const { data: msgs } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("conversation_id", conversationId)
+      .is("deleted_at", null)
+      .order("sent_at", { ascending: true });
+
+    setMessages((msgs as Message[] | null) ?? []);
+
+    // Okunmamış sayacı sıfırla
+    await supabase
+      .from("conversations")
+      .update({ unread_owner_count: 0 })
+      .eq("id", conversationId);
+
+    setLoading(false);
+  }, [conversationId]);
+
+  useEffect(() => {
+    void load();
+
+    const channel = supabase
+      .channel(`conv-mobile-${conversationId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "messages",
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload) => {
+          const m = payload.new as Message;
+          setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [conversationId, load]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(() => {
+        listRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    }
+  }, [messages.length]);
+
+  const send = async () => {
+    const text = draft.trim();
+    if (!text) return;
+    setSending(true);
+    const { data, error } = await supabase
+      .from("messages")
+      .insert({
+        conversation_id: conversationId,
+        sender: "owner",
+        body: text,
+      })
+      .select("*")
+      .single();
+    setSending(false);
+
+    if (error || !data) {
+      Alert.alert("Hata", error?.message ?? "Mesaj gönderilemedi.");
+      return;
+    }
+    setDraft("");
+    setMessages((prev) =>
+      prev.some((x) => x.id === data.id) ? prev : [...prev, data as Message],
+    );
+  };
+
+  const info = stickerInfo?.use_case
+    ? USE_CASE_LABELS[stickerInfo.use_case]
+    : USE_CASE_LABELS.other;
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.loading}>
+        <ActivityIndicator color={colors.navy} size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.header}>
+        <Pressable onPress={() => router.back()} hitSlop={16}>
+          <Text style={styles.back}>← Inbox</Text>
+        </Pressable>
+        <View style={styles.headerCenter}>
+          <View style={styles.headerRow}>
+            <Text style={styles.headerEmoji}>{info.emoji}</Text>
+            <Text style={styles.headerTitle} numberOfLines={1}>
+              {stickerInfo?.label || info.tr}
+            </Text>
+          </View>
+          {stickerInfo?.token && (
+            <Text style={styles.headerSub}>/s/{stickerInfo.token}</Text>
+          )}
+        </View>
+        <View style={{ width: 60 }} />
+      </View>
+
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 24}
+      >
+        <FlatList
+          ref={listRef}
+          data={messages}
+          keyExtractor={(m) => m.id}
+          contentContainerStyle={styles.listContent}
+          renderItem={({ item }) => <Bubble message={item} />}
+          ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
+          ListEmptyComponent={
+            <Text style={styles.emptyChat}>Henüz mesaj yok.</Text>
+          }
+        />
+
+        <View style={styles.compose}>
+          <TextInput
+            value={draft}
+            onChangeText={setDraft}
+            placeholder="Cevap yaz…"
+            placeholderTextColor={colors.muted}
+            style={styles.composeInput}
+            multiline
+            maxLength={2000}
+          />
+          <Pressable
+            onPress={send}
+            disabled={sending || !draft.trim()}
+            style={[styles.sendBtn, (!draft.trim() || sending) && { opacity: 0.5 }]}
+          >
+            <Text style={styles.sendBtnText}>{sending ? "…" : "Gönder"}</Text>
+          </Pressable>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
+
+function Bubble({ message }: { message: Message }) {
+  const isMine = message.sender === "owner";
+  const isSystem = message.sender === "system";
+
+  if (isSystem) {
+    return (
+      <View style={styles.systemWrap}>
+        <View style={styles.systemBubble}>
+          <Text style={styles.systemText}>{message.body}</Text>
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View
+      style={[
+        styles.bubbleWrap,
+        isMine ? styles.bubbleWrapMine : styles.bubbleWrapTheirs,
+      ]}
+    >
+      <View
+        style={[
+          styles.bubble,
+          isMine ? styles.bubbleMine : styles.bubbleTheirs,
+        ]}
+      >
+        <Text
+          style={[
+            styles.bubbleText,
+            isMine ? { color: "#FFF" } : { color: colors.charcoal },
+          ]}
+        >
+          {message.body}
+        </Text>
+        <Text
+          style={[
+            styles.bubbleTime,
+            isMine ? { color: "rgba(255,255,255,0.6)" } : { color: colors.muted },
+          ]}
+        >
+          {formatRelativeTime(message.sent_at)}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: colors.bg },
+  loading: { flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: colors.bg },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.navyMuted,
+    gap: spacing.md,
+  },
+  back: { ...typography.bodyBold, color: colors.navy },
+  headerCenter: { flex: 1, alignItems: "center" },
+  headerRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  headerEmoji: { fontSize: 20 },
+  headerTitle: { ...typography.bodyBold, color: colors.navy },
+  headerSub: { ...typography.tiny, color: colors.muted, marginTop: 2, fontFamily: "monospace" },
+  listContent: { padding: spacing.lg, flexGrow: 1 },
+  emptyChat: { ...typography.body, color: colors.muted, textAlign: "center", marginTop: spacing.xxxl },
+  bubbleWrap: { maxWidth: "80%" },
+  bubbleWrapMine: { alignSelf: "flex-end" },
+  bubbleWrapTheirs: { alignSelf: "flex-start" },
+  bubble: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: radius.lg,
+  },
+  bubbleMine: { backgroundColor: colors.navy },
+  bubbleTheirs: { backgroundColor: colors.navyMuted },
+  bubbleText: { ...typography.body, lineHeight: 22 },
+  bubbleTime: { ...typography.tiny, fontSize: 10, marginTop: 4 },
+  systemWrap: { alignItems: "center" },
+  systemBubble: {
+    backgroundColor: colors.navyMuted,
+    paddingVertical: 4,
+    paddingHorizontal: spacing.md,
+    borderRadius: radius.full,
+  },
+  systemText: { ...typography.tiny, color: colors.muted },
+  compose: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    gap: spacing.sm,
+    padding: spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: colors.navyMuted,
+    paddingBottom: Platform.OS === "ios" ? spacing.md : spacing.lg,
+  },
+  composeInput: {
+    flex: 1,
+    minHeight: 44,
+    maxHeight: 120,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    borderColor: colors.navyBorder,
+    paddingHorizontal: spacing.md,
+    paddingTop: 10,
+    paddingBottom: 10,
+    fontSize: 15,
+    color: colors.charcoal,
+  },
+  sendBtn: {
+    backgroundColor: colors.navy,
+    paddingHorizontal: spacing.lg,
+    height: 44,
+    borderRadius: radius.md,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sendBtnText: { ...typography.bodyBold, color: "#FFF" },
+});

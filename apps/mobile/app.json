@@ -1,0 +1,55 @@
+{
+  "expo": {
+    "name": "Tagora",
+    "slug": "tagora",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "scheme": "tagora",
+    "newArchEnabled": true,
+    "backgroundColor": "#FFFFFF",
+    "splash": {
+      "backgroundColor": "#0F1B3D",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.tagora.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Sticker'ınızı hesabınıza eşleştirmek için QR kodu okumamız gerekiyor.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "app.tagora.mobile",
+      "adaptiveIcon": {
+        "backgroundColor": "#0F1B3D"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Tagora sticker QR kodunuzu tarayabilmek için kameraya erişim gerekiyor."
+        }
+      ],
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}

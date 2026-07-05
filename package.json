@@ -1,0 +1,21 @@
+{
+  "name": "tagora",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tagora — Privacy-first QR sticker platform",
+  "scripts": {
+    "dev:web": "pnpm --filter @tagora/web dev",
+    "build:web": "pnpm --filter @tagora/web build",
+    "start:web": "pnpm --filter @tagora/web start",
+    "dev:mobile": "pnpm --filter @tagora/mobile start",
+    "ios": "pnpm --filter @tagora/mobile ios",
+    "android": "pnpm --filter @tagora/mobile android",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "db:reset": "echo 'Run Supabase migrations: see packages/db/README.md'"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

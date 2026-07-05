@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Env files
+.env
+.env.local
+.env*.local
+!.env.example
+
+# Supabase
+.supabase/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Expo — machine-specific device history + dev server settings
+.expo/
+apps/*/.expo/
+
+# Vercel
+.vercel/
+
+# Sticker token batch CSV'leri (her deploy'da üretilir, üretici'ye özel)
+tokens-batch-*.csv
