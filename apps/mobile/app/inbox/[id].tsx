@@ -185,16 +185,29 @@ export default function ChatScreen() {
                   style: "destructive",
                   onPress: async () => {
                     // Önce mesajları sil (FK cascade yoksa manuel)
-                    await supabase
+                    const { error: msgErr } = await supabase
                       .from("messages")
                       .delete()
                       .eq("conversation_id", conversationId);
-                    const { error } = await supabase
+                    if (msgErr) {
+                      Alert.alert("Hata (mesajlar)", msgErr.message);
+                      return;
+                    }
+                    // Sonra konuşmayı sil — silme başarısını doğrulamak için select() ile
+                    const { data: deleted, error } = await supabase
                       .from("conversations")
                       .delete()
-                      .eq("id", conversationId);
+                      .eq("id", conversationId)
+                      .select("id");
                     if (error) {
                       Alert.alert("Hata", error.message);
+                      return;
+                    }
+                    if (!deleted || deleted.length === 0) {
+                      Alert.alert(
+                        "Silinemedi",
+                        "Konuşma silme yetkin yok görünüyor. Yönetici ile iletişime geç.",
+                      );
                       return;
                     }
                     router.back();

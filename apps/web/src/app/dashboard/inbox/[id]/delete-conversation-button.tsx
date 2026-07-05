@@ -26,15 +26,32 @@ export function DeleteConversationButton({ conversationId, scannerName }: Props)
     setBusy(true);
     const supabase = createSupabaseBrowserClient();
 
-    await supabase.from("messages").delete().eq("conversation_id", conversationId);
-    const { error } = await supabase
+    const { error: msgErr } = await supabase
+      .from("messages")
+      .delete()
+      .eq("conversation_id", conversationId);
+    if (msgErr) {
+      setBusy(false);
+      alert("Mesaj silme hatası: " + msgErr.message);
+      return;
+    }
+
+    // Konuşmayı sil — silme başarısını doğrulamak için select() ile
+    const { data: deleted, error } = await supabase
       .from("conversations")
       .delete()
-      .eq("id", conversationId);
+      .eq("id", conversationId)
+      .select("id");
 
     setBusy(false);
     if (error) {
       alert("Silme hatası: " + error.message);
+      return;
+    }
+    if (!deleted || deleted.length === 0) {
+      alert(
+        "Silinemedi — yetkin yok görünüyor. Sayfayı yenile veya yönetici ile iletişime geç.",
+      );
       return;
     }
     router.push("/dashboard/inbox");
