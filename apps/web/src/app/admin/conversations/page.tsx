@@ -161,7 +161,12 @@ export default async function AdminConversationsPage({
                     </Link>
                   </Td>
                   <Td>
-                    <span className="font-medium text-charcoal">{c.scanner_name}</span>
+                    <Link
+                      href={`/admin/conversations/${c.id}` as never}
+                      className="font-medium text-navy hover:underline"
+                    >
+                      {c.scanner_name} →
+                    </Link>
                   </Td>
                   <Td>
                     <span
