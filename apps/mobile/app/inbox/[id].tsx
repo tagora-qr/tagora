@@ -172,7 +172,40 @@ export default function ChatScreen() {
             {stickerInfo?.token ? `/s/${stickerInfo.token}` : ""}
           </Text>
         </View>
-        <View style={{ width: 60 }} />
+        <Pressable
+          hitSlop={16}
+          onPress={() => {
+            Alert.alert(
+              "Konuşmayı sil",
+              `${scannerName} ile olan tüm mesajlar ve konuşma kalıcı olarak silinir. Bu işlem geri alınamaz.`,
+              [
+                { text: "Vazgeç", style: "cancel" },
+                {
+                  text: "Sil",
+                  style: "destructive",
+                  onPress: async () => {
+                    // Önce mesajları sil (FK cascade yoksa manuel)
+                    await supabase
+                      .from("messages")
+                      .delete()
+                      .eq("conversation_id", conversationId);
+                    const { error } = await supabase
+                      .from("conversations")
+                      .delete()
+                      .eq("id", conversationId);
+                    if (error) {
+                      Alert.alert("Hata", error.message);
+                      return;
+                    }
+                    router.back();
+                  },
+                },
+              ],
+            );
+          }}
+        >
+          <Text style={styles.deleteBtn}>Sil</Text>
+        </Pressable>
       </View>
 
       <KeyboardAvoidingView
@@ -293,6 +326,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   back: { ...typography.bodyBold, color: colors.navy },
+  deleteBtn: { ...typography.bodyBold, color: colors.danger },
   headerCenter: { flex: 1, alignItems: "center" },
   headerRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   headerEmoji: { fontSize: 20 },

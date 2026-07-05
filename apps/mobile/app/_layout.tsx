@@ -67,7 +67,13 @@ function AuthGate() {
       }
     } else {
       // Session var — tabs veya public değilsek tabs'a (initial `/` dahil)
-      if (!inTabs && !inPublicGroup && group !== "claim" && group !== "inbox") {
+      if (
+        !inTabs &&
+        !inPublicGroup &&
+        group !== "claim" &&
+        group !== "inbox" &&
+        group !== "sticker"
+      ) {
         router.replace("/(tabs)/");
       }
     }
@@ -101,6 +107,7 @@ function AuthGate() {
         }}
       />
       <Stack.Screen name="inbox/[id]" options={{ animation: "slide_from_right" }} />
+      <Stack.Screen name="sticker/[id]" options={{ animation: "slide_from_right" }} />
     </Stack>
   );
 }

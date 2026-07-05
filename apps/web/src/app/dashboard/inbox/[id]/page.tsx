@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { OwnerChat } from "./owner-chat";
+import { DeleteConversationButton } from "./delete-conversation-button";
 
 type Params = Promise<{ id: string }>;
 
@@ -53,16 +54,17 @@ export default async function ConversationPage({ params }: { params: Params }) {
 
   return (
     <div className="flex h-[calc(100vh-180px)] flex-col">
-      <header className="mb-3 flex items-center justify-between">
+      <header className="mb-3 flex items-center justify-between gap-3">
         <Link href="/dashboard/inbox" className="btn-ghost">
           ← Inbox
         </Link>
-        <div className="text-right">
-          <p className="text-sm font-semibold text-navy">{scannerName}</p>
-          <p className="text-xs text-charcoal/50">
+        <div className="min-w-0 flex-1 text-center">
+          <p className="truncate text-sm font-semibold text-navy">{scannerName}</p>
+          <p className="truncate text-xs text-charcoal/50">
             {sticker.label ? `${sticker.label} · ` : ""}/s/{sticker.token}
           </p>
         </div>
+        <DeleteConversationButton conversationId={id} scannerName={scannerName} />
       </header>
 
       <OwnerChat

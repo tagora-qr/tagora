@@ -71,17 +71,28 @@ export default function StickersScreen() {
         ListEmptyComponent={
           loading ? null : <EmptyState onClaim={() => router.push("/claim")} />
         }
-        renderItem={({ item }) => <StickerCard sticker={item} />}
+        renderItem={({ item }) => (
+          <StickerCard
+            sticker={item}
+            onPress={() => router.push(`/sticker/${item.id}` as never)}
+          />
+        )}
         ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
       />
     </Screen>
   );
 }
 
-function StickerCard({ sticker }: { sticker: Sticker }) {
-  const useCaseInfo = sticker.use_case
-    ? USE_CASE_LABELS[sticker.use_case]
-    : USE_CASE_LABELS.other;
+function StickerCard({
+  sticker,
+  onPress,
+}: {
+  sticker: Sticker;
+  onPress: () => void;
+}) {
+  const useCaseInfo =
+    (sticker.use_case && USE_CASE_LABELS[sticker.use_case]) ??
+    USE_CASE_LABELS.other;
 
   const badge =
     sticker.status === "active"
@@ -91,7 +102,7 @@ function StickerCard({ sticker }: { sticker: Sticker }) {
         : { color: colors.muted, label: sticker.status, bg: colors.bgSubtle };
 
   return (
-    <View style={styles.card}>
+    <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && { opacity: 0.7 }]}>
       <View style={styles.cardTop}>
         <Text style={styles.cardEmoji}>{useCaseInfo.emoji}</Text>
         <View style={[styles.badge, { backgroundColor: badge.bg }]}>
@@ -106,7 +117,7 @@ function StickerCard({ sticker }: { sticker: Sticker }) {
       <Text style={styles.cardMeta}>
         {sticker.scan_count} taranma · <Text style={styles.mono}>/s/{sticker.token}</Text>
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
