@@ -14,16 +14,35 @@ export const metadata = {
   description: "Tagora hesabına giriş yap.",
 };
 
-export default function LoginPage() {
+type SearchParams = Promise<{ next?: string; error?: string }>;
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const params = await searchParams;
+  // Whitelist: sadece kendi domain path'lerine yönlendir (open redirect koruması)
+  const rawNext = params.next ?? "/dashboard";
+  const next = rawNext.startsWith("/") ? rawNext : "/dashboard";
+  const isAdminNext = next.startsWith("/admin");
+
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-6 py-12">
       <Logo className="mb-8" />
       <div className="w-full rounded-2xl border border-navy/10 bg-white p-8 shadow-sm">
+        {isAdminNext && (
+          <span className="mb-3 inline-flex rounded-full bg-navy px-2.5 py-1 text-xs font-bold uppercase tracking-wider text-accent">
+            Admin girişi
+          </span>
+        )}
         <h1 className="mb-2 text-2xl font-bold text-navy">Hoş geldin</h1>
         <p className="mb-6 text-sm text-charcoal/70">
-          E-postanı gir; sana sihirli bir giriş linki yollayalım.
+          {isAdminNext
+            ? "Admin paneline erişmek için giriş yap."
+            : "E-postanı gir; sana sihirli bir giriş linki yollayalım."}
         </p>
-        <LoginForm />
+        <LoginForm next={next} />
       </div>
       <p className="mt-6 text-center text-xs text-charcoal/50">
         Devam ederek{" "}

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
 
-export function LoginForm() {
+export function LoginForm({ next = "/dashboard" }: { next?: string }) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -15,10 +15,12 @@ export function LoginForm() {
     setLoading(true);
 
     const supabase = createSupabaseBrowserClient();
+    // next path'ini callback'e ilet ki giriş sonrası doğru sayfaya gitsin
+    const encodedNext = encodeURIComponent(next);
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodedNext}`,
       },
     });
 
