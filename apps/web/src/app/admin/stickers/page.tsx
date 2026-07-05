@@ -81,7 +81,12 @@ export default async function AdminStickersPage({
               (stickers as unknown as StickerRow[]).map((s) => (
                 <tr key={s.id} className="transition hover:bg-navy/[0.02]">
                   <Td>
-                    <span className="font-mono text-xs">{s.token}</span>
+                    <Link
+                      href={`/admin/stickers/${s.id}` as never}
+                      className="font-mono text-xs text-navy hover:underline"
+                    >
+                      {s.token}
+                    </Link>
                   </Td>
                   <Td>
                     <UseCaseBadge value={s.use_case} />

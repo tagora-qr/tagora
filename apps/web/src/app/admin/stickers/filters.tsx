@@ -94,6 +94,25 @@ export function StickersTableFilters({
       {pending && (
         <span className="text-xs text-charcoal/50">Yükleniyor…</span>
       )}
+
+      <div className="ml-auto">
+        <ExportButton status={currentStatus} useCase={currentUseCase} />
+      </div>
     </div>
+  );
+}
+
+function ExportButton({ status, useCase }: { status: string; useCase: string }) {
+  const params = new URLSearchParams();
+  if (status !== "all") params.set("status", status);
+  if (useCase !== "all") params.set("use_case", useCase);
+  const href = `/api/admin/stickers/export${params.toString() ? "?" + params.toString() : ""}`;
+  return (
+    <a
+      href={href}
+      className="inline-flex items-center gap-2 rounded-lg border border-navy/20 bg-navy px-3 py-1.5 text-xs font-semibold text-accent hover:bg-navy-800"
+    >
+      📥 CSV indir
+    </a>
   );
 }
