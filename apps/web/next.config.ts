@@ -3,6 +3,15 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@tagora/db", "@tagora/shared"],
+  // iyzipay bundling — kendi klasöründeki `resources/` dizinini runtime'da
+  // fs ile scan eder. Next.js bundler bu klasörü "unused" görüp bundle'a almadığı
+  // için Vercel'de ENOENT hatası çıkar. serverExternalPackages ile iyzipay
+  // bundle edilmiyor, node_modules'dan direkt yüklenir (resources dahil).
+  serverExternalPackages: ["iyzipay"],
+  // outputFileTracing dahil etme — ekstra güvence
+  outputFileTracingIncludes: {
+    "/api/checkout/**/*": ["./node_modules/iyzipay/**/*"],
+  },
   typedRoutes: true,
   // KVKK için: gereksiz fetch'leri prefetch yapma
   poweredByHeader: false,
