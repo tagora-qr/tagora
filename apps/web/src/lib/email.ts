@@ -1,30 +1,26 @@
 /**
- * Transactional email helper — Resend HTTP API üzerinden.
+ * Transactional email helper — Brevo REST API üzerinden.
  *
- * Neden fetch: SDK dependency istememek. Resend REST çok basit.
- * Doküman: https://resend.com/docs/api-reference/emails/send-email
+ * Neden fetch: SDK dependency istememek. Brevo REST temiz.
+ * Doküman: https://developers.brevo.com/reference/sendtransacemail
  *
- * Env: RESEND_API_KEY (Vercel'de tanımlı olmalı)
+ * Env:
+ *   BREVO_API_KEY — Brevo dashboard'da SMTP & API sekmesinden alınır
+ *   BREVO_FROM_EMAIL — sender email (default bildirim@tagora.com.tr)
+ *   BREVO_FROM_NAME — sender name (default Tagora)
+ *   BREVO_REPLY_TO — yanıt adresi (default destek@tagora.com.tr)
  *
  * NOT: Fail-safe. Email gönderimi başarısız olursa hata FIRLATMAZ,
  * sadece console'a log basar — sipariş akışı email hatası yüzünden bozulmaz.
- */
-
-/**
- * NOT: Şimdilik Tagora için ayrı bir Resend hesabı yok — mevcut Resend
- * hesabındaki verified domain `complify.io` kullanılıyor. From adres
- * "Tagora <bildirim@complify.io>" formatında: kullanıcı gelen kutusunda
- * "Tagora" markasını görür, teknik sender complify.io.
  *
- * Reply-to `destek@tagora.com.tr` — kullanıcı yanıt basarsa Tagora destek'e
- * gider (MX kurulumu sonrasında). Şimdilik bounce olabilir.
- *
- * Yeni Tagora Resend hesabı açılınca:
- *   Vercel'e RESEND_FROM env değişkeni ekle: "Tagora <bildirim@tagora.com.tr>"
- *   Kod değişmesin — env override eder.
+ * Brevo domain verify olduktan sonra `bildirim@tagora.com.tr`'den gönderim
+ * yapabilir. Verify olana kadar sender olarak `omer@complify.io` gibi
+ * hesap sahibi email de kullanılabilir (Brevo hesap sahibine gönderime izin
+ * verir verify olmadan da).
  */
-const FROM_ADDRESS = process.env.RESEND_FROM ?? "Tagora <bildirim@complify.io>";
-const REPLY_TO = process.env.RESEND_REPLY_TO ?? "destek@tagora.com.tr";
+const FROM_EMAIL = process.env.BREVO_FROM_EMAIL ?? "bildirim@tagora.com.tr";
+const FROM_NAME = process.env.BREVO_FROM_NAME ?? "Tagora";
+const REPLY_TO = process.env.BREVO_REPLY_TO ?? "destek@tagora.com.tr";
 
 interface SendEmailInput {
   to: string;
@@ -41,41 +37,49 @@ interface SendResult {
 }
 
 export async function sendTransactionalEmail(input: SendEmailInput): Promise<SendResult> {
-  const apiKey = process.env.RESEND_API_KEY;
+  const apiKey = process.env.BREVO_API_KEY;
   if (!apiKey) {
-    console.warn("[email] RESEND_API_KEY tanımlı değil, email gönderilmedi:", input.subject);
-    return { ok: false, error: "RESEND_API_KEY missing" };
+    console.warn("[email] BREVO_API_KEY tanımlı değil, email gönderilmedi:", input.subject);
+    return { ok: false, error: "BREVO_API_KEY missing" };
   }
 
   try {
-    const res = await fetch("https://api.resend.com/emails", {
+    // Brevo API payload
+    // Docs: https://developers.brevo.com/reference/sendtransacemail
+    const payload: Record<string, unknown> = {
+      sender: { email: FROM_EMAIL, name: FROM_NAME },
+      to: [{ email: input.to }],
+      replyTo: { email: REPLY_TO },
+      subject: input.subject,
+      htmlContent: input.html,
+    };
+    if (input.text) payload.textContent = input.text;
+    // Brevo tag'leri sadece string array kabul eder (Resend'in {name,value} formatı değil)
+    if (input.tags && input.tags.length) {
+      payload.tags = input.tags.map((t) => `${t.name}:${t.value}`);
+    }
+
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${apiKey}`,
+        "api-key": apiKey,
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
-      body: JSON.stringify({
-        from: FROM_ADDRESS,
-        to: [input.to],
-        subject: input.subject,
-        html: input.html,
-        text: input.text,
-        reply_to: REPLY_TO,
-        tags: input.tags,
-      }),
+      body: JSON.stringify(payload),
     });
 
     const json = (await res.json().catch(() => ({}))) as {
-      id?: string;
+      messageId?: string;
+      code?: string;
       message?: string;
-      name?: string;
     };
 
     if (!res.ok) {
-      console.error("[email] Resend error:", res.status, json);
+      console.error("[email] Brevo error:", res.status, json);
       return { ok: false, error: json.message ?? `HTTP ${res.status}` };
     }
-    return { ok: true, id: json.id };
+    return { ok: true, id: json.messageId };
   } catch (e) {
     console.error("[email] Fetch failed:", e);
     return { ok: false, error: (e as Error).message };
