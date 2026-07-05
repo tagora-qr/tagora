@@ -10,8 +10,21 @@
  * sadece console'a log basar — sipariş akışı email hatası yüzünden bozulmaz.
  */
 
-const FROM_ADDRESS = "Tagora <bildirim@tagora.com.tr>";
-const REPLY_TO = "destek@tagora.com.tr";
+/**
+ * NOT: Şimdilik Tagora için ayrı bir Resend hesabı yok — mevcut Resend
+ * hesabındaki verified domain `complify.io` kullanılıyor. From adres
+ * "Tagora <bildirim@complify.io>" formatında: kullanıcı gelen kutusunda
+ * "Tagora" markasını görür, teknik sender complify.io.
+ *
+ * Reply-to `destek@tagora.com.tr` — kullanıcı yanıt basarsa Tagora destek'e
+ * gider (MX kurulumu sonrasında). Şimdilik bounce olabilir.
+ *
+ * Yeni Tagora Resend hesabı açılınca:
+ *   Vercel'e RESEND_FROM env değişkeni ekle: "Tagora <bildirim@tagora.com.tr>"
+ *   Kod değişmesin — env override eder.
+ */
+const FROM_ADDRESS = process.env.RESEND_FROM ?? "Tagora <bildirim@complify.io>";
+const REPLY_TO = process.env.RESEND_REPLY_TO ?? "destek@tagora.com.tr";
 
 interface SendEmailInput {
   to: string;
