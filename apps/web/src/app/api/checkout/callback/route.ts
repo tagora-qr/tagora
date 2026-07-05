@@ -9,6 +9,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { retrieveCheckoutForm } from "@/lib/iyzico";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
+import { renderOrderConfirmationEmail, sendTransactionalEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   // iyzico form-encoded POST atar
@@ -53,10 +54,53 @@ export async function POST(req: NextRequest) {
         iyzico_raw_response: result as unknown,
       })
       .eq("id", orderId)
-      .select("order_no")
+      .select(
+        "order_no, buyer_name, buyer_email, total_try, shipping_address, shipping_city",
+      )
       .single();
 
-    const orderNo = (order as { order_no: string } | null)?.order_no ?? "";
+    const orderRow = order as {
+      order_no: string;
+      buyer_name: string;
+      buyer_email: string;
+      total_try: number;
+      shipping_address: string;
+      shipping_city: string;
+    } | null;
+    const orderNo = orderRow?.order_no ?? "";
+
+    // Onay email'i — fire & forget, hataysa akış bozulmasın
+    if (orderRow?.buyer_email) {
+      const { data: items } = await service
+        .from("order_items")
+        .select("package_name, quantity, line_total_try")
+        .eq("order_id", orderId);
+      const itemsList = ((items ?? []) as { package_name: string; quantity: number; line_total_try: number }[])
+        .map((i) => ({ name: i.package_name, quantity: i.quantity, lineTotal: Number(i.line_total_try) }));
+
+      const origin = new URL(req.url).origin;
+      const email = renderOrderConfirmationEmail({
+        orderNo,
+        buyerName: orderRow.buyer_name,
+        totalTry: Number(orderRow.total_try),
+        shippingAddress: orderRow.shipping_address,
+        shippingCity: orderRow.shipping_city,
+        trackUrl: `${origin}/dashboard/orders/${orderNo}`,
+        items: itemsList,
+      });
+      // Await ile bekle ama sonucunu umursama — email fail sipariş success'ini bozmaz
+      const emailRes = await sendTransactionalEmail({
+        to: orderRow.buyer_email,
+        subject: email.subject,
+        html: email.html,
+        text: email.text,
+        tags: [{ name: "type", value: "order_confirmation" }, { name: "order_no", value: orderNo }],
+      });
+      if (!emailRes.ok) {
+        console.error("[callback] Order confirmation email failed:", emailRes.error);
+      }
+    }
+
     return NextResponse.redirect(
       new URL(`/shop/success/${orderNo}`, req.url),
     );

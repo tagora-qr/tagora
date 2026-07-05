@@ -244,6 +244,61 @@ export function OrderActions({
         )}
       </div>
 
+      {/* Email tekrar gönder */}
+      <div className="mb-4">
+        <p className="mb-2 text-xs font-semibold text-charcoal/60">E-POSTA</p>
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={async () => {
+              if (!window.confirm("Onay email'i müşteriye tekrar gönderilsin mi?")) return;
+              setBusy("email-confirmation");
+              try {
+                const res = await fetch("/api/admin/orders/resend-email", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ orderId, type: "confirmation" }),
+                });
+                const json = await res.json();
+                if (json.ok) alert("✓ Onay email'i gönderildi");
+                else alert("Hata: " + (json.error ?? "unknown"));
+              } finally {
+                setBusy(null);
+              }
+            }}
+            disabled={busy !== null}
+            className="rounded-lg border border-navy/15 px-3 py-1.5 text-xs font-medium text-navy hover:bg-navy/5 disabled:opacity-40"
+          >
+            {busy === "email-confirmation" ? "…" : "📧 Onay Email'i Gönder"}
+          </button>
+          <button
+            onClick={async () => {
+              if (!trackingNumber || !trackingCarrier) {
+                alert("Önce kargo bilgisini kaydet");
+                return;
+              }
+              if (!window.confirm("Kargo bildirimi email'i müşteriye tekrar gönderilsin mi?")) return;
+              setBusy("email-shipped");
+              try {
+                const res = await fetch("/api/admin/orders/resend-email", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ orderId, type: "shipped" }),
+                });
+                const json = await res.json();
+                if (json.ok) alert("✓ Kargo email'i gönderildi");
+                else alert("Hata: " + (json.error ?? "unknown"));
+              } finally {
+                setBusy(null);
+              }
+            }}
+            disabled={busy !== null || !trackingNumber}
+            className="rounded-lg border border-navy/15 px-3 py-1.5 text-xs font-medium text-navy hover:bg-navy/5 disabled:opacity-40"
+          >
+            {busy === "email-shipped" ? "…" : "📦 Kargo Email'i Gönder"}
+          </button>
+        </div>
+      </div>
+
       {/* Admin note */}
       <div>
         <button
