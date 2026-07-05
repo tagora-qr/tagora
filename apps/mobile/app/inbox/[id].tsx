@@ -34,6 +34,8 @@ export default function ChatScreen() {
     use_case: StickerUseCase | null;
   } | null>(null);
   const [scannerName, setScannerName] = useState<string>("Anonim ziyaretçi");
+  const [scannerSessionId, setScannerSessionId] = useState<string | null>(null);
+  const [scannerBlocked, setScannerBlocked] = useState<boolean>(false);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -57,13 +59,15 @@ export default function ChatScreen() {
     }
 
     if (conv?.scanner_session_id) {
+      setScannerSessionId(conv.scanner_session_id);
       const { data: session } = await supabase
         .from("scanner_sessions")
-        .select("display_name")
+        .select("display_name, is_blocked")
         .eq("id", conv.scanner_session_id)
         .maybeSingle();
-      const name = (session as { display_name: string | null } | null)?.display_name?.trim();
-      if (name) setScannerName(name);
+      const sess = session as { display_name: string | null; is_blocked: boolean } | null;
+      if (sess?.display_name?.trim()) setScannerName(sess.display_name.trim());
+      setScannerBlocked(sess?.is_blocked ?? false);
     }
 
     const { data: msgs } = await supabase
@@ -168,6 +172,7 @@ export default function ChatScreen() {
             </Text>
           </View>
           <Text style={styles.headerSub} numberOfLines={1}>
+            {scannerBlocked ? "🚫 Engelli · " : ""}
             {stickerInfo?.label ? `${stickerInfo.label} · ` : ""}
             {stickerInfo?.token ? `/s/${stickerInfo.token}` : ""}
           </Text>
@@ -176,48 +181,95 @@ export default function ChatScreen() {
           hitSlop={16}
           onPress={() => {
             Alert.alert(
-              "Konuşmayı sil",
-              `${scannerName} ile olan tüm mesajlar ve konuşma kalıcı olarak silinir. Bu işlem geri alınamaz.`,
+              scannerName,
+              scannerBlocked
+                ? `${scannerName} şu anda engelli — sana mesaj gönderemez.`
+                : `${scannerName} ile konuşma seçenekleri:`,
               [
-                { text: "Vazgeç", style: "cancel" },
                 {
-                  text: "Sil",
-                  style: "destructive",
+                  text: scannerBlocked ? "🔓 Engeli kaldır" : "🚫 Kişiyi engelle",
+                  style: scannerBlocked ? "default" : "destructive",
                   onPress: async () => {
-                    // Önce mesajları sil (FK cascade yoksa manuel)
-                    const { error: msgErr } = await supabase
-                      .from("messages")
-                      .delete()
-                      .eq("conversation_id", conversationId);
-                    if (msgErr) {
-                      Alert.alert("Hata (mesajlar)", msgErr.message);
+                    if (!scannerSessionId) {
+                      Alert.alert("Hata", "Scanner session bulunamadı.");
                       return;
                     }
-                    // Sonra konuşmayı sil — silme başarısını doğrulamak için select() ile
-                    const { data: deleted, error } = await supabase
-                      .from("conversations")
-                      .delete()
-                      .eq("id", conversationId)
+                    const nextValue = !scannerBlocked;
+                    const { data: updated, error } = await supabase
+                      .from("scanner_sessions")
+                      .update({ is_blocked: nextValue })
+                      .eq("id", scannerSessionId)
                       .select("id");
                     if (error) {
                       Alert.alert("Hata", error.message);
                       return;
                     }
-                    if (!deleted || deleted.length === 0) {
+                    if (!updated || updated.length === 0) {
                       Alert.alert(
-                        "Silinemedi",
-                        "Konuşma silme yetkin yok görünüyor. Yönetici ile iletişime geç.",
+                        "Değiştirilemedi",
+                        "Bu scanner'ı bloklama yetkin olmayabilir. Yönetici ile iletişime geç.",
                       );
                       return;
                     }
-                    router.back();
+                    setScannerBlocked(nextValue);
+                    Alert.alert(
+                      nextValue ? "Kişi engellendi" : "Engel kaldırıldı",
+                      nextValue
+                        ? `${scannerName} artık sana mesaj gönderemez.`
+                        : `${scannerName} tekrar mesaj gönderebilir.`,
+                    );
                   },
                 },
+                {
+                  text: "🗑️ Konuşmayı sil",
+                  style: "destructive",
+                  onPress: () => {
+                    Alert.alert(
+                      "Konuşmayı sil",
+                      `${scannerName} ile olan tüm mesajlar ve konuşma kalıcı olarak silinir. Bu işlem geri alınamaz.`,
+                      [
+                        { text: "Vazgeç", style: "cancel" },
+                        {
+                          text: "Sil",
+                          style: "destructive",
+                          onPress: async () => {
+                            const { error: msgErr } = await supabase
+                              .from("messages")
+                              .delete()
+                              .eq("conversation_id", conversationId);
+                            if (msgErr) {
+                              Alert.alert("Hata (mesajlar)", msgErr.message);
+                              return;
+                            }
+                            const { data: deleted, error } = await supabase
+                              .from("conversations")
+                              .delete()
+                              .eq("id", conversationId)
+                              .select("id");
+                            if (error) {
+                              Alert.alert("Hata", error.message);
+                              return;
+                            }
+                            if (!deleted || deleted.length === 0) {
+                              Alert.alert(
+                                "Silinemedi",
+                                "Konuşma silme yetkin yok görünüyor.",
+                              );
+                              return;
+                            }
+                            router.back();
+                          },
+                        },
+                      ],
+                    );
+                  },
+                },
+                { text: "Vazgeç", style: "cancel" },
               ],
             );
           }}
         >
-          <Text style={styles.deleteBtn}>Sil</Text>
+          <Text style={styles.menuBtn}>⋯</Text>
         </Pressable>
       </View>
 
@@ -340,6 +392,7 @@ const styles = StyleSheet.create({
   },
   back: { ...typography.bodyBold, color: colors.navy },
   deleteBtn: { ...typography.bodyBold, color: colors.danger },
+  menuBtn: { fontSize: 24, color: colors.navy, fontWeight: "700", paddingHorizontal: 8 },
   headerCenter: { flex: 1, alignItems: "center" },
   headerRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   headerEmoji: { fontSize: 20 },

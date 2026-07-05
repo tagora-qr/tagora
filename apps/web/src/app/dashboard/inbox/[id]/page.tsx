@@ -6,6 +6,7 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { OwnerChat } from "./owner-chat";
 import { DeleteConversationButton } from "./delete-conversation-button";
+import { BlockScannerButton } from "./block-scanner-button";
 
 type Params = Promise<{ id: string }>;
 
@@ -25,7 +26,7 @@ export default async function ConversationPage({ params }: { params: Params }) {
       sticker_id,
       scanner_session_id,
       stickers!inner ( token, label, use_case ),
-      scanner_sessions!inner ( display_name )
+      scanner_sessions!inner ( display_name, is_blocked )
     `)
     .eq("id", id)
     .maybeSingle();
@@ -46,11 +47,14 @@ export default async function ConversationPage({ params }: { params: Params }) {
     .eq("id", id);
 
   const convData = conv as unknown as {
+    scanner_session_id: string;
     stickers: { token: string; label: string | null; use_case: string | null };
-    scanner_sessions: { display_name: string | null };
+    scanner_sessions: { display_name: string | null; is_blocked: boolean };
   };
   const sticker = convData.stickers;
   const scannerName = convData.scanner_sessions?.display_name?.trim() || "Anonim ziyaretçi";
+  const scannerBlocked = convData.scanner_sessions?.is_blocked ?? false;
+  const scannerSessionId = convData.scanner_session_id;
 
   return (
     <div className="flex h-[calc(100vh-180px)] flex-col">
@@ -61,9 +65,15 @@ export default async function ConversationPage({ params }: { params: Params }) {
         <div className="min-w-0 flex-1 text-center">
           <p className="truncate text-sm font-semibold text-navy">{scannerName}</p>
           <p className="truncate text-xs text-charcoal/50">
+            {scannerBlocked ? "🚫 Engelli · " : ""}
             {sticker.label ? `${sticker.label} · ` : ""}/s/{sticker.token}
           </p>
         </div>
+        <BlockScannerButton
+          scannerSessionId={scannerSessionId}
+          scannerName={scannerName}
+          isBlocked={scannerBlocked}
+        />
         <DeleteConversationButton conversationId={id} scannerName={scannerName} />
       </header>
 
