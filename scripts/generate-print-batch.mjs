@@ -263,6 +263,29 @@ async function insertTokensToDb(tokens, useCase) {
   return { insertedCount, errors };
 }
 
+async function insertBatchRecord({ name, useCase, sku, size, count, outputDir }) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) return;
+
+  const supabase = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+
+  const { error } = await supabase.from("print_batches").insert({
+    name,
+    use_case: useCase,
+    sku,
+    size,
+    count,
+    output_dir: outputDir,
+  });
+
+  if (error) {
+    console.warn(`⚠️  Batch kaydı eklenemedi: ${error.message}`);
+  }
+}
+
 // =============================================================================
 // MAIN
 // =============================================================================
@@ -384,6 +407,18 @@ omer@complify.io — Ömer Kılınç, Tagora
       }
       console.log(`\n✅ ${insertedCount} / ${count} sticker DB'ye insert edildi.`);
       console.log(`   status='manufactured' · use_case='${useCase}'`);
+
+      // Batch kaydı da ekle
+      await insertBatchRecord({
+        name: batchName,
+        useCase,
+        sku: config.sku,
+        size: config.size,
+        count,
+        outputDir,
+      });
+      console.log(`\n📦 Batch kaydı eklendi: ${batchName}`);
+
       console.log(`\n💡 Sonraki adım: SVG'leri üretici ile paylaş (ZIP olarak).`);
     } catch (e) {
       console.error(`\n❌ DB insert başarısız: ${e.message}`);
