@@ -114,25 +114,30 @@ export function ScannerClient({ token, useCase, stickerLabel }: ScannerClientPro
   }, [sessionToken, conversationId]);
 
   // Polling fallback — realtime çalışmayınca owner cevapları hala gelsin diye.
-  // 3 saniye interval, tab görünürse aktif.
+  // /api/scanner/messages endpoint'i service_role ile RLS bypass yapıyor.
   useEffect(() => {
     if (!sessionToken || !conversationId) return;
 
     let cancelled = false;
-    const supabase = createSupabaseScannerClient(sessionToken);
 
     const tick = async () => {
       if (cancelled || document.hidden) return;
       try {
-        const { data } = await supabase
-          .from("messages")
-          .select("id, conversation_id, sender, body, sent_at")
-          .eq("conversation_id", conversationId)
-          .order("sent_at", { ascending: true });
-        if (cancelled || !data) return;
+        const res = await fetch("/api/scanner/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_token: sessionToken,
+            conversation_id: conversationId,
+          }),
+        });
+        const json = (await res.json()) as
+          | { ok: true; messages: ChatMessage[] }
+          | { ok: false; error: string };
+        if (cancelled || !json.ok) return;
         setMessages((prev) => {
           const known = new Set(prev.map((m) => m.id));
-          const additions = (data as ChatMessage[]).filter((m) => !known.has(m.id));
+          const additions = json.messages.filter((m) => !known.has(m.id));
           return additions.length ? [...prev, ...additions] : prev;
         });
       } catch (e) {

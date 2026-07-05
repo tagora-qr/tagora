@@ -143,25 +143,30 @@ export default function ScannerScreen() {
     };
   }, [conversationId, sessionToken]);
 
-  // 2b) Polling fallback — 3 saniye interval, owner cevapları için garantili yol
+  // 2b) Polling fallback — 3 saniye interval, service_role endpoint ile RLS bypass
   useEffect(() => {
     if (!conversationId || !sessionToken) return;
 
     let cancelled = false;
-    const scannerClient = createSupabaseScannerClient(sessionToken);
 
     const tick = async () => {
       if (cancelled) return;
       try {
-        const { data } = await scannerClient
-          .from("messages")
-          .select("id, conversation_id, sender, body, sent_at")
-          .eq("conversation_id", conversationId)
-          .order("sent_at", { ascending: true });
-        if (cancelled || !data) return;
+        const res = await fetch(`${APP_URL}/api/scanner/messages`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_token: sessionToken,
+            conversation_id: conversationId,
+          }),
+        });
+        const json = (await res.json()) as
+          | { ok: true; messages: ChatMessage[] }
+          | { ok: false; error: string };
+        if (cancelled || !json.ok) return;
         setMessages((prev) => {
           const known = new Set(prev.map((m) => m.id));
-          const additions = (data as ChatMessage[]).filter((m) => !known.has(m.id));
+          const additions = json.messages.filter((m) => !known.has(m.id));
           return additions.length ? [...prev, ...additions] : prev;
         });
       } catch (e) {
