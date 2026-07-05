@@ -6,8 +6,10 @@ const config: NextConfig = {
   typedRoutes: true,
   // KVKK için: gereksiz fetch'leri prefetch yapma
   poweredByHeader: false,
-  // Sprint 3: production'a hızlı çıkış için build-time type/lint check'i pas geç.
-  // TODO(Sprint 4): Supabase Database generic'i client'a wire et, ignore'ları kaldır.
+  // Sprint 5 TODO: `supabase gen types typescript` ile canonical Database dosyası üret,
+  // packages/db/src/database.types.ts'e yaz, ve aşağıdaki 2 ignore'u kaldır.
+  // Şu an manuel Database shape'i Supabase-JS 2.x inference'ı ile uyumsuz →
+  // .select() sonuçları `never` dönüyor. Detay: MEMORY.md'de sprint_5_supabase_types.
   typescript: {
     ignoreBuildErrors: true,
   },

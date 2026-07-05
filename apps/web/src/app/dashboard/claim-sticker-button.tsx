@@ -97,7 +97,7 @@ export function ClaimStickerButton({ variant = "primary" }: Props) {
                 >
                   {(Object.keys(USE_CASE_LABELS) as StickerUseCase[]).map((k) => (
                     <option key={k} value={k}>
-                      {USE_CASE_LABELS[k].emoji} {USE_CASE_LABELS[k].tr}
+                      {USE_CASE_LABELS[k]?.emoji} {USE_CASE_LABELS[k]?.tr}
                     </option>
                   ))}
                 </select>

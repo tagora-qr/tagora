@@ -40,9 +40,9 @@ export default async function DashboardPage() {
 }
 
 function StickerCard({ sticker }: { sticker: import("@tagora/db").Sticker }) {
-  const useCaseInfo = sticker.use_case
-    ? USE_CASE_LABELS[sticker.use_case]
-    : USE_CASE_LABELS.other;
+  const useCaseInfo =
+    (sticker.use_case && USE_CASE_LABELS[sticker.use_case]) ??
+    USE_CASE_LABELS.other;
 
   // Sticker detay sayfası v1'de eklenecek — MVP'de tıklanamaz card.
   return (

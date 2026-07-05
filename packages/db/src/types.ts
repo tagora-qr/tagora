@@ -163,24 +163,75 @@ export interface WaitlistEntry {
 }
 
 // ===========================================================================
-// SUPABASE DATABASE TYPE (kısıtlı, manuel)
+// SUPABASE DATABASE TYPE
 // ===========================================================================
-// supabase-js v2 için: createClient<Database>() kullan
-// gen:types ile otomatize edilebilir
+// supabase-js v2 için: createClient<Database>() kullan.
+// Her tablo için Row/Insert/Update/Relationships zorunlu (Relationships eksikse
+// tüm .select() sonuçları `never` döner — bilinen Supabase-JS 2.x davranışı).
+//
+// Sprint 4+ TODO: `supabase gen types typescript` ile otomatikleştir.
+
+/** Common: hangi alanlar server tarafından üretilir (default/trigger/RLS) */
+type Timestamps = "created_at" | "updated_at";
+type Generated<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export type Database = {
   public: {
     Tables: {
-      users: { Row: User; Insert: Partial<User>; Update: Partial<User> };
-      sticker_designs: { Row: StickerDesign; Insert: Partial<StickerDesign>; Update: Partial<StickerDesign> };
-      stickers: { Row: Sticker; Insert: Partial<Sticker>; Update: Partial<Sticker> };
-      scanner_sessions: { Row: ScannerSession; Insert: Partial<ScannerSession>; Update: Partial<ScannerSession> };
-      conversations: { Row: Conversation; Insert: Partial<Conversation>; Update: Partial<Conversation> };
-      messages: { Row: Message; Insert: Partial<Message>; Update: Partial<Message> };
-      abuse_reports: { Row: AbuseReport; Insert: Partial<AbuseReport>; Update: Partial<AbuseReport> };
-      waitlist: { Row: WaitlistEntry; Insert: Partial<WaitlistEntry>; Update: Partial<WaitlistEntry> };
+      users: {
+        Row: User;
+        Insert: Generated<User, "id" | Timestamps | "kvkk_consent_at">;
+        Update: Partial<User>;
+        Relationships: [];
+      };
+      sticker_designs: {
+        Row: StickerDesign;
+        Insert: Generated<StickerDesign, "id" | "created_at">;
+        Update: Partial<StickerDesign>;
+        Relationships: [];
+      };
+      stickers: {
+        Row: Sticker;
+        Insert: Generated<Sticker, "id" | Timestamps | "manufactured_at" | "scan_count">;
+        Update: Partial<Sticker>;
+        Relationships: [];
+      };
+      scanner_sessions: {
+        Row: ScannerSession;
+        Insert: Generated<ScannerSession, "id" | "created_at" | "expires_at" | "message_count" | "is_blocked">;
+        Update: Partial<ScannerSession>;
+        Relationships: [];
+      };
+      conversations: {
+        Row: Conversation;
+        Insert: Generated<Conversation, "id" | Timestamps | "unread_owner_count" | "unread_scanner_count">;
+        Update: Partial<Conversation>;
+        Relationships: [];
+      };
+      messages: {
+        Row: Message;
+        Insert: Generated<Message, "id" | "sent_at" | "flagged">;
+        Update: Partial<Message>;
+        Relationships: [];
+      };
+      abuse_reports: {
+        Row: AbuseReport;
+        Insert: Generated<AbuseReport, "id" | "created_at" | "status">;
+        Update: Partial<AbuseReport>;
+        Relationships: [];
+      };
+      waitlist: {
+        Row: WaitlistEntry;
+        Insert: Generated<WaitlistEntry, "id" | "created_at">;
+        Update: Partial<WaitlistEntry>;
+        Relationships: [];
+      };
     };
     Views: {
-      sticker_public_info: { Row: StickerPublicInfo };
+      sticker_public_info: {
+        Row: StickerPublicInfo;
+        Relationships: [];
+      };
     };
     Functions: {
       delete_my_account: { Args: Record<string, never>; Returns: void };
@@ -199,5 +250,6 @@ export type Database = {
       abuse_reason: AbuseReason;
       abuse_status: AbuseStatus;
     };
+    CompositeTypes: Record<string, never>;
   };
 };

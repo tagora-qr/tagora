@@ -124,10 +124,10 @@ export default function HomePage() {
                   className="rounded-2xl border border-navy/10 bg-white p-5 text-center"
                 >
                   <div className="mb-3 text-4xl" aria-hidden="true">
-                    {USE_CASE_LABELS[k].emoji}
+                    {USE_CASE_LABELS[k]?.emoji}
                   </div>
                   <h4 className="font-semibold text-navy">
-                    {USE_CASE_LABELS[k].tr}
+                    {USE_CASE_LABELS[k]?.tr}
                   </h4>
                 </div>
               ))}

@@ -64,10 +64,11 @@ export default async function InboxPage() {
           {list.map((c) => {
             const sticker = c.sticker;
             const useCaseInfo =
-              sticker?.use_case &&
-              (sticker.use_case as keyof typeof USE_CASE_LABELS) in USE_CASE_LABELS
-                ? USE_CASE_LABELS[sticker.use_case as keyof typeof USE_CASE_LABELS]
-                : USE_CASE_LABELS.other;
+              (sticker?.use_case &&
+                USE_CASE_LABELS[
+                  sticker.use_case as keyof typeof USE_CASE_LABELS
+                ]) ??
+              USE_CASE_LABELS.other;
             return (
               <li key={c.id}>
                 <Link
