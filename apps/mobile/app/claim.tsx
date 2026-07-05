@@ -43,7 +43,7 @@ export default function Claim() {
     if (scannedRef.current) return;
     scannedRef.current = true;
 
-    // URL formatında ise token'ı çıkar: https://tagora.app/s/<token>
+    // URL formatında ise token'ı çıkar: https://tagora.link/s/<token>
     const match = data.match(/\/s\/([0-9A-Za-z]{10})/);
     const extracted = match?.[1] ?? data.trim();
 

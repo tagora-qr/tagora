@@ -1,5 +1,5 @@
 /**
- * Landing — tagora.app/
+ * Landing — tagora.com.tr/
  *
  * Hero + nasıl çalışır + use-case'ler + waitlist + privacy footer.
  */
@@ -57,7 +57,7 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-2 text-xs font-bold text-navy shadow-lg">
-                tagora.app/s/k7n2pXyZ4A
+                tagora.link/s/k7n2pXyZ4A
               </div>
             </div>
           </div>

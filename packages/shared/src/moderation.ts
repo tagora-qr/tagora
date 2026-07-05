@@ -16,7 +16,7 @@
 // yazıyoruz — TR aglütinatif dil olduğu için "şifre/şifrenizi/şifrelemek" hepsi yakalanır.
 
 const PHISHING_PATTERNS = [
-  /https?:\/\/(?!tagora\.app)/iu, // tagora.app dışı URL'leri raporla
+  /https?:\/\/(?!(?:www\.)?tagora\.(?:com\.tr|link))/iu, // tagora.com.tr + tagora.link dışı URL'leri raporla
   /(?:^|[^A-Za-zÇĞİÖŞÜçğıöşü])(?:şifre|password|otp|cvc|cvv|iban|tc kimlik|t\.c\.|kimlik no)/iu,
   /https?:\/\/[^\s]*\b(bank|iyzico|stripe|paypal|garanti|akbank|isbank)\b/iu,
 ];

@@ -95,7 +95,7 @@ begin
   -- Soft delete + anonimleştir
   update public.users
   set
-    email = 'deleted-' || id::text || '@deleted.tagora.app',
+    email = 'deleted-' || id::text || '@deleted.tagora.com.tr',
     phone = null,
     display_name = null,
     deleted_at = now()

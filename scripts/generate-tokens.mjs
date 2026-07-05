@@ -78,7 +78,8 @@ console.log(`🔢 ${count} adet sticker token üretiliyor…`);
 const tokens = generateStickerTokenBatch(count);
 
 const csvRows = ["token,qr_url"];
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.app";
+// Scanner URL — kısa domain (tagora.link). Sipariş için ayrı ana site (tagora.com.tr) var.
+const baseUrl = process.env.SCANNER_URL ?? "https://tagora.link";
 for (const token of tokens) {
   csvRows.push(`${token},${baseUrl}/s/${token}`);
 }

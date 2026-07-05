@@ -75,7 +75,7 @@ create table public.sticker_designs (
 -- ============================================================
 create table public.stickers (
   id uuid primary key default uuid_generate_v4(),
-  -- Public scanner URL: tagora.app/s/<token>
+  -- Public scanner URL: tagora.link/s/<token>
   -- 10 char Base62 cryptographic random → 62^10 ≈ 8.4×10^17 kombinasyon
   token text unique not null check (length(token) = 10),
 

@@ -1,11 +1,35 @@
 /**
- * Supabase Auth session refresh middleware.
- * Her isteğin başında cookie'yi güncel tutar.
+ * Tagora Edge Middleware
+ *
+ * İki iş yapar:
+ *  1. Host routing — tagora.link'i canonical tagora.com.tr'ye 308'ler (path /s/* hariç,
+ *     sticker scanner için kısa URL burada canlı kalıyor).
+ *  2. Supabase Auth session refresh + /dashboard giriş guard.
+ *
+ * Neden:
+ *  - Sticker'a `tagora.link/s/xxxxx` basılıyor (kısa + brand-thematic).
+ *  - Ana pazarlama tagora.com.tr'de tekil kalır → SEO duplicate content yok.
+ *  - Kullanıcı tagora.link yazsa direkt ana siteye gider.
  */
 import { type NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
+const SCANNER_HOST = "tagora.link";
+const CANONICAL_HOST = "tagora.com.tr";
+
 export async function middleware(req: NextRequest) {
+  const host = (req.headers.get("host") ?? "").toLowerCase();
+  const url = req.nextUrl;
+
+  // 1) Host routing — tagora.link + non-scanner path → canonical redirect
+  const isScannerHost = host === SCANNER_HOST || host === `www.${SCANNER_HOST}`;
+  const isScannerPath = url.pathname.startsWith("/s/");
+  if (isScannerHost && !isScannerPath) {
+    const target = new URL(url.pathname + url.search, `https://${CANONICAL_HOST}`);
+    return NextResponse.redirect(target, 308);
+  }
+
+  // 2) Supabase Auth session refresh + dashboard guard
   let response = NextResponse.next({ request: req });
 
   const supabase = createServerClient(

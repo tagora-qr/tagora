@@ -85,7 +85,7 @@ pnpm --filter @tagora/mobile android   # Android Emulator
 `app/claim.tsx` modal olarak açılır. `expo-camera` + `CameraView.onBarcodeScanned` ile QR okur. URL formatını parse eder:
 
 ```
-https://tagora.app/s/<10-char-token>
+https://tagora.link/s/<10-char-token>
 → extract token → validate → form
 ```
 

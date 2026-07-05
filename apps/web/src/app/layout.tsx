@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     "Bir QR, sonsuz bağlantı. Telefonunu paylaşmadan ulaşılabilir kal. KVKK uyumlu, AB veri yerleşimi.",
   applicationName: "Tagora",
   authors: [{ name: "Tagora" }],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.com.tr"),
   openGraph: {
     title: "Tagora — Anonim İletişim",
     description: "Bir QR, sonsuz bağlantı. Telefonunu paylaşmadan ulaşılabilir kal.",

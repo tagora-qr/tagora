@@ -1,7 +1,7 @@
 /**
  * Tagora Token Generator
  *
- * Her sticker bir `token` ile public erişilir: `tagora.app/s/<token>`
+ * Her sticker bir `token` ile public erişilir: `tagora.link/s/<token>`
  *
  * Tasarım kararları:
  * - 10 karakter Base62 → 62^10 ≈ 8.4×10^17 kombinasyon (brute-force ihmal edilebilir)
