@@ -31,20 +31,26 @@ const STATUS_TRANSITIONS: Record<string, { next: string; label: string; danger?:
 
 interface Props {
   orderId: string;
+  orderNo: string;
   currentStatus: string;
   trackingCarrier: string | null;
   trackingNumber: string | null;
   adminNote: string | null;
   carriers: string[];
+  demand: number;
+  allocated: number;
 }
 
 export function OrderActions({
   orderId,
+  orderNo,
   currentStatus,
   trackingCarrier,
   trackingNumber,
   adminNote,
   carriers,
+  demand,
+  allocated,
 }: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
@@ -77,12 +83,85 @@ export function OrderActions({
   };
 
   const transitions = STATUS_TRANSITIONS[currentStatus] ?? [];
+  const canAllocate = ["paid", "preparing"].includes(currentStatus) && allocated < demand;
+  const fulfilmentPct = demand > 0 ? Math.round((allocated / demand) * 100) : 0;
+
+  const allocate = async () => {
+    if (!window.confirm(`Depoden ${demand - allocated} sticker seçilip bu siparişe atansın mı?`)) return;
+    setBusy("allocate");
+    try {
+      const res = await fetch("/api/admin/orders/allocate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        alert("Hata: " + (json.error ?? "unknown"));
+        return;
+      }
+      if (json.allocated < demand - allocated) {
+        alert(
+          `Sadece ${json.allocated} sticker atanabildi. Depoda ${demand - json.allocatedTotal} sticker daha eksik. ` +
+            `Yeni batch bastır → tekrar dene.`,
+        );
+      }
+      router.refresh();
+    } catch (e) {
+      alert((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  };
 
   return (
     <div className="rounded-2xl border border-navy/10 bg-white p-5 shadow-sm">
       <h2 className="mb-4 text-xs font-bold uppercase tracking-wider text-charcoal/60">
         Yönetim
       </h2>
+
+      {/* Fulfilment — sticker atama */}
+      <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50/30 p-3">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="text-xs font-semibold text-amber-800">📦 FULFILMENT</p>
+          <span className="text-xs font-medium tabular-nums text-amber-700">
+            {allocated} / {demand} sticker atandı ({fulfilmentPct}%)
+          </span>
+        </div>
+        <div className="mb-3 h-2 overflow-hidden rounded-full bg-amber-100">
+          <div
+            className="h-full bg-emerald-500 transition-all"
+            style={{ width: `${fulfilmentPct}%` }}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {canAllocate ? (
+            <button
+              onClick={allocate}
+              disabled={busy !== null}
+              className="rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 disabled:opacity-40"
+            >
+              {busy === "allocate" ? "Atanıyor…" : `📦 ${demand - allocated} Sticker Ata (FIFO)`}
+            </button>
+          ) : allocated === 0 ? (
+            <p className="text-xs text-amber-700">
+              Sipariş {currentStatus === "pending" ? "önce ödenmeli" : "atanamaz"}.
+            </p>
+          ) : (
+            <>
+              <span className="text-xs text-emerald-700 font-medium">✓ Tümü atandı</span>
+              <a
+                href={`/api/admin/orders/${orderId}/packing-slip`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-lg border border-navy/15 px-3 py-1.5 text-xs font-medium text-navy hover:bg-navy/5"
+              >
+                🖨️ Packing Slip (Yazdır)
+              </a>
+            </>
+          )}
+        </div>
+      </div>
 
       {/* Status transitions */}
       {transitions.length > 0 && (

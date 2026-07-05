@@ -53,9 +53,23 @@ export default async function AdminOrderDetailPage({ params }: { params: Params 
     .select("*")
     .eq("order_id", id);
 
+  // Fulfilment — atanan sticker'lar
+  const { data: assignedStickers } = await supabase
+    .from("stickers")
+    .select("id, token, status, allocated_at")
+    .eq("order_id", id)
+    .order("allocated_at", { ascending: true });
+
+  const [demandRes, allocatedRes] = await Promise.all([
+    supabase.rpc("order_sticker_demand" as never, { _order_id: id } as never),
+    supabase.rpc("order_sticker_allocated" as never, { _order_id: id } as never),
+  ]);
+  const demand = (demandRes.data as unknown as number | null) ?? 0;
+  const allocated = (allocatedRes.data as unknown as number | null) ?? 0;
+
   return (
     <div className="space-y-6">
-      <Link href="/admin/orders" className="text-sm text-charcoal/60 hover:text-navy">
+      <Link href={"/admin/orders" as never} className="text-sm text-charcoal/60 hover:text-navy">
         ← Siparişler
       </Link>
 
@@ -96,12 +110,65 @@ export default async function AdminOrderDetailPage({ params }: { params: Params 
       {/* Actions */}
       <OrderActions
         orderId={o.id}
+        orderNo={o.order_no}
         currentStatus={o.status}
         trackingCarrier={o.tracking_carrier}
         trackingNumber={o.tracking_number}
         adminNote={o.admin_note}
         carriers={CARRIERS}
+        demand={demand}
+        allocated={allocated}
       />
+
+      {/* Atanan sticker'lar */}
+      {(assignedStickers ?? []).length > 0 && (
+        <div className="rounded-2xl border border-navy/10 bg-white shadow-sm">
+          <div className="flex items-center justify-between border-b border-navy/10 px-4 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-charcoal/60">
+              Atanan Sticker'lar ({(assignedStickers ?? []).length}/{demand})
+            </h2>
+            <a
+              href={`/api/admin/orders/${o.id}/packing-slip`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-medium text-navy hover:underline"
+            >
+              🖨️ Packing Slip →
+            </a>
+          </div>
+          <div className="max-h-64 overflow-y-auto">
+            <table className="w-full text-xs">
+              <thead className="sticky top-0 bg-navy/[0.02]">
+                <tr>
+                  <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Token</th>
+                  <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Status</th>
+                  <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Atandı</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-navy/5">
+                {((assignedStickers ?? []) as { id: string; token: string; status: string; allocated_at: string | null }[]).map((s) => (
+                  <tr key={s.id}>
+                    <td className="px-4 py-2 font-mono">{s.token}</td>
+                    <td className="px-4 py-2">
+                      <span className={
+                        "inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium " +
+                        (s.status === "allocated" ? "bg-amber-50 text-amber-700"
+                          : s.status === "shipped" ? "bg-indigo-50 text-indigo-700"
+                          : s.status === "delivered" ? "bg-purple-50 text-purple-700"
+                          : s.status === "claimed" || s.status === "active" ? "bg-emerald-50 text-emerald-700"
+                          : "bg-navy/5 text-charcoal")
+                      }>{s.status}</span>
+                    </td>
+                    <td className="px-4 py-2 text-charcoal/60 tabular-nums">
+                      {s.allocated_at ? new Date(s.allocated_at).toLocaleString("tr-TR") : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Grid: buyer + shipping + payment */}
       <div className="grid gap-4 md:grid-cols-3">

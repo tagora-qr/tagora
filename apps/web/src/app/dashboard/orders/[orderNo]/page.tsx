@@ -106,6 +106,15 @@ export default async function UserOrderDetailPage({ params }: { params: Params }
     .select("id, package_name, sticker_count, quantity, unit_price_try, line_total_try")
     .eq("order_id", o.id);
 
+  // Kullanıcı görsün — sadece gönderime hazır/kargoda/teslim durumda göster
+  const showAssignedInfo = ["shipped", "delivered"].includes(o.status);
+  const { count: stickerCount } = showAssignedInfo
+    ? await supabase
+        .from("stickers")
+        .select("id", { count: "exact", head: true })
+        .eq("order_id", o.id)
+    : { count: null };
+
   const currentIdx = STATUS_ORDER.indexOf(o.status);
   const isTerminated = ["cancelled", "refunded", "failed"].includes(o.status);
   const trackingUrl = o.tracking_carrier && o.tracking_number
@@ -295,6 +304,20 @@ export default async function UserOrderDetailPage({ params }: { params: Params }
           {o.shipping_zip ? ` ${o.shipping_zip}` : ""}
         </p>
       </div>
+
+      {/* Kargolanan sticker sayısı bilgisi */}
+      {showAssignedInfo && stickerCount !== null && stickerCount > 0 && (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-4 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-1">
+            🏷️ Kargolanan
+          </p>
+          <p className="text-sm text-charcoal">
+            <strong>{stickerCount} sticker</strong> paketinde geliyor. Teslim aldıktan sonra
+            {" "}<a href="https://tagora.com.tr" className="text-navy underline">Tagora uygulamasında</a>{" "}
+            QR'ları tarayarak sana bağlayabilirsin.
+          </p>
+        </div>
+      )}
 
       {/* Müşteri notu */}
       {o.customer_note && (

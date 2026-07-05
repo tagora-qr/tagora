@@ -92,7 +92,7 @@ async function getMetrics() {
     revenueMonthRes,
   ] = await Promise.all([
     supabase.from("stickers").select("id", { count: "exact", head: true }),
-    supabase.from("stickers").select("id", { count: "exact", head: true }).eq("status", "manufactured"),
+    supabase.from("stickers").select("id", { count: "exact", head: true }).eq("status", "manufactured").is("order_id", null),
     supabase.from("stickers").select("id", { count: "exact", head: true }).eq("status", "claimed"),
     supabase.from("stickers").select("id", { count: "exact", head: true }).eq("status", "active"),
     supabase.from("conversations").select("id", { count: "exact", head: true }),
@@ -193,7 +193,11 @@ export default async function AdminOverviewPage() {
         </h2>
         <div className="grid gap-3 sm:grid-cols-4">
           <Metric label="Toplam Basılmış" value={m.stickers.total} />
-          <Metric label="Depoda (manufactured)" value={m.stickers.manufactured} />
+          <Metric
+            label="Depoda (satışa hazır)"
+            value={m.stickers.manufactured}
+            hint={m.stickers.manufactured < 100 ? "⚠️ Stok azalıyor" : undefined}
+          />
           <Metric
             label="Claim Edilmiş"
             value={m.stickers.claimed + m.stickers.active}
