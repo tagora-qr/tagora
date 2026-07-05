@@ -72,6 +72,8 @@ async function getTrends() {
 async function getMetrics() {
   const supabase = createSupabaseServiceClient();
 
+  const startOfMonth = new Date(new Date().setDate(1)).toISOString();
+
   // Basit count sorguları
   const [
     { count: totalStickers },
@@ -83,6 +85,11 @@ async function getMetrics() {
     { count: totalUsers },
     { count: newUsersThisMonth },
     { count: waitlistCount },
+    { count: totalOrders },
+    { count: paidOrders },
+    { count: pendingFulfilment },
+    revenueTotalRes,
+    revenueMonthRes,
   ] = await Promise.all([
     supabase.from("stickers").select("id", { count: "exact", head: true }),
     supabase.from("stickers").select("id", { count: "exact", head: true }).eq("status", "manufactured"),
@@ -97,7 +104,24 @@ async function getMetrics() {
       .is("deleted_at", null)
       .gte("created_at", new Date(new Date().setDate(1)).toISOString()),
     supabase.from("waitlist").select("id", { count: "exact", head: true }),
+    supabase.from("orders").select("id", { count: "exact", head: true }),
+    supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "paid"),
+    supabase.from("orders").select("id", { count: "exact", head: true }).in("status", ["paid", "preparing"]),
+    supabase
+      .from("orders")
+      .select("total_try")
+      .in("status", ["paid", "preparing", "shipped", "delivered"]),
+    supabase
+      .from("orders")
+      .select("total_try")
+      .in("status", ["paid", "preparing", "shipped", "delivered"])
+      .gte("paid_at", startOfMonth),
   ]);
+
+  const revenueTotal = ((revenueTotalRes.data ?? []) as { total_try: number }[])
+    .reduce((s, o) => s + Number(o.total_try), 0);
+  const revenueMonth = ((revenueMonthRes.data ?? []) as { total_try: number }[])
+    .reduce((s, o) => s + Number(o.total_try), 0);
 
   return {
     stickers: {
@@ -119,6 +143,13 @@ async function getMetrics() {
       newThisMonth: newUsersThisMonth ?? 0,
     },
     waitlist: waitlistCount ?? 0,
+    orders: {
+      total: totalOrders ?? 0,
+      paid: paidOrders ?? 0,
+      pendingFulfilment: pendingFulfilment ?? 0,
+      revenueTotal,
+      revenueMonth,
+    },
   };
 }
 
@@ -140,6 +171,19 @@ export default async function AdminOverviewPage() {
           Son 30 Gün Trend
         </h2>
         <TrendsChart data={trends} />
+      </section>
+
+      {/* Satış metrikleri */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-charcoal/60">
+          Satış (Bu Ay + Toplam)
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-4">
+          <MetricMoney label="Bu Ay Ciro" value={m.orders.revenueMonth} href="/admin/orders?status=paid" hint="Ödenmiş siparişler" />
+          <MetricMoney label="Toplam Ciro" value={m.orders.revenueTotal} href="/admin/orders" />
+          <Metric label="Toplam Sipariş" value={m.orders.total} href="/admin/orders" />
+          <Metric label="Hazırlanacak" value={m.orders.pendingFulfilment} href="/admin/orders?status=paid" hint="paid + preparing" />
+        </div>
       </section>
 
       {/* Sticker metrikleri */}
@@ -206,6 +250,32 @@ function Metric({
         {value.toLocaleString("tr-TR")}
       </p>
       {hint && <p className="mt-1 text-xs text-accent/80 font-medium">{hint}</p>}
+    </div>
+  );
+  return href ? <Link href={href as never} className="block">{inner}</Link> : inner;
+}
+
+function MetricMoney({
+  label,
+  value,
+  hint,
+  href,
+}: {
+  label: string;
+  value: number;
+  hint?: string;
+  href?: string;
+}) {
+  const inner = (
+    <div className="rounded-2xl border border-emerald-100 bg-emerald-50/30 p-5 shadow-sm transition hover:border-emerald-200 hover:shadow-md">
+      <p className="text-xs font-medium text-charcoal/60">
+        {label}
+        {href && <span className="ml-1 text-emerald-600">→</span>}
+      </p>
+      <p className="mt-1 text-2xl font-bold text-emerald-700 tabular-nums">
+        {value.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺
+      </p>
+      {hint && <p className="mt-1 text-xs text-emerald-700/80 font-medium">{hint}</p>}
     </div>
   );
   return href ? <Link href={href as never} className="block">{inner}</Link> : inner;

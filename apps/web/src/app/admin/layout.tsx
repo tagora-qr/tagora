@@ -13,6 +13,7 @@ export const metadata = {
 
 const NAV = [
   { href: "/admin", label: "Overview", icon: "📊" },
+  { href: "/admin/orders", label: "Siparişler", icon: "🛒" },
   { href: "/admin/stickers", label: "Stickerlar", icon: "🏷️" },
   { href: "/admin/batches", label: "Batch'ler", icon: "📦" },
   { href: "/admin/conversations", label: "Konuşmalar", icon: "💬" },
