@@ -69,6 +69,29 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirect);
   }
 
+  // Admin guard: /admin altındakiler login + is_admin=true ister
+  const isAdmin = url.pathname.startsWith("/admin");
+  if (isAdmin) {
+    if (!user) {
+      const redirect = url.clone();
+      redirect.pathname = "/login";
+      redirect.searchParams.set("next", url.pathname);
+      return NextResponse.redirect(redirect);
+    }
+    // is_admin flag'i public.users tablosunda — auth.uid()'den lookup
+    const { data: profile } = await supabase
+      .from("users")
+      .select("is_admin")
+      .eq("auth_user_id", user.id)
+      .maybeSingle();
+    const admin = (profile as { is_admin?: boolean } | null)?.is_admin === true;
+    if (!admin) {
+      const redirect = url.clone();
+      redirect.pathname = "/dashboard";
+      return NextResponse.redirect(redirect);
+    }
+  }
+
   return response;
 }
 

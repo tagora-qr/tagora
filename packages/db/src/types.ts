@@ -54,6 +54,7 @@ export interface User {
   display_name: string | null;
   locale: Locale;
   tier: UserTier;
+  is_admin: boolean;
   kvkk_consent_at: string;
   marketing_opt_in: boolean;
   created_at: string;

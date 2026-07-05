@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Tagora Sticker · Araç · 5×5 cm
+  Print size: 50mm × 50mm (bleed 3mm eklenmeli üretici tarafında)
+  Colors: Navy #0F1B3D | Accent #D4F36A | White #FFFFFF
+  Materyel: Matte outdoor vinyl (UV korumalı 5+ yıl)
+  QR alanı: 34mm × 26mm — üretici her sticker için unique QR ile değiştirecek
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 240 240"
+     width="50mm" height="50mm"
+     role="img" aria-labelledby="title">
+  <title id="title">Tagora Araç Sticker</title>
+
+  <!-- Navy card, rounded corner (4mm ≈ 19px @ 240 scale) -->
+  <rect x="0" y="0" width="240" height="240" rx="19" fill="#0F1B3D"/>
+
+  <!-- Use case badge: accent circle + emoji, top right -->
+  <circle cx="200" cy="40" r="22" fill="#D4F36A"/>
+  <text x="200" y="49" text-anchor="middle" font-size="22"
+        font-family="Apple Color Emoji, Segoe UI Emoji, sans-serif">🚗</text>
+
+  <!-- QR panel: white rounded rect, 170×115 (35.4×24 mm print) -->
+  <!-- ÜRETİCİ NOTU: Bu alandaki placeholder QR pattern gerçek QR ile değiştirilecek.
+       Her sticker için unique Base62 token → tagora.link/s/<token> URL'i encode edilir.
+       Error correction level: H (%30 tolerance). Modül boyutu ≥ 0.7mm. -->
+  <rect x="35" y="55" width="170" height="115" rx="10" fill="#FFFFFF"/>
+
+  <!-- Faux QR pattern (üretici gerçek QR ile REPLACE edecek) -->
+  <g transform="translate(50, 68)">
+    <!-- 3 locator squares (QR standard) -->
+    <rect x="0" y="0" width="25" height="25" fill="#0F1B3D" rx="2"/>
+    <rect x="4" y="4" width="17" height="17" fill="#FFFFFF" rx="1"/>
+    <rect x="8" y="8" width="9" height="9" fill="#0F1B3D" rx="1"/>
+
+    <rect x="115" y="0" width="25" height="25" fill="#0F1B3D" rx="2"/>
+    <rect x="119" y="4" width="17" height="17" fill="#FFFFFF" rx="1"/>
+    <rect x="123" y="8" width="9" height="9" fill="#0F1B3D" rx="1"/>
+
+    <rect x="0" y="65" width="25" height="25" fill="#0F1B3D" rx="2"/>
+    <rect x="4" y="69" width="17" height="17" fill="#FFFFFF" rx="1"/>
+    <rect x="8" y="73" width="9" height="9" fill="#0F1B3D" rx="1"/>
+
+    <!-- Data modules (placeholder — will be regenerated per token) -->
+    <g fill="#0F1B3D">
+      <rect x="35" y="0" width="4" height="4"/><rect x="45" y="5" width="4" height="4"/>
+      <rect x="55" y="0" width="4" height="4"/><rect x="70" y="5" width="4" height="4"/>
+      <rect x="85" y="0" width="4" height="4"/><rect x="95" y="10" width="4" height="4"/>
+      <rect x="105" y="0" width="4" height="4"/>
+      <rect x="35" y="15" width="4" height="4"/><rect x="50" y="20" width="4" height="4"/>
+      <rect x="65" y="15" width="4" height="4"/><rect x="80" y="20" width="4" height="4"/>
+      <rect x="95" y="15" width="4" height="4"/>
+      <rect x="0" y="35" width="4" height="4"/><rect x="10" y="40" width="4" height="4"/>
+      <rect x="20" y="35" width="4" height="4"/><rect x="30" y="45" width="4" height="4"/>
+      <rect x="45" y="35" width="4" height="4"/><rect x="60" y="40" width="4" height="4"/>
+      <rect x="75" y="35" width="4" height="4"/><rect x="90" y="45" width="4" height="4"/>
+      <rect x="105" y="35" width="4" height="4"/><rect x="120" y="40" width="4" height="4"/>
+      <rect x="135" y="35" width="4" height="4"/>
+      <rect x="0" y="50" width="4" height="4"/><rect x="15" y="55" width="4" height="4"/>
+      <rect x="30" y="50" width="4" height="4"/><rect x="45" y="55" width="4" height="4"/>
+      <rect x="60" y="50" width="4" height="4"/><rect x="80" y="55" width="4" height="4"/>
+      <rect x="95" y="50" width="4" height="4"/><rect x="115" y="55" width="4" height="4"/>
+      <rect x="130" y="50" width="4" height="4"/>
+      <rect x="35" y="65" width="4" height="4"/><rect x="45" y="70" width="4" height="4"/>
+      <rect x="60" y="65" width="4" height="4"/><rect x="75" y="75" width="4" height="4"/>
+      <rect x="90" y="65" width="4" height="4"/><rect x="105" y="75" width="4" height="4"/>
+      <rect x="120" y="65" width="4" height="4"/><rect x="135" y="70" width="4" height="4"/>
+      <rect x="40" y="80" width="4" height="4"/><rect x="55" y="85" width="4" height="4"/>
+      <rect x="70" y="80" width="4" height="4"/><rect x="85" y="85" width="4" height="4"/>
+      <rect x="100" y="80" width="4" height="4"/><rect x="115" y="85" width="4" height="4"/>
+      <rect x="130" y="80" width="4" height="4"/>
+    </g>
+  </g>
+
+  <!-- CTA -->
+  <text x="120" y="192" text-anchor="middle" fill="#D4F36A"
+        font-size="12" font-weight="800"
+        font-family="system-ui, -apple-system, sans-serif" letter-spacing="1.2">
+    ARAÇ SAHİBİNE YAZ →
+  </text>
+
+  <!-- URL fallback -->
+  <text x="120" y="215" text-anchor="middle" fill="#FFFFFF"
+        font-size="10" font-family="ui-monospace, Menlo, monospace" letter-spacing="0.3">
+    tagora.link/s/xxxxx
+  </text>
+
+  <!-- Wordmark -->
+  <text x="120" y="232" text-anchor="middle" fill="#D4F36A"
+        font-size="8" font-weight="700"
+        font-family="system-ui, sans-serif" letter-spacing="3" opacity="0.6">
+    TAGORA
+  </text>
+</svg>

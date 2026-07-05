@@ -47,3 +47,7 @@ apps/*/.expo/
 
 # Sticker token batch CSV'leri (her deploy'da üretilir, üretici'ye özel)
 tokens-batch-*.csv
+
+# Sticker print batch output (unique QR SVG'ler + tokens — üretici'ye özel, gizli)
+output/
+
