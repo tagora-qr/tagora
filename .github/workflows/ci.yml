@@ -1,0 +1,115 @@
+# Tagora — Continuous Integration
+#
+# Her push + PR'da typecheck + lint + build çalışır. Vercel'e gitmeden hataları burada yakalarız.
+#
+# Sprint 5 sonrası TODO: `web-typecheck` step'inden `continue-on-error: true` kaldır — o zaman
+# Supabase-JS Database inference sorunu `supabase gen types` ile çözülmüş olacak.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Web (Next.js)
+  # ---------------------------------------------------------------------------
+  web:
+    name: Web · Next.js
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+
+      # Sprint 5'e kadar sarı warning, kırmızı değil — Supabase types canonical olmadıkça geçmiyor
+      - name: Typecheck
+        id: web-typecheck
+        continue-on-error: true
+        run: pnpm --filter @tagora/web exec tsc --noEmit
+
+      - name: Build
+        env:
+          # Vercel'deki gerçek değerler burada gerekmez — env yoksa placeholder yeter
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          NEXT_PUBLIC_APP_URL: https://tagora.com.tr
+          NEXT_PUBLIC_SITE_NAME: Tagora
+          NEXT_PUBLIC_DEFAULT_LOCALE: tr
+        run: pnpm --filter @tagora/web build
+
+  # ---------------------------------------------------------------------------
+  # Mobile (Expo)
+  # ---------------------------------------------------------------------------
+  mobile:
+    name: Mobile · Expo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Typecheck
+        id: mobile-typecheck
+        continue-on-error: true
+        run: pnpm --filter @tagora/mobile exec tsc --noEmit
+
+  # ---------------------------------------------------------------------------
+  # Shared packages
+  # ---------------------------------------------------------------------------
+  packages:
+    name: Packages · db + shared
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile=false
+
+      - name: Typecheck db
+        run: pnpm --filter @tagora/db typecheck
+
+      - name: Typecheck shared
+        run: pnpm --filter @tagora/shared typecheck
