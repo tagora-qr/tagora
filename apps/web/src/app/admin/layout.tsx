@@ -14,7 +14,8 @@ export const metadata = {
 const NAV = [
   { href: "/admin", label: "Overview", icon: "📊" },
   { href: "/admin/stickers", label: "Stickerlar", icon: "🏷️" },
-  // Sprint 6: /admin/batches, /admin/users, /admin/conversations
+  { href: "/admin/users", label: "Kullanıcılar", icon: "👥" },
+  // Sprint 6: /admin/batches, /admin/conversations
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
