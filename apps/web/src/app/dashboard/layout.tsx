@@ -42,6 +42,12 @@ export default async function DashboardLayout({
         >
           Inbox
         </Link>
+        <Link
+          href={"/dashboard/orders" as never}
+          className="rounded-lg px-3 py-1.5 text-sm font-medium text-navy/70 hover:bg-navy/5 hover:text-navy"
+        >
+          Siparişlerim
+        </Link>
       </nav>
 
       <main className="flex-1 py-6">{children}</main>
@@ -62,6 +68,13 @@ export default async function DashboardLayout({
           >
             <span className="text-xl" aria-hidden="true">💬</span>
             Inbox
+          </Link>
+          <Link
+            href={"/dashboard/orders" as never}
+            className="flex flex-1 flex-col items-center gap-0.5 py-1 text-xs text-navy/70 hover:text-navy"
+          >
+            <span className="text-xl" aria-hidden="true">🛒</span>
+            Siparişler
           </Link>
           <Link
             href="/dashboard/profile"

@@ -96,13 +96,20 @@ export default async function OrderSuccessPage({ params }: { params: Params }) {
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Link href="/dashboard" className="btn-primary">
-            Dashboard'a git
+          <Link href={`/dashboard/orders/${o.order_no}` as never} className="btn-primary">
+            Siparişimi Takip Et →
           </Link>
-          <Link href="/" className="btn-secondary">
-            Anasayfa
+          <Link href={"/dashboard/orders" as never} className="btn-secondary">
+            Tüm Siparişlerim
           </Link>
         </div>
+
+        <p className="mt-6 text-center text-xs text-charcoal/50">
+          Sonradan tekrar bakmak için:{" "}
+          <Link href={"/dashboard/orders" as never} className="font-medium text-navy underline">
+            tagora.com.tr/dashboard/orders
+          </Link>
+        </p>
       </main>
     </div>
   );
