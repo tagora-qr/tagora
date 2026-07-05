@@ -22,9 +22,10 @@ interface ChatMessage {
 interface Props {
   conversationId: string;
   initialMessages: ChatMessage[];
+  scannerName: string;
 }
 
-export function OwnerChat({ conversationId, initialMessages }: Props) {
+export function OwnerChat({ conversationId, initialMessages, scannerName }: Props) {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
@@ -102,7 +103,7 @@ export function OwnerChat({ conversationId, initialMessages }: Props) {
             Henüz mesaj yok.
           </p>
         ) : (
-          messages.map((m) => <Bubble key={m.id} m={m} />)
+          messages.map((m) => <Bubble key={m.id} m={m} scannerName={scannerName} />)
         )}
       </div>
 
@@ -139,7 +140,7 @@ export function OwnerChat({ conversationId, initialMessages }: Props) {
   );
 }
 
-function Bubble({ m }: { m: ChatMessage }) {
+function Bubble({ m, scannerName }: { m: ChatMessage; scannerName: string }) {
   const isMine = m.sender === "owner";
   const isSystem = m.sender === "system";
   if (isSystem) {
@@ -156,6 +157,14 @@ function Bubble({ m }: { m: ChatMessage }) {
         isMine ? "self-end bg-navy text-white" : "self-start bg-navy/5 text-charcoal",
       )}
     >
+      <p
+        className={clsx(
+          "mb-0.5 text-[10px] font-semibold uppercase tracking-wide",
+          isMine ? "text-accent" : "text-navy/70",
+        )}
+      >
+        {isMine ? "Sen" : scannerName}
+      </p>
       <p className="whitespace-pre-wrap break-words">{m.body}</p>
       <p
         className={clsx(

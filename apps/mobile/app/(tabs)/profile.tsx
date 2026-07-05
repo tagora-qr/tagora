@@ -141,16 +141,38 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
-        {/* Bildirim tercihleri placeholder */}
+        {/* Bildirim ayarları */}
         <View style={styles.card}>
           <Text style={styles.cardHeader}>Uygulama</Text>
-          <View style={styles.actionRow}>
+          <Pressable
+            onPress={async () => {
+              if (!user?.id) return;
+              const token = await import("@/lib/push").then((m) =>
+                m.registerForPushNotifications(user.id),
+              );
+              if (token) {
+                Alert.alert(
+                  "Bildirimler aktif ✓",
+                  "Sticker'ına biri mesaj yollayınca telefonuna bildirim düşecek.",
+                );
+              } else {
+                Alert.alert(
+                  "İzin gerekli",
+                  "iPhone Ayarlar → Bildirimler → Expo Go → Bildirimlere İzin Ver.",
+                );
+              }
+            }}
+            style={styles.actionRow}
+          >
             <Text style={styles.actionEmoji}>🔔</Text>
             <View style={{ flex: 1 }}>
-              <Text style={styles.actionLabel}>Bildirimler</Text>
-              <Text style={styles.actionSub}>Sprint 3'te aktif olacak</Text>
+              <Text style={styles.actionLabel}>Bildirimleri aç</Text>
+              <Text style={styles.actionSub}>
+                Sticker'ına mesaj geldiğinde anında haberdar ol
+              </Text>
             </View>
-          </View>
+            <Text style={styles.chev}>›</Text>
+          </Pressable>
         </View>
 
         {/* DEV-only: native scanner ekranını test et */}

@@ -470,6 +470,14 @@ function MessageBubble({
           : "self-start bg-navy/5 text-charcoal",
       )}
     >
+      <p
+        className={clsx(
+          "mb-0.5 text-[10px] font-semibold uppercase tracking-wide",
+          isMine ? "text-accent" : "text-navy/70",
+        )}
+      >
+        {isMine ? "Sen" : "Sahibi"}
+      </p>
       <p className="whitespace-pre-wrap break-words">{message.body}</p>
       <p
         className={clsx(

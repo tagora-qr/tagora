@@ -33,16 +33,17 @@ export default function ChatScreen() {
     token: string;
     use_case: StickerUseCase | null;
   } | null>(null);
+  const [scannerName, setScannerName] = useState<string>("Anonim ziyaretçi");
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const listRef = useRef<FlatList<Message>>(null);
 
   const load = useCallback(async () => {
-    // Konuşma bilgisini al (sticker_id çekmek için)
+    // Konuşma bilgisini al (sticker_id + scanner_session_id çekmek için)
     const { data: conv } = await supabase
       .from("conversations")
-      .select("sticker_id")
+      .select("sticker_id, scanner_session_id")
       .eq("id", conversationId)
       .maybeSingle();
 
@@ -53,6 +54,16 @@ export default function ChatScreen() {
         .eq("id", conv.sticker_id)
         .maybeSingle();
       setStickerInfo(sticker as typeof stickerInfo);
+    }
+
+    if (conv?.scanner_session_id) {
+      const { data: session } = await supabase
+        .from("scanner_sessions")
+        .select("display_name")
+        .eq("id", conv.scanner_session_id)
+        .maybeSingle();
+      const name = (session as { display_name: string | null } | null)?.display_name?.trim();
+      if (name) setScannerName(name);
     }
 
     const { data: msgs } = await supabase
@@ -131,9 +142,9 @@ export default function ChatScreen() {
     );
   };
 
-  const info = stickerInfo?.use_case
-    ? USE_CASE_LABELS[stickerInfo.use_case]
-    : USE_CASE_LABELS.other;
+  const info =
+    (stickerInfo?.use_case && USE_CASE_LABELS[stickerInfo.use_case]) ??
+    USE_CASE_LABELS.other;
 
   if (loading) {
     return (
@@ -153,12 +164,13 @@ export default function ChatScreen() {
           <View style={styles.headerRow}>
             <Text style={styles.headerEmoji}>{info.emoji}</Text>
             <Text style={styles.headerTitle} numberOfLines={1}>
-              {stickerInfo?.label || info.tr}
+              {scannerName}
             </Text>
           </View>
-          {stickerInfo?.token && (
-            <Text style={styles.headerSub}>/s/{stickerInfo.token}</Text>
-          )}
+          <Text style={styles.headerSub} numberOfLines={1}>
+            {stickerInfo?.label ? `${stickerInfo.label} · ` : ""}
+            {stickerInfo?.token ? `/s/${stickerInfo.token}` : ""}
+          </Text>
         </View>
         <View style={{ width: 60 }} />
       </View>
@@ -173,7 +185,9 @@ export default function ChatScreen() {
           data={messages}
           keyExtractor={(m) => m.id}
           contentContainerStyle={styles.listContent}
-          renderItem={({ item }) => <Bubble message={item} />}
+          renderItem={({ item }) => (
+            <Bubble message={item} scannerName={scannerName} />
+          )}
           ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
           ListEmptyComponent={
             <Text style={styles.emptyChat}>Henüz mesaj yok.</Text>
@@ -203,7 +217,13 @@ export default function ChatScreen() {
   );
 }
 
-function Bubble({ message }: { message: Message }) {
+function Bubble({
+  message,
+  scannerName,
+}: {
+  message: Message;
+  scannerName: string;
+}) {
   const isMine = message.sender === "owner";
   const isSystem = message.sender === "system";
 
@@ -230,6 +250,14 @@ function Bubble({ message }: { message: Message }) {
           isMine ? styles.bubbleMine : styles.bubbleTheirs,
         ]}
       >
+        <Text
+          style={[
+            styles.bubbleSender,
+            isMine ? { color: colors.accent } : { color: colors.navy, opacity: 0.7 },
+          ]}
+        >
+          {isMine ? "SEN" : scannerName.toUpperCase()}
+        </Text>
         <Text
           style={[
             styles.bubbleText,
@@ -284,6 +312,7 @@ const styles = StyleSheet.create({
   bubbleTheirs: { backgroundColor: colors.navyMuted },
   bubbleText: { ...typography.body, lineHeight: 22 },
   bubbleTime: { ...typography.tiny, fontSize: 10, marginTop: 4 },
+  bubbleSender: { fontSize: 10, fontWeight: "700", letterSpacing: 1, marginBottom: 2 },
   systemWrap: { alignItems: "center" },
   systemBubble: {
     backgroundColor: colors.navyMuted,

@@ -540,6 +540,9 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       ]}
     >
       <View style={[styles.bubble, isMine ? styles.bubbleMine : styles.bubbleOther]}>
+        <Text style={[styles.bubbleSender, isMine ? styles.bubbleSenderMine : styles.bubbleSenderOther]}>
+          {isMine ? "SEN" : "SAHİBİ"}
+        </Text>
         <Text style={isMine ? styles.bubbleTextMine : styles.bubbleTextOther}>
           {message.body}
         </Text>
@@ -697,6 +700,9 @@ const styles = StyleSheet.create({
   bubbleOther: { backgroundColor: colors.navyMuted },
   bubbleTextMine: { ...typography.body, color: colors.bg },
   bubbleTextOther: { ...typography.body, color: colors.charcoal },
+  bubbleSender: { fontSize: 10, fontWeight: "700", letterSpacing: 1, marginBottom: 2 },
+  bubbleSenderMine: { color: colors.accent },
+  bubbleSenderOther: { color: colors.navy, opacity: 0.7 },
   systemBubble: {
     alignSelf: "center",
     backgroundColor: colors.navyMuted,

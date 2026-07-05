@@ -30,7 +30,9 @@
         "backgroundColor": "#0F1B3D"
       },
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -67,7 +69,14 @@
           "cameraPermission": "Tagora sticker QR kodunuzu tarayabilmek için kameraya erişim gerekiyor."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#0F1B3D",
+          "defaultChannel": "default"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -75,7 +84,11 @@
     "extra": {
       "router": {
         "origin": false
+      },
+      "eas": {
+        "projectId": "2d66fb45-da7c-4b19-b6e7-f061c7d32a39"
       }
-    }
+    },
+    "owner": "omerkilinc"
   }
 }

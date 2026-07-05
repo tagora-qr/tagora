@@ -16,6 +16,10 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Linking from "expo-linking";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { supabase } from "@/lib/supabase";
+import {
+  registerForPushNotifications,
+  attachNotificationResponseListener,
+} from "@/lib/push";
 
 /** Deep link (tagora://auth-callback?...) veya session'a göre redirect */
 function AuthGate() {
@@ -68,6 +72,21 @@ function AuthGate() {
       }
     }
   }, [session, loading, segments, router]);
+
+  // Push notifications — session var ise token kaydet
+  useEffect(() => {
+    if (session?.user?.id) {
+      void registerForPushNotifications(session.user.id);
+    }
+  }, [session?.user?.id]);
+
+  // Bildirime tıklayınca conversation'a yönlendir
+  useEffect(() => {
+    const unsubscribe = attachNotificationResponseListener((conversationId) => {
+      router.push({ pathname: "/inbox/[id]", params: { id: conversationId } });
+    });
+    return unsubscribe;
+  }, [router]);
 
   return (
     <Stack screenOptions={{ headerShown: false, animation: "fade" }}>

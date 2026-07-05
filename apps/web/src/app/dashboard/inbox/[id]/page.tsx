@@ -22,7 +22,9 @@ export default async function ConversationPage({ params }: { params: Params }) {
       id,
       status,
       sticker_id,
-      stickers!inner ( token, label, use_case )
+      scanner_session_id,
+      stickers!inner ( token, label, use_case ),
+      scanner_sessions!inner ( display_name )
     `)
     .eq("id", id)
     .maybeSingle();
@@ -42,7 +44,12 @@ export default async function ConversationPage({ params }: { params: Params }) {
     .update({ unread_owner_count: 0 })
     .eq("id", id);
 
-  const sticker = (conv as unknown as { stickers: { token: string; label: string | null; use_case: string | null } }).stickers;
+  const convData = conv as unknown as {
+    stickers: { token: string; label: string | null; use_case: string | null };
+    scanner_sessions: { display_name: string | null };
+  };
+  const sticker = convData.stickers;
+  const scannerName = convData.scanner_sessions?.display_name?.trim() || "Anonim ziyaretçi";
 
   return (
     <div className="flex h-[calc(100vh-180px)] flex-col">
@@ -51,14 +58,18 @@ export default async function ConversationPage({ params }: { params: Params }) {
           ← Inbox
         </Link>
         <div className="text-right">
-          <p className="text-sm font-semibold text-navy">
-            {sticker.label || "Anonim ziyaretçi"}
+          <p className="text-sm font-semibold text-navy">{scannerName}</p>
+          <p className="text-xs text-charcoal/50">
+            {sticker.label ? `${sticker.label} · ` : ""}/s/{sticker.token}
           </p>
-          <p className="text-xs text-charcoal/50">/s/{sticker.token}</p>
         </div>
       </header>
 
-      <OwnerChat conversationId={id} initialMessages={messages ?? []} />
+      <OwnerChat
+        conversationId={id}
+        initialMessages={messages ?? []}
+        scannerName={scannerName}
+      />
     </div>
   );
 }
