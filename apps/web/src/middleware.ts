@@ -59,7 +59,6 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Dashboard guard: /dashboard altındakiler login ister
-  const url = req.nextUrl;
   const isDashboard = url.pathname.startsWith("/dashboard");
   if (isDashboard && !user) {
     const redirect = url.clone();
