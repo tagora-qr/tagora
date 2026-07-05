@@ -164,6 +164,81 @@ export interface WaitlistEntry {
 }
 
 // ===========================================================================
+// SHOP
+// ===========================================================================
+
+export interface StickerPackage {
+  id: string;
+  slug: string;
+  name_tr: string;
+  name_en: string;
+  description_tr: string | null;
+  description_en: string | null;
+  sticker_count: number;
+  price_try: number;
+  price_usd: number | null;
+  is_active: boolean;
+  is_featured: boolean;
+  sort_order: number;
+  image_url: string | null;
+  created_at: string;
+}
+
+export type OrderStatus =
+  | "pending"
+  | "paid"
+  | "preparing"
+  | "shipped"
+  | "delivered"
+  | "cancelled"
+  | "refunded"
+  | "failed";
+
+export interface Order {
+  id: string;
+  order_no: string;
+  user_id: string | null;
+  status: OrderStatus;
+  subtotal_try: number;
+  shipping_try: number;
+  total_try: number;
+  iyzico_payment_id: string | null;
+  iyzico_conversation_id: string | null;
+  iyzico_token: string | null;
+  iyzico_raw_response: unknown | null;
+  buyer_name: string;
+  buyer_email: string;
+  buyer_phone: string;
+  buyer_identity_number: string | null;
+  shipping_address: string;
+  shipping_city: string;
+  shipping_district: string | null;
+  shipping_zip: string | null;
+  tracking_carrier: string | null;
+  tracking_number: string | null;
+  customer_note: string | null;
+  admin_note: string | null;
+  created_at: string;
+  updated_at: string;
+  paid_at: string | null;
+  shipped_at: string | null;
+  delivered_at: string | null;
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  package_id: string;
+  quantity: number;
+  unit_price_try: number;
+  line_total_try: number;
+  package_name: string;
+  package_slug: string;
+  sticker_count: number;
+  created_at: string;
+}
+
+// ===========================================================================
 // SUPABASE DATABASE TYPE
 // ===========================================================================
 // supabase-js v2 için: createClient<Database>() kullan.
