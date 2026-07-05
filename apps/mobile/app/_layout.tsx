@@ -54,11 +54,18 @@ function AuthGate() {
     const group = segments[0];
     // Auth gerektirmeyen gruplar: (auth) onboarding/login, (public) scanner deep link
     const inPublicGroup = group === "(auth)" || group === "(public)";
-    if (!session && !inPublicGroup) {
-      router.replace("/(auth)/onboarding");
-    } else if (session && group === "(auth)") {
-      // Login sonrası tabs'a; ama (public) yolundaysa session olsa bile scanner'da kalsın
-      router.replace("/(tabs)/");
+    const inTabs = group === "(tabs)";
+
+    if (!session) {
+      // Session yok — public/auth grubunda değilsen onboarding'e
+      if (!inPublicGroup) {
+        router.replace("/(auth)/onboarding");
+      }
+    } else {
+      // Session var — tabs veya public değilsek tabs'a (initial `/` dahil)
+      if (!inTabs && !inPublicGroup && group !== "claim" && group !== "inbox") {
+        router.replace("/(tabs)/");
+      }
     }
   }, [session, loading, segments, router]);
 

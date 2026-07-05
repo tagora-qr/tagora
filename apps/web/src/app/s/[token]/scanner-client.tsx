@@ -82,7 +82,8 @@ export function ScannerClient({ token, useCase, stickerLabel }: ScannerClientPro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // Realtime subscription
+  // Realtime subscription (best-effort — WebSocket'te x-scanner-session header'ı
+  // iletilmediği için RLS fail edebiliyor; polling fallback aşağıda).
   useEffect(() => {
     if (!sessionToken || !conversationId) return;
 
@@ -109,6 +110,41 @@ export function ScannerClient({ token, useCase, stickerLabel }: ScannerClientPro
 
     return () => {
       void supabase.removeChannel(channel);
+    };
+  }, [sessionToken, conversationId]);
+
+  // Polling fallback — realtime çalışmayınca owner cevapları hala gelsin diye.
+  // 3 saniye interval, tab görünürse aktif.
+  useEffect(() => {
+    if (!sessionToken || !conversationId) return;
+
+    let cancelled = false;
+    const supabase = createSupabaseScannerClient(sessionToken);
+
+    const tick = async () => {
+      if (cancelled || document.hidden) return;
+      try {
+        const { data } = await supabase
+          .from("messages")
+          .select("id, conversation_id, sender, body, sent_at")
+          .eq("conversation_id", conversationId)
+          .order("sent_at", { ascending: true });
+        if (cancelled || !data) return;
+        setMessages((prev) => {
+          const known = new Set(prev.map((m) => m.id));
+          const additions = (data as ChatMessage[]).filter((m) => !known.has(m.id));
+          return additions.length ? [...prev, ...additions] : prev;
+        });
+      } catch (e) {
+        console.warn("[scanner] polling failed", e);
+      }
+    };
+
+    const interval = setInterval(tick, 3000);
+    void tick(); // immediate
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
     };
   }, [sessionToken, conversationId]);
 

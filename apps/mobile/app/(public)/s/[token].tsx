@@ -113,7 +113,8 @@ export default function ScannerScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  // 2) Realtime subscription — session-scoped client ile (RLS için header şart)
+  // 2) Realtime subscription — best-effort (WebSocket'te x-scanner-session
+  //    header'ı gitmediği için RLS fail edebiliyor; polling fallback aşağıda).
   useEffect(() => {
     if (!conversationId || !sessionToken) return;
 
@@ -139,6 +140,40 @@ export default function ScannerScreen() {
 
     return () => {
       void scannerClient.removeChannel(channel);
+    };
+  }, [conversationId, sessionToken]);
+
+  // 2b) Polling fallback — 3 saniye interval, owner cevapları için garantili yol
+  useEffect(() => {
+    if (!conversationId || !sessionToken) return;
+
+    let cancelled = false;
+    const scannerClient = createSupabaseScannerClient(sessionToken);
+
+    const tick = async () => {
+      if (cancelled) return;
+      try {
+        const { data } = await scannerClient
+          .from("messages")
+          .select("id, conversation_id, sender, body, sent_at")
+          .eq("conversation_id", conversationId)
+          .order("sent_at", { ascending: true });
+        if (cancelled || !data) return;
+        setMessages((prev) => {
+          const known = new Set(prev.map((m) => m.id));
+          const additions = (data as ChatMessage[]).filter((m) => !known.has(m.id));
+          return additions.length ? [...prev, ...additions] : prev;
+        });
+      } catch (e) {
+        console.warn("[scanner] polling failed", e);
+      }
+    };
+
+    const interval = setInterval(tick, 3000);
+    void tick();
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
     };
   }, [conversationId, sessionToken]);
 

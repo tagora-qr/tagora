@@ -104,12 +104,19 @@ export default function ProfileScreen() {
           <View style={styles.sep} />
 
           <Pressable
-            onPress={() =>
-              Linking.openURL(
+            onPress={async () => {
+              const url =
                 (process.env.EXPO_PUBLIC_APP_URL ?? "http://localhost:3000") +
-                  "/privacy",
-              )
-            }
+                "/privacy";
+              try {
+                await Linking.openURL(url);
+              } catch (e) {
+                Alert.alert(
+                  "Bağlantı açılamadı",
+                  `URL: ${url}\n\nİnternet bağlantını veya domain'i kontrol et.`,
+                );
+              }
+            }}
             style={styles.actionRow}
           >
             <Text style={styles.actionEmoji}>🔒</Text>
@@ -145,6 +152,28 @@ export default function ProfileScreen() {
             </View>
           </View>
         </View>
+
+        {/* DEV-only: native scanner ekranını test et */}
+        {__DEV__ && (
+          <View style={[styles.card, { borderColor: colors.accent, borderWidth: 2 }]}>
+            <Text style={styles.cardHeader}>🧪 DEV — Test Araçları</Text>
+            <Pressable
+              onPress={() =>
+                router.push("/(public)/s/HFaxME0G5r" as never)
+              }
+              style={styles.actionRow}
+            >
+              <Text style={styles.actionEmoji}>📱</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.actionLabel}>Native scanner ekranını aç</Text>
+                <Text style={styles.actionSub}>
+                  Test sticker: HFaxME0G5r · Deep link akışını simüle eder
+                </Text>
+              </View>
+              <Text style={styles.chev}>›</Text>
+            </Pressable>
+          </View>
+        )}
 
         <Button label="Çıkış Yap" onPress={handleSignOut} variant="secondary" fullWidth size="lg" style={{ marginTop: spacing.xl }} />
 
