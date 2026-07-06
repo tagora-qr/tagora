@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const config: NextConfig = {
   reactStrictMode: true,
@@ -60,4 +61,20 @@ const config: NextConfig = {
   },
 };
 
-export default config;
+// Sentry wrap — source map upload + tunneling
+// Kritik: Auth token yoksa da build başarısız olmaz, sadece source map upload atlanır
+export default process.env.NEXT_PUBLIC_SENTRY_DSN
+  ? withSentryConfig(config, {
+      org: process.env.SENTRY_ORG ?? "tagora",
+      project: process.env.SENTRY_PROJECT ?? "tagora-web",
+      // Auth token varsa source map upload olur; yoksa skip
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      silent: !process.env.CI,
+      widenClientFileUpload: true,
+      // Sentry tunneling — ad blocker'lardan kaçınmak için proxy route
+      tunnelRoute: "/monitoring",
+      hideSourceMaps: true,
+      disableLogger: true,
+      automaticVercelMonitors: true,
+    })
+  : config;

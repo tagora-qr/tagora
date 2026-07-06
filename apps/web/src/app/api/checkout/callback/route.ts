@@ -10,6 +10,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { retrieveCheckoutForm } from "@/lib/iyzico";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import { renderOrderConfirmationEmail, sendTransactionalEmail } from "@/lib/email";
+import { trackServerEvent } from "@/lib/analytics";
 
 export async function POST(req: NextRequest) {
   // iyzico form-encoded POST atar
@@ -100,6 +101,18 @@ export async function POST(req: NextRequest) {
         console.error("[callback] Order confirmation email failed:", emailRes.error);
       }
     }
+
+    // Analytics: order paid — funnel'ın son adımı
+    await trackServerEvent({
+      event: "order:paid",
+      distinctId: orderRow?.buyer_email ?? orderId,
+      properties: {
+        order_no: orderNo,
+        total_try: Number(orderRow?.total_try ?? 0),
+        buyer_city: orderRow?.shipping_city,
+        payment_id: result.paymentId,
+      },
+    });
 
     return NextResponse.redirect(
       new URL(`/shop/success/${orderNo}`, req.url),

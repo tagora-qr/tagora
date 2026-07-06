@@ -8,6 +8,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient, createSupabaseServiceClient } from "@/lib/supabase/server";
 import { renderOrderShippedEmail, sendTransactionalEmail } from "@/lib/email";
+import { trackServerEvent } from "@/lib/analytics";
 
 const TRACKING_URLS: Record<string, (no: string) => string> = {
   "Aras Kargo": (no) => `https://www.araskargo.com.tr/mainpage/cargo-tracking?code=${no}`,
@@ -158,6 +159,17 @@ export async function POST(req: NextRequest) {
     if (!emailRes.ok) {
       console.error("[orders/update] Shipped email failed:", emailRes.error);
     }
+
+    // Analytics: order shipped
+    await trackServerEvent({
+      event: "order:shipped",
+      distinctId: prev.buyer_email,
+      properties: {
+        order_no: prev.order_no,
+        carrier: nextCarrier,
+        tracking_number: nextTrackNo,
+      },
+    });
   }
 
   return NextResponse.json({ ok: true });
