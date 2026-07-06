@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <!-- Background -->
+  <rect width="1080" height="1350" fill="#F5F0E8"/>
+
+  <!-- Title -->
+  <text x="540" y="220" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="72" font-weight="800" fill="#0F1B3D" letter-spacing="-0.03em">
+    5 farklı alanda:
+  </text>
+
+  <!-- Use cases grid -->
+  <!-- 🚗 Araç -->
+  <g transform="translate(150, 350)">
+    <rect x="0" y="0" width="360" height="200" rx="24" fill="#FFFFFF" stroke="#0F1B3D" stroke-width="2" stroke-opacity="0.1"/>
+    <text x="180" y="110" text-anchor="middle" font-size="80">🚗</text>
+    <text x="180" y="165" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="26" font-weight="700" fill="#0F1B3D">Araç</text>
+  </g>
+
+  <!-- 🚪 Kapı -->
+  <g transform="translate(570, 350)">
+    <rect x="0" y="0" width="360" height="200" rx="24" fill="#FFFFFF" stroke="#0F1B3D" stroke-width="2" stroke-opacity="0.1"/>
+    <text x="180" y="110" text-anchor="middle" font-size="80">🚪</text>
+    <text x="180" y="165" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="26" font-weight="700" fill="#0F1B3D">Kapı &amp; Zil</text>
+  </g>
+
+  <!-- 🐕 Pet -->
+  <g transform="translate(150, 590)">
+    <rect x="0" y="0" width="360" height="200" rx="24" fill="#FFFFFF" stroke="#0F1B3D" stroke-width="2" stroke-opacity="0.1"/>
+    <text x="180" y="110" text-anchor="middle" font-size="80">🐕</text>
+    <text x="180" y="165" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="26" font-weight="700" fill="#0F1B3D">Evcil Hayvan</text>
+  </g>
+
+  <!-- 🧳 Bagaj -->
+  <g transform="translate(570, 590)">
+    <rect x="0" y="0" width="360" height="200" rx="24" fill="#FFFFFF" stroke="#0F1B3D" stroke-width="2" stroke-opacity="0.1"/>
+    <text x="180" y="110" text-anchor="middle" font-size="80">🧳</text>
+    <text x="180" y="165" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="26" font-weight="700" fill="#0F1B3D">Bagaj</text>
+  </g>
+
+  <!-- 🚴 Bisiklet -->
+  <g transform="translate(360, 830)">
+    <rect x="0" y="0" width="360" height="200" rx="24" fill="#F5B83C"/>
+    <text x="180" y="110" text-anchor="middle" font-size="80">🚴</text>
+    <text x="180" y="165" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="26" font-weight="700" fill="#0F1B3D">Bisiklet</text>
+  </g>
+
+  <!-- Bottom text -->
+  <text x="540" y="1150" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="36" font-weight="700" fill="#0F1B3D">
+    Tek hesap.
+  </text>
+  <text x="540" y="1210" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="36" font-weight="700" fill="#F5B83C">
+    Sonsuz obje.
+  </text>
+
+  <!-- Brand -->
+  <text x="540" y="1300" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="20" font-weight="600" fill="#0F1B3D" letter-spacing="0.1em">
+    TAGORA
+  </text>
+</svg>

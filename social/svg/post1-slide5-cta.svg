@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#FFDA7A"/>
+      <stop offset="100%" stop-color="#F5B83C"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Gold background -->
+  <rect width="1080" height="1350" fill="url(#glow)"/>
+
+  <!-- Subtle grid -->
+  <pattern id="ctaGrid" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+    <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#0F1B3D" stroke-width="1" opacity="0.05"/>
+  </pattern>
+  <rect width="1080" height="1350" fill="url(#ctaGrid)"/>
+
+  <!-- Big rocket / launch -->
+  <text x="540" y="290" text-anchor="middle" font-size="140">🚀</text>
+
+  <!-- Main -->
+  <text x="540" y="470" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="96" font-weight="900" fill="#0F1B3D" letter-spacing="-0.03em">
+    Bugün lansman.
+  </text>
+
+  <!-- Subtitle -->
+  <text x="540" y="620" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="42" font-weight="500" fill="rgba(15,27,61,0.75)">
+    Erken kayıt olanlara özel indirim.
+  </text>
+
+  <!-- CTA button styled -->
+  <g transform="translate(240, 780)">
+    <rect x="0" y="0" width="600" height="140" rx="70" fill="#0F1B3D"/>
+    <text x="300" y="90" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="42" font-weight="800" fill="#F5B83C">
+      tagora.com.tr →
+    </text>
+  </g>
+
+  <!-- Small subline -->
+  <text x="540" y="1010" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="26" font-weight="500" fill="rgba(15,27,61,0.6)">
+    Türkiye içi 2-4 gün kargo
+  </text>
+  <text x="540" y="1055" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="26" font-weight="500" fill="rgba(15,27,61,0.6)">
+    Tekli sticker 49₺'den başlıyor
+  </text>
+
+  <!-- Logo bottom -->
+  <g transform="translate(490, 1150)">
+    <rect x="0" y="0" width="100" height="100" rx="24" fill="#0F1B3D"/>
+    <text x="50" y="76" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+          font-size="72" font-weight="900" fill="#F5B83C">T</text>
+  </g>
+
+  <text x="540" y="1310" text-anchor="middle" font-family="Inter, -apple-system, sans-serif"
+        font-size="24" font-weight="700" fill="#0F1B3D" letter-spacing="0.15em">
+    TAGORA
+  </text>
+</svg>

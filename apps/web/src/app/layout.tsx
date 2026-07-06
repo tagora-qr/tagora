@@ -56,6 +56,8 @@ export const metadata: Metadata = {
     title: "Tagora — Anonim İletişim için Akıllı QR Sticker",
     description:
       "Bir QR, sonsuz bağlantı. Telefonunu paylaşmadan ulaşılabilir kal.",
+    site: "@tagoraQR",
+    creator: "@tagoraQR",
   },
   robots: {
     index: true,
@@ -106,6 +108,11 @@ const organizationJsonLd = {
       email: "destek@tagora.com.tr",
       availableLanguage: ["Turkish", "English"],
     },
+  ],
+  // Google için sosyal medya doğrulaması → Knowledge Graph'a bağlı
+  sameAs: [
+    "https://www.instagram.com/tagora.qr",
+    "https://x.com/tagoraQR",
   ],
 };
 
