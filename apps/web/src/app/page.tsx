@@ -73,36 +73,55 @@ export default function HomePage() {
       <SiteHeader />{/* Homepage: TAGORA long tagline'ı footer için tut */}
 
       {/* HERO */}
-      <section className="bg-gradient-to-b from-navy-50 via-white to-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-navy-50/70 via-white to-white">
         <div className="mx-auto max-w-5xl px-4 py-16 sm:py-24">
           <div className="grid gap-10 sm:grid-cols-2 sm:items-center">
             <div className="animate-fade-in">
               <span className="chip mb-5">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Privacy-First · KVKK Uyumlu · AB Veri Yerleşimi
+                <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+                Yayında · 49₺'den başlar · 2-4 gün kargo
               </span>
-              <h1 className="mb-4 text-4xl font-bold leading-tight tracking-tight text-navy sm:text-5xl">
-                Telefonunu paylaşma.
-                <br />
-                <span className="bg-gradient-to-r from-navy to-navy-600 bg-clip-text text-transparent">
-                  Tagora yapıştır.
+              <h1 className="mb-4 text-4xl font-bold leading-[1.1] tracking-tight text-navy sm:text-5xl md:text-[3.5rem]">
+                Cama telefon yazmayı{" "}
+                <span className="relative inline-block">
+                  <span className="relative z-10 bg-gradient-to-r from-navy to-navy-600 bg-clip-text text-transparent">
+                    bitiriyoruz.
+                  </span>
+                  <span className="absolute bottom-1 left-0 -z-0 h-3 w-full rounded-full bg-accent/40" aria-hidden="true" />
                 </span>
               </h1>
-              <p className="mb-7 text-lg text-charcoal/70">
-                {TAGORA.tagline.tr} Aracın, kapın, evcil hayvanın için anonim
-                iletişim — kimliğin sende kalsın.
+              <p className="mb-7 text-lg leading-relaxed text-charcoal/75">
+                Aracına, kapına, tasmaya yapıştır. Biri QR'ı tarayınca seninle{" "}
+                <strong className="text-navy">anonim mesajlaşır</strong> —
+                telefonun asla paylaşılmaz.
               </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link href="#waitlist" className="btn-primary">
-                  Bekleme Listesine Katıl
+              <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+                <Link href="/shop" className="btn-primary text-center">
+                  Sipariş Ver — 49₺'den →
                 </Link>
-                <Link href="#how" className="btn-secondary">
+                <Link href="#how" className="btn-secondary text-center">
                   Nasıl Çalışır
                 </Link>
               </div>
+
+              {/* Sosyal kanıt satırı */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-charcoal/60">
+                <span className="flex items-center gap-1.5">
+                  <span className="text-emerald-500">✓</span> KVKK uyumlu
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-emerald-500">✓</span> AB sunucular
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-emerald-500">✓</span> Uçtan uca şifreli
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <span className="text-emerald-500">✓</span> Türkiye'de tasarım
+                </span>
+              </div>
             </div>
 
-            {/* Hero görseli — sticker preview */}
+            {/* Hero görseli — sticker preview + telefon bildirimi */}
             <div className="relative flex items-center justify-center">
               <div className="aspect-square w-full max-w-sm rotate-3 rounded-3xl bg-gradient-to-br from-navy to-navy-800 p-12 shadow-2xl">
                 <div className="flex h-full w-full items-center justify-center rounded-2xl bg-white">
@@ -112,7 +131,52 @@ export default function HomePage() {
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-2 text-xs font-bold text-navy shadow-lg">
                 tagora.link/s/k7n2pXyZ4A
               </div>
+
+              {/* Simüle push bildirimi — sticker'ın üzerine "yeni mesaj" */}
+              <div className="absolute -right-2 top-6 hidden animate-slide-up rounded-2xl border border-navy/10 bg-white px-4 py-3 shadow-2xl sm:block sm:-right-6 md:right-0">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-navy text-lg">
+                    <span className="text-accent">T</span>
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-charcoal/50">
+                      Yeni mesaj · 07:12
+                    </p>
+                    <p className="text-xs font-semibold text-navy">
+                      Peluş bende, Şişli'deyim
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust markers — hero altında */}
+      <section className="border-y border-navy/5 bg-navy/[0.02]">
+        <div className="mx-auto max-w-5xl px-4 py-8">
+          <div className="grid gap-6 sm:grid-cols-4">
+            <TrustMarker
+              icon="🇹🇷"
+              title="KVKK Uyumlu"
+              body="Türk yasal çerçevesinde tasarlandı, self-service veri hakları."
+            />
+            <TrustMarker
+              icon="🇪🇺"
+              title="AB Sunucular"
+              body="Tüm veriler Frankfurt'ta, yurt dışı transferi yok."
+            />
+            <TrustMarker
+              icon="🔒"
+              title="Kimliğin Gizli"
+              body="Telefonun, adresin, adın — hiçbiri karşı tarafa gitmez."
+            />
+            <TrustMarker
+              icon="⚡"
+              title="Anlık Chat"
+              body="Biri QR'ı tarayınca telefonuna push, hemen cevaplar."
+            />
           </div>
         </div>
       </section>
@@ -237,15 +301,51 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* WAITLIST */}
+      {/* SATIŞ CTA — ana */}
+      <section className="mx-auto max-w-4xl px-4 py-16">
+        <div className="rounded-3xl bg-gradient-to-br from-accent/90 to-accent p-10 text-navy shadow-lg sm:p-14">
+          <div className="text-center">
+            <h2 className="mb-3 text-3xl font-bold sm:text-4xl">
+              Bir sticker 49₺.
+              <br />
+              <span className="text-navy/80">Sonrası sonsuz iletişim.</span>
+            </h2>
+            <p className="mx-auto mb-8 max-w-xl text-navy/70">
+              Türkiye içi 2-4 gün kargo. KDV dahil. iyzico güvenli ödeme.
+              Kart bilgin bize gelmez.
+            </p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Link
+                href="/shop"
+                className="rounded-xl bg-navy px-8 py-4 font-bold text-accent shadow-md transition hover:bg-navy/90"
+              >
+                Paketleri Gör →
+              </Link>
+              <Link
+                href={"/business" as never}
+                className="rounded-xl border border-navy/30 bg-white/50 px-8 py-4 font-semibold text-navy transition hover:bg-white"
+              >
+                B2B için Tıkla
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WAITLIST — ikincil */}
       <section id="waitlist" className="mx-auto max-w-2xl px-4 py-16">
         <div className="rounded-3xl border border-navy/10 bg-white p-10 shadow-sm">
-          <h2 className="mb-2 text-center text-3xl font-bold text-navy">
-            İlk 1.000 kişiden biri ol
+          <div className="mb-4 flex items-center justify-center">
+            <span className="rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-700">
+              📮 Haberdar olmak istersen
+            </span>
+          </div>
+          <h2 className="mb-2 text-center text-2xl font-bold text-navy sm:text-3xl">
+            Yeni özellikleri ilk sen dene
           </h2>
-          <p className="mb-8 text-center text-charcoal/60">
-            Lansman duyurusunu önce sana yollayalım. Erken kayıtlara özel
-            indirim.
+          <p className="mb-8 text-center text-sm text-charcoal/60">
+            Yeni sticker tasarımları, use case'ler, kampanyalar — email listesine
+            katıl, spam yok.
           </p>
           <WaitlistForm />
         </div>
@@ -253,6 +353,18 @@ export default function HomePage() {
 
       <SiteFooter />
     </>
+  );
+}
+
+function TrustMarker({ icon, title, body }: { icon: string; title: string; body: string }) {
+  return (
+    <div className="flex gap-3">
+      <div className="flex-shrink-0 text-2xl">{icon}</div>
+      <div>
+        <p className="text-sm font-semibold text-navy">{title}</p>
+        <p className="mt-0.5 text-xs text-charcoal/60 leading-relaxed">{body}</p>
+      </div>
+    </div>
   );
 }
 
