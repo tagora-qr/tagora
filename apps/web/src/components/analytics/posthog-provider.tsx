@@ -31,7 +31,8 @@ export function initPostHogIfConsented() {
 
   posthog.init(key, {
     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST ?? "https://eu.i.posthog.com",
-    capture_pageview: false, // manuel — router change'te tetikleyeceğiz
+    // Next.js App Router'da history değişikliklerini otomatik yakalar
+    capture_pageview: "history_change",
     capture_pageleave: true,
     disable_session_recording: false, // session replay AÇIK
     autocapture: true, // click, form submit otomatik yakala
@@ -39,6 +40,8 @@ export function initPostHogIfConsented() {
     person_profiles: "identified_only", // sadece login user'ları için profile
     loaded: (ph) => {
       if (process.env.NODE_ENV === "development") ph.debug();
+      // İlk pageview'i loaded callback'te tetikle
+      ph.capture("$pageview");
     },
   });
 }

@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
-import { Suspense } from "react";
 import "./globals.css";
-import { PostHogProvider, PageviewTracker } from "@/components/analytics/posthog-provider";
+import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { CookieConsentBanner } from "@/components/analytics/cookie-consent";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -48,9 +47,6 @@ export default function RootLayout({
       <body className="min-h-screen bg-white antialiased">
         <PostHogProvider>
           {children}
-          <Suspense fallback={null}>
-            <PageviewTracker />
-          </Suspense>
           <CookieConsentBanner />
         </PostHogProvider>
       </body>
