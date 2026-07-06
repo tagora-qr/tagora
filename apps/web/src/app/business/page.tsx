@@ -85,43 +85,49 @@ const SECTORS = [
   },
 ];
 
-// Özellikler
+// Özellikler — realistic olarak ne şu an mevcut, ne roadmap'te
 const FEATURES = [
   {
-    icon: "📊",
-    title: "Kurumsal Dashboard",
+    icon: "📦",
+    title: "Toplu Sticker Baskısı",
+    availability: "available" as const,
     body:
-      "Tüm sticker'lar, konuşmalar, tarayanlar tek panelden. CSV export, filtreleme, çoklu kullanıcı erişimi.",
+      "100 adetten başlayan bulk siparişler. Standart tasarım stokta, özel tasarım 10-14 gün üretim süresi.",
   },
   {
     icon: "🎨",
-    title: "White-Label Seçenek",
+    title: "Özel Tasarım",
+    availability: "available" as const,
     body:
-      "Kendi logon, kendi renklerin, kendi URL'in. Tagora altyapısı, senin markan. Tam özelleştirme.",
-  },
-  {
-    icon: "🔗",
-    title: "API Entegrasyonu",
-    body:
-      "Mevcut CRM'ine, ERP'ine, saha uygulamana bağlan. Webhook desteği, kullanım metrikleri.",
-  },
-  {
-    icon: "👥",
-    title: "Çoklu Kullanıcı",
-    body:
-      "Ekip üyelerini davet et. Rol bazlı erişim (admin/moderator/viewer). Denetim izleri.",
+      "Logo, renk, boyut, malzeme özelleştirmesi. Kurumsal marka kimliğine uygun QR sticker.",
   },
   {
     icon: "💼",
-    title: "Fatura & KDV",
+    title: "Kurumsal Fatura",
+    availability: "available" as const,
     body:
-      "Kurumsal fatura, e-fatura entegrasyonu. KDV dahil / hariç seçenekleri. Muhasebe kolayı.",
+      "E-fatura entegrasyonu, KDV dahil/hariç, ödeme vadesi opsiyonları. Muhasebe için CSV export.",
   },
   {
     icon: "🛟",
     title: "Öncelikli Destek",
+    availability: "available" as const,
     body:
-      "Özel iş ortağı yöneticisi, WhatsApp/telefon desteği, SLA garantisi.",
+      "Özel iş ortağı yöneticisi, WhatsApp/telefon desteği, 24 saat içinde teklif.",
+  },
+  {
+    icon: "📊",
+    title: "Sipariş & Kullanım Portalı",
+    availability: "soon" as const,
+    body:
+      "Kendi sipariş geçmişini takip, aktif sticker durumu, kullanım metrikleri. Şu an manuel raporla, portal Q3'te.",
+  },
+  {
+    icon: "🎭",
+    title: "White-Label & API",
+    availability: "enterprise" as const,
+    body:
+      "Kendi domain'in, kendi tema/logo, ekip üyeleri, REST API + webhook. 5.000+ adet Enterprise anlaşmasıyla.",
   },
 ];
 
@@ -136,12 +142,12 @@ const FAQ = [
     a: "Standart tasarım: 5-7 iş günü. Özel tasarım (logo, renk, boyut): 10-14 iş günü. Türkiye içi kargo dahil. Yurt dışı sevkiyat için ekstra süre.",
   },
   {
-    q: "White-label ne demek, nasıl çalışır?",
-    a: "Kendi markanız altında Tagora altyapısını kullanabilirsiniz. QR taranıldığında sizin logonuz, sizin renkleriniz, sizin domain'iniz görünür. Tagora arka planda kalır. Kurumsal müşteriler için ideal.",
+    q: "White-label & API ne zaman aktif olur?",
+    a: "White-label (kendi domain, tema, logo) + REST API + webhook Enterprise tier'ında (5.000+ adet). Şu an sadece anlaşma bazlı devreye alıyoruz — sizinle bir sürekli ilişki kurduktan sonra teknik entegrasyon yol haritasını beraber çıkarıyoruz.",
   },
   {
-    q: "Kurumsal dashboard'da ne var?",
-    a: "Tüm sticker'ların durum takibi (satın alınan, dağıtılan, taranan, aktif), konuşma analizi (anonim toplu istatistik — içerik değil), kullanıcı yönetimi, CSV export ve API erişim anahtarları.",
+    q: "Kurumsal Dashboard / self-service portal var mı?",
+    a: "Şu an self-service portal geliştirme sürecinde (2026 Q3). Bugün için: sipariş, kullanım metrikleri, kargolama durumu bilgilerini iş ortağı yöneticiniz haftalık email ile paylaşıyor. Portala geçince otomatik erişim gelecek.",
   },
   {
     q: "KVKK ve verilerimizin güvenliği?",
@@ -161,9 +167,9 @@ const PRICING_TIERS = [
     unitPrice: "35 ₺",
     features: [
       "Standart Tagora tasarım",
-      "Kurumsal dashboard",
-      "1 admin + 2 viewer",
-      "Email desteği",
+      "Toplu sipariş + kargo optimizasyonu",
+      "Email desteği (24 saat cevap)",
+      "Haftalık kullanım raporu",
     ],
   },
   {
@@ -172,11 +178,11 @@ const PRICING_TIERS = [
     unitPrice: "20 ₺",
     featured: true,
     features: [
-      "Logo baskılı sticker seçeneği",
-      "Kurumsal dashboard + CSV export",
-      "5 kullanıcı hesap",
-      "Öncelikli destek",
-      "API erişimi",
+      "Logo baskılı sticker",
+      "Özel tasarım süreci",
+      "Öncelikli destek (WhatsApp)",
+      "Haftalık detay raporu",
+      "Kurumsal fatura + esnek ödeme",
     ],
   },
   {
@@ -184,12 +190,11 @@ const PRICING_TIERS = [
     range: "5.000+ adet",
     unitPrice: "İletişim",
     features: [
-      "White-label opsiyon (özel domain)",
-      "Custom tasarım süreci",
-      "Sınırsız kullanıcı",
+      "White-label (kendi domain + tema)",
+      "REST API + Webhook",
       "Özel iş ortağı yöneticisi",
-      "SLA garantisi",
-      "VDPA + ISO 27001 raporu",
+      "VDPA + SLA anlaşması",
+      "Custom entegrasyon süreci",
     ],
   },
 ];
@@ -331,7 +336,7 @@ export default function BusinessPage() {
               B2B'ye özel özellikler
             </h2>
             <p className="text-charcoal/60">
-              Bireysel plandan farklı — kurumsal ihtiyaçlar için tasarlandı
+              Şu an aktif olanlar, yakında gelecekler ve Enterprise'a özel olanlar — şeffaf ayrılmış.
             </p>
           </div>
 
@@ -339,15 +344,34 @@ export default function BusinessPage() {
             {FEATURES.map((f, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-navy/10 bg-white p-6"
+                className="relative rounded-2xl border border-navy/10 bg-white p-6"
               >
-                <div className="mb-3 text-3xl">{f.icon}</div>
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div className="text-3xl">{f.icon}</div>
+                  <AvailabilityBadge kind={f.availability} />
+                </div>
                 <h3 className="mb-2 font-semibold text-navy">{f.title}</h3>
                 <p className="text-sm text-charcoal/70 leading-relaxed">
                   {f.body}
                 </p>
               </div>
             ))}
+          </div>
+
+          {/* Legend */}
+          <div className="mt-8 flex flex-wrap justify-center gap-4 text-xs text-charcoal/60">
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-emerald-500" />
+              Mevcut — bugünden itibaren
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-amber-500" />
+              Yakında — 2026 Q3 planında
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-navy" />
+              Enterprise — 5.000+ adet anlaşmasıyla
+            </span>
           </div>
         </div>
       </section>
@@ -507,5 +531,23 @@ export default function BusinessPage() {
 
       <SiteFooter />
     </div>
+  );
+}
+
+function AvailabilityBadge({
+  kind,
+}: {
+  kind: "available" | "soon" | "enterprise";
+}) {
+  const map = {
+    available: { label: "Mevcut", cls: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+    soon: { label: "Yakında", cls: "bg-amber-50 text-amber-700 border-amber-200" },
+    enterprise: { label: "Enterprise", cls: "bg-navy/5 text-navy border-navy/20" },
+  };
+  const b = map[kind];
+  return (
+    <span className={`inline-flex rounded-full border px-2 py-0.5 text-[10px] font-semibold ${b.cls}`}>
+      {b.label}
+    </span>
   );
 }

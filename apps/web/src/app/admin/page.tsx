@@ -90,6 +90,8 @@ async function getMetrics() {
     { count: pendingFulfilment },
     revenueTotalRes,
     revenueMonthRes,
+    { count: openLeads },
+    { count: totalLeads },
   ] = await Promise.all([
     supabase.from("stickers").select("id", { count: "exact", head: true }),
     supabase.from("stickers").select("id", { count: "exact", head: true }).eq("status", "manufactured").is("order_id", null),
@@ -116,6 +118,8 @@ async function getMetrics() {
       .select("total_try")
       .in("status", ["paid", "preparing", "shipped", "delivered"])
       .gte("paid_at", startOfMonth),
+    supabase.from("business_leads").select("id", { count: "exact", head: true }).in("status", ["new", "contacted", "quoted"]),
+    supabase.from("business_leads").select("id", { count: "exact", head: true }),
   ]);
 
   const revenueTotal = ((revenueTotalRes.data ?? []) as { total_try: number }[])
@@ -150,6 +154,10 @@ async function getMetrics() {
       revenueTotal,
       revenueMonth,
     },
+    b2b: {
+      open: openLeads ?? 0,
+      total: totalLeads ?? 0,
+    },
   };
 }
 
@@ -183,6 +191,22 @@ export default async function AdminOverviewPage() {
           <MetricMoney label="Toplam Ciro" value={m.orders.revenueTotal} href="/admin/orders" />
           <Metric label="Toplam Sipariş" value={m.orders.total} href="/admin/orders" />
           <Metric label="Hazırlanacak" value={m.orders.pendingFulfilment} href="/admin/orders?status=paid" hint="paid + preparing" />
+        </div>
+      </section>
+
+      {/* B2B pipeline */}
+      <section>
+        <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-charcoal/60">
+          B2B Talepler
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Metric
+            label="Bekleyen Talep"
+            value={m.b2b.open}
+            href="/admin/business-leads"
+            hint={m.b2b.open > 0 ? "⚠️ Yanıt bekliyor" : undefined}
+          />
+          <Metric label="Toplam Talep" value={m.b2b.total} href="/admin/business-leads" />
         </div>
       </section>
 
