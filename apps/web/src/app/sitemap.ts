@@ -6,6 +6,7 @@
  */
 import type { MetadataRoute } from "next";
 import { getBaseUrl } from "@/lib/base-url";
+import { ARTICLES } from "./rehber/articles";
 
 const BASE_URL = getBaseUrl();
 
@@ -33,6 +34,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/rehber`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
     },
     // Yasal — düşük öncelik ama indexlensin
     {
@@ -76,5 +83,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...useCasePages];
+  // Blog/Rehber makaleleri
+  const articlePages: MetadataRoute.Sitemap = ARTICLES.map((a) => ({
+    url: `${BASE_URL}/rehber/${a.slug}`,
+    lastModified: new Date(a.updatedAt),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...useCasePages, ...articlePages];
 }

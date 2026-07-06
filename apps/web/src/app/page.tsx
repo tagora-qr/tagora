@@ -296,6 +296,8 @@ function SiteFooter() {
             <ul className="space-y-2 text-sm text-white/70">
               <li><Link href="#how" className="hover:text-white">Nasıl Çalışır</Link></li>
               <li><Link href="/shop" className="hover:text-white">Sticker Sipariş</Link></li>
+              <li><Link href="/kullanim" className="hover:text-white">Kullanım Alanları</Link></li>
+              <li><Link href={"/rehber" as never} className="hover:text-white">Rehber & Blog</Link></li>
               <li><Link href="#sss" className="hover:text-white">SSS</Link></li>
               <li><Link href="/login" className="hover:text-white">Giriş</Link></li>
             </ul>
