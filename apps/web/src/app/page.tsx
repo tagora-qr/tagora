@@ -7,6 +7,7 @@ import Link from "next/link";
 import { TAGORA } from "@tagora/shared";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { AppDownloadBadges } from "@/components/app-download-badges";
 import { WaitlistForm } from "./waitlist-form";
 
 // SEO: use case link'leri — kullanım detay sayfalarına iç link
@@ -220,6 +221,90 @@ export default function HomePage() {
               <p className="text-sm text-charcoal/70">{s.body}</p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* MOBILE APP DOWNLOAD */}
+      <section id="uygulama" className="mx-auto max-w-5xl px-4 py-16">
+        <div className="grid gap-10 rounded-3xl bg-gradient-to-br from-navy to-navy-800 p-8 text-white sm:grid-cols-2 sm:items-center sm:p-12 lg:p-16">
+          <div>
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+              iOS + Android
+            </span>
+            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
+              Tagora'yı telefonuna indir.
+            </h2>
+            <p className="mb-8 text-lg text-white/80 leading-relaxed">
+              QR'ları tara, sticker'larını eşle, mesajları anında al. Uygulama olmadan da web'den kullanabilirsin — ama bildirimleri kaçırmamak için app'i indir.
+            </p>
+            <AppDownloadBadges variant="dark" />
+          </div>
+
+          {/* Phone mockup */}
+          <div className="relative flex items-center justify-center">
+            <div className="relative aspect-[9/19] w-full max-w-[240px] rounded-[3rem] border-8 border-navy-700 bg-black shadow-2xl">
+              {/* Notch */}
+              <div className="absolute left-1/2 top-2 z-10 h-5 w-24 -translate-x-1/2 rounded-full bg-black" />
+
+              {/* Screen */}
+              <div className="absolute inset-2 overflow-hidden rounded-[2.4rem] bg-gradient-to-b from-navy-50 via-white to-white">
+                {/* Status bar */}
+                <div className="flex items-center justify-between px-5 pt-3 text-[8px] font-semibold text-navy">
+                  <span>9:41</span>
+                  <span>●●●</span>
+                </div>
+
+                {/* Header */}
+                <div className="mt-3 flex items-center justify-between px-4">
+                  <div className="flex items-center gap-1.5">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-md bg-navy text-[10px] font-black text-accent">T</div>
+                    <span className="text-[10px] font-bold text-navy">Tagora</span>
+                  </div>
+                  <span className="text-[10px] text-charcoal/40">Inbox</span>
+                </div>
+
+                {/* Notification preview */}
+                <div className="mx-3 mt-4 rounded-xl border border-navy/10 bg-white p-2 shadow-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-[10px]">🐕</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[9px] font-semibold text-navy">Peluş tasması</p>
+                      <p className="truncate text-[8px] text-charcoal/60">Kedi bende, Şişli'deyim</p>
+                    </div>
+                    <span className="text-[7px] text-charcoal/40">07:12</span>
+                  </div>
+                </div>
+
+                <div className="mx-3 mt-2 rounded-xl border border-navy/10 bg-white p-2 shadow-sm">
+                  <div className="flex items-start gap-2">
+                    <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 text-[10px]">🚗</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[9px] font-semibold text-navy">Araç camı</p>
+                      <p className="truncate text-[8px] text-charcoal/60">Aracınız yolu kapatmış...</p>
+                    </div>
+                    <span className="text-[7px] text-charcoal/40">Dün</span>
+                  </div>
+                </div>
+
+                <div className="mx-3 mt-2 rounded-xl border border-navy/10 bg-white p-2 shadow-sm opacity-60">
+                  <div className="flex items-start gap-2">
+                    <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-lg bg-purple-100 text-[10px]">🧳</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[9px] font-semibold text-navy">Bagaj etiketi</p>
+                      <p className="truncate text-[8px] text-charcoal/60">Valizinizi buldum</p>
+                    </div>
+                    <span className="text-[7px] text-charcoal/40">2g</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Floating badge */}
+            <div className="absolute -right-4 top-4 rotate-6 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-navy shadow-lg">
+              🔔 Anlık bildirim
+            </div>
+          </div>
         </div>
       </section>
 

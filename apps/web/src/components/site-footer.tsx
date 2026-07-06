@@ -84,6 +84,11 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href="/#uygulama" className="hover:text-white">
+                  Mobil Uygulama
+                </Link>
+              </li>
+              <li>
                 <Link href="/login" className="hover:text-white">
                   Giriş
                 </Link>
