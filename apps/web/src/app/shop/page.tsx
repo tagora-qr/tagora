@@ -6,7 +6,8 @@
  */
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { Logo } from "@/components/logo";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import type { StickerPackage } from "@tagora/db";
 
 export const metadata = {
@@ -29,16 +30,7 @@ export default async function ShopPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-navy-50 via-white to-white">
-      <header className="border-b border-navy/5">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link href="/">
-            <Logo />
-          </Link>
-          <Link href="/" className="btn-ghost text-sm">
-            ← Anasayfa
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
         <div className="mb-10 text-center">
@@ -108,6 +100,8 @@ export default async function ShopPage() {
           </div>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

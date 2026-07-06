@@ -4,7 +4,8 @@
  */
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Logo } from "@/components/logo";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { ARTICLES } from "./articles";
 
 export const metadata: Metadata = {
@@ -27,21 +28,7 @@ export default function RehberHubPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white via-navy-50/20 to-white">
-      <header className="border-b border-navy/5">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link href="/">
-            <Logo />
-          </Link>
-          <nav className="flex items-center gap-2">
-            <Link href="/shop" className="btn-ghost text-sm">
-              Sipariş
-            </Link>
-            <Link href="/login" className="btn-ghost text-sm">
-              Giriş
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
         <div className="mb-12 text-center">
@@ -116,6 +103,8 @@ export default function RehberHubPage() {
           </div>
         </section>
       </main>
+
+      <SiteFooter />
     </div>
   );
 }

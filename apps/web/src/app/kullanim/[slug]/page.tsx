@@ -8,7 +8,8 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Logo } from "@/components/logo";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import { USE_CASES, USE_CASE_SLUGS } from "../use-cases";
 import { getBaseUrl } from "@/lib/base-url";
 
@@ -80,21 +81,7 @@ export default async function UseCaseDetailPage({ params }: { params: Params }) 
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <header className="border-b border-navy/5 bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-          <Link href="/">
-            <Logo />
-          </Link>
-          <nav className="flex items-center gap-2">
-            <Link href="/kullanim" className="btn-ghost text-sm">
-              ← Kullanım
-            </Link>
-            <Link href="/shop" className="btn-primary text-sm">
-              Sipariş Ver
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Breadcrumb (visible) */}
       <nav className="mx-auto max-w-5xl px-4 pt-6 text-xs text-charcoal/50">
@@ -106,7 +93,7 @@ export default async function UseCaseDetailPage({ params }: { params: Params }) 
           </li>
           <li>›</li>
           <li>
-            <Link href="/kullanim" className="hover:text-navy">
+            <Link href={"/kullanim" as never} className="hover:text-navy">
               Kullanım
             </Link>
           </li>
@@ -254,6 +241,8 @@ export default async function UseCaseDetailPage({ params }: { params: Params }) 
           </div>
         </div>
       </section>
+
+      <SiteFooter />
     </div>
   );
 }
