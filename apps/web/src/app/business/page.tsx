@@ -10,6 +10,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getBaseUrl } from "@/lib/base-url";
+import { BusinessLeadForm } from "./lead-form";
 
 const BASE_URL = getBaseUrl();
 
@@ -221,11 +222,6 @@ const breadcrumbJsonLd = {
   ],
 };
 
-const mailBody = encodeURIComponent(
-  "Merhaba Tagora ekibi,\n\nB2B teklif almak istiyorum.\n\nŞirket: \nİhtiyaç (kaç adet, ne için): \nÖzel tasarım gerekli mi: \n\nDaha detaylı görüşmek isterim.\n\nTeşekkürler",
-);
-const mailSubject = encodeURIComponent("Tagora Business — Teklif Talebi");
-const mailtoCta = `mailto:is@tagora.com.tr?subject=${mailSubject}&body=${mailBody}`;
 
 export default function BusinessPage() {
   return (
@@ -264,7 +260,7 @@ export default function BusinessPage() {
               dashboard, white-label ve özel iş ortağı desteği.
             </p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row">
-              <a href={mailtoCta} className="btn-accent inline-block">
+              <a href="#teklif-al" className="btn-accent inline-block">
                 Teklif Al →
               </a>
               <Link
@@ -407,7 +403,7 @@ export default function BusinessPage() {
                   ))}
                 </ul>
                 <a
-                  href={mailtoCta}
+                  href="#teklif-al"
                   className={
                     "block w-full rounded-lg py-3 text-center text-sm font-semibold transition " +
                     (t.featured
@@ -450,6 +446,35 @@ export default function BusinessPage() {
         </div>
       </section>
 
+      {/* LEAD FORM */}
+      <section id="teklif-al" className="scroll-mt-20 bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="mb-10 text-center">
+            <span className="chip mb-4 inline-flex">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              24 saat içinde detaylı teklif
+            </span>
+            <h2 className="mb-3 text-3xl font-bold text-navy">
+              Teklif talep et
+            </h2>
+            <p className="text-charcoal/60">
+              Formu doldur, ekip 24 saat içinde sana özel teklifle döner.
+            </p>
+          </div>
+
+          <div className="rounded-3xl border border-navy/10 bg-white p-6 shadow-sm sm:p-10">
+            <BusinessLeadForm />
+          </div>
+
+          <p className="mt-6 text-center text-xs text-charcoal/50">
+            Formda takılırsan ya da başka bir yolu tercih edersen:{" "}
+            <a href="mailto:is@tagora.com.tr" className="font-medium text-navy underline">
+              is@tagora.com.tr
+            </a>
+          </p>
+        </div>
+      </section>
+
       {/* FINAL CTA */}
       <section className="bg-gradient-to-br from-navy to-navy-800 py-20 text-white">
         <div className="mx-auto max-w-3xl px-4 text-center">
@@ -461,7 +486,7 @@ export default function BusinessPage() {
             detaylı teklif hazırlarız.
           </p>
           <div className="flex flex-col justify-center gap-3 sm:flex-row">
-            <a href={mailtoCta} className="btn-accent inline-block">
+            <a href="#teklif-al" className="btn-accent inline-block">
               Teklif Al →
             </a>
             <a

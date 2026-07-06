@@ -30,7 +30,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "Tagora KVKK uyumlu mu, verilerim güvende mi?",
-    a: "Evet. Tüm veriler Frankfurt'taki AB sunucularında saklanır. KVKK Md.11 self-service — hesap ayarlarından tüm verini bir tıkla indirebilir veya sildirebilirsin. Mesajlar 90 gün sonra otomatik silinir.",
+    a: "Evet. KVKK Md.11 self-service — hesap ayarlarından tüm verini bir tıkla indirebilir veya sildirebilirsin. Chat mesajları uçtan uca şifreli, 90 gün sonra otomatik silinir. Aydınlatma metninde tam detay: tagora.com.tr/kvkk",
   },
   {
     q: "Sticker ne kadar dayanıklı, dış mekan için uygun mu?",
@@ -110,7 +110,7 @@ export default function HomePage() {
                   <span className="text-emerald-500">✓</span> KVKK uyumlu
                 </span>
                 <span className="flex items-center gap-1.5">
-                  <span className="text-emerald-500">✓</span> AB sunucular
+                  <span className="text-emerald-500">✓</span> Kimliğin gizli
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="text-emerald-500">✓</span> Uçtan uca şifreli
@@ -163,9 +163,9 @@ export default function HomePage() {
               body="Türk yasal çerçevesinde tasarlandı, self-service veri hakları."
             />
             <TrustMarker
-              icon="🇪🇺"
-              title="AB Sunucular"
-              body="Tüm veriler Frankfurt'ta, yurt dışı transferi yok."
+              icon="🔐"
+              title="Uçtan Uca Şifreli"
+              body="Chat mesajları şifreli iletilir, 90 gün sonra otomatik silinir."
             />
             <TrustMarker
               icon="🔒"
@@ -292,7 +292,7 @@ export default function HomePage() {
           </h2>
           <ul className="grid gap-3 text-base text-white/85 sm:grid-cols-2">
             <li>✓ Telefonun cama yazılmıyor — kimse görmüyor</li>
-            <li>✓ Tüm veri AB&apos;de (Frankfurt)</li>
+            <li>✓ KVKK Md.10 aydınlatma metniyle şeffaf işlenir</li>
             <li>✓ Mesaj 90 gün sonra otomatik silinir</li>
             <li>✓ KVKK Md.11 self-service: tek tıkla verim indirme</li>
             <li>✓ Scanner cihaz bilgisi 24 saatte anonimleşir</li>
