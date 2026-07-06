@@ -15,6 +15,7 @@ interface SiteHeaderProps {
 const NAV_LINKS = [
   { href: "/kullanim" as const, label: "Kullanım" },
   { href: "/rehber" as const, label: "Rehber" },
+  { href: "/business" as const, label: "Business" },
   { href: "/shop" as const, label: "Sipariş" },
 ] as const;
 

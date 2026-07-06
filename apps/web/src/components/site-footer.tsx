@@ -74,6 +74,11 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
+                <Link href={"/business" as never} className="hover:text-white">
+                  Business (B2B)
+                </Link>
+              </li>
+              <li>
                 <Link href={"/rehber" as never} className="hover:text-white">
                   Rehber & Blog
                 </Link>
