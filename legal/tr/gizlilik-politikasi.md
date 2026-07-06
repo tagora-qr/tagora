@@ -2,8 +2,9 @@
 
 **Yürürlük Tarihi**: 2026-07-05
 **Versiyon**: 1.0
+**Veri Sorumlusu**: DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti. (Tagora markası)
 
-Tagora Teknoloji ("**Tagora**", "**biz**") olarak sunduğumuz web sitesi (`tagora.com.tr`, `tagora.link`), mobil uygulama ("**Tagora**") ve bu platformlar üzerinden sunduğumuz QR sticker hizmetlerini ("**Hizmet**") kullanırken kişisel verilerinizin korunmasına en yüksek özeni gösteririz.
+**DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.** ("**Tagora**", "**biz**") olarak sunduğumuz web sitesi (`tagora.com.tr`, `tagora.link`), mobil uygulama ("**Tagora**") ve bu platformlar üzerinden sunduğumuz QR sticker hizmetlerini ("**Hizmet**") kullanırken kişisel verilerinizin korunmasına en yüksek özeni gösteririz.
 
 Bu Gizlilik Politikası; Tagora'nın kişisel verileri hangi ilkelerle işlediğini, hangi ürün özelliklerinde hangi verilerin toplandığını, kimlerle paylaşıldığını, ne kadar süre saklandığını ve haklarınızı **kolayca anlaşılır bir dille** özetlemektedir.
 

@@ -3,7 +3,7 @@
 **Yürürlük Tarihi**: 2026-07-05
 **Versiyon**: 1.0
 
-Bu Kullanım Şartları ("**Şartlar**"), Tagora Teknoloji tarafından sunulan **Tagora** platformunu (web sitesi, mobil uygulama ve QR sticker hizmeti) kullanan tüm kişileri ("**siz**", "**Kullanıcı**") ilgilendiren yasal koşulları düzenler.
+Bu Kullanım Şartları ("**Şartlar**"), **DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.** (Tagora markası) tarafından sunulan **Tagora** platformunu (web sitesi, mobil uygulama ve QR sticker hizmeti) kullanan tüm kişileri ("**siz**", "**Kullanıcı**") ilgilendiren yasal koşulları düzenler.
 
 Tagora'yı kullanarak bu Şartları kabul etmiş sayılırsınız. Kabul etmiyorsanız lütfen Hizmet'i kullanmayınız.
 
@@ -11,7 +11,7 @@ Tagora'yı kullanarak bu Şartları kabul etmiş sayılırsınız. Kabul etmiyor
 
 ## 1. Tanımlar
 
-- **Tagora**: Bu Şartlarda "biz", "Tagora Teknoloji" ile eş anlamlıdır.
+- **Tagora**: Bu Şartlarda "biz", "**DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.**" (Tagora markası) ile eş anlamlıdır.
 - **Hizmet**: Tagora web sitesi (`tagora.com.tr`, `tagora.link`), mobil uygulama ve QR sticker platformu.
 - **Kullanıcı**: Hizmet'e kayıt olan veya kullanan gerçek/tüzel kişi.
 - **Sticker**: Tagora tarafından üretilen, üzerinde benzersiz QR kod barındıran fiziksel etiket.
@@ -146,7 +146,7 @@ Tagora, otomatik ve manuel moderasyon kullanarak:
 ## 7. Fikri Mülkiyet
 
 ### 7.1 Tagora Marka ve Yazılımı
-- "Tagora" markası, logosu, tasarımları, yazılım kodları, veritabanı yapısı ve tüm içerikler **Tagora Teknoloji'ye aittir**
+- "Tagora" markası, logosu, tasarımları, yazılım kodları, veritabanı yapısı ve tüm içerikler **DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.'ye aittir**
 - Kendi kullanımınız dışında **kopyalama, dağıtım, tersine mühendislik yapamazsınız**
 - Marka tesciline yönelik hak ihlalleri hukuki yaptırıma tabidir
 
@@ -205,7 +205,7 @@ Bir sorun yaşarsanız `destek@tagora.com.tr` ile temasa geçin — %90 sorun 48
 Sipariş / ödeme kaynaklı uyuşmazlıklarda tüketici olarak Türkiye Cumhuriyeti Tüketici Kanunu hükümlerine göre Tüketici Hakem Heyeti veya Tüketici Mahkemesi'ne başvurabilirsiniz.
 
 ### 10.3 Yetkili Mahkeme
-Diğer uyuşmazlıklarda **İstanbul Mahkemeleri ve İcra Daireleri** yetkilidir.
+Diğer uyuşmazlıklarda **Bursa Mahkemeleri ve İcra Daireleri** yetkilidir (şirket merkezi Bursa'dadır).
 
 ### 10.4 Uygulanacak Hukuk
 Bu Şartlar Türkiye Cumhuriyeti hukukuna tabidir.
@@ -246,9 +246,11 @@ Bu Şartlar; [KVKK Aydınlatma Metni](/kvkk), [Gizlilik Politikası](/privacy) v
 - **Güvenlik**: `security@tagora.com.tr`
 - **B2B / İş birliği**: `is@tagora.com.tr`
 
-Tagora Teknoloji
-[Adres: Şirket kuruluşu tamamlandığında güncellenecek]
-[Vergi Dairesi ve Numarası: güncellenecek]
+**Ticari Unvan**: DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.
+**Marka**: Tagora
+**Adres**: 23 Nisan Mah. Ata Bulvarı Gizemler 3 Plaza K:1 D:6 Nilüfer / BURSA
+**Vergi Dairesi / No**: Nilüfer V.D. — 3020908768
+**MERSİS No**: 0302090876800001
 
 ---
 

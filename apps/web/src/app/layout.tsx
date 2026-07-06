@@ -91,12 +91,22 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Tagora",
-  legalName: "Tagora Teknoloji",
+  legalName: "DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.",
   url: BASE_URL,
   logo: `${BASE_URL}/opengraph-image`,
   description:
     "Anonim iletişim için akıllı QR sticker platformu. Telefonunu paylaşmadan ulaşılabilir kal. KVKK uyumlu, AB veri yerleşimi.",
   foundingDate: "2026",
+  taxID: "3020908768",
+  vatID: "0302090876800001",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "23 Nisan Mah. Ata Bulvarı Gizemler 3 Plaza K:1 D:6",
+    addressLocality: "Nilüfer",
+    addressRegion: "Bursa",
+    postalCode: "16110",
+    addressCountry: "TR",
+  },
   areaServed: {
     "@type": "Country",
     name: "Türkiye",

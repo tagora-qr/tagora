@@ -2,18 +2,23 @@
 
 **Yürürlük Tarihi**: 2026-07-05
 **Versiyon**: 1.0
-**Veri Sorumlusu**: Tagora Teknoloji [Ltd. Şti. / Kuruluş süreci — güncelleme yapılacak]
+**Veri Sorumlusu**: DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.
 
 ---
 
 ## 1. Veri Sorumlusunun Kimliği
 
-6698 sayılı Kişisel Verilerin Korunması Kanunu ("**KVKK**") kapsamında veri sorumlusu sıfatıyla hareket eden **Tagora Teknoloji** ("**Tagora**", "**biz**") olarak, sunduğumuz web sitesi ("**tagora.com.tr**", "**tagora.link**"), mobil uygulama ("**Tagora**") ve QR sticker platformu üzerinden ("**Hizmet**") edindiğimiz kişisel verilerinizi, KVKK ve ilgili mevzuata uygun şekilde işlemekteyiz.
+6698 sayılı Kişisel Verilerin Korunması Kanunu ("**KVKK**") kapsamında veri sorumlusu sıfatıyla hareket eden **DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.** ("**Tagora**", "**biz**") olarak, sunduğumuz web sitesi ("**tagora.com.tr**", "**tagora.link**"), mobil uygulama ("**Tagora**") ve QR sticker platformu üzerinden ("**Hizmet**") edindiğimiz kişisel verilerinizi, KVKK ve ilgili mevzuata uygun şekilde işlemekteyiz.
 
-**İletişim Bilgileri**
-- E-posta: `kvkk@tagora.com.tr`
-- Web: `https://tagora.com.tr`
-- Adres: [Şirket kuruluşu tamamlandığında güncellenecek]
+**Veri Sorumlusu İletişim Bilgileri**
+
+- **Ticari Unvan**: DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.
+- **Marka**: Tagora
+- **Adres**: 23 Nisan Mah. Ata Bulvarı Gizemler 3 Plaza K:1 D:6 Nilüfer / BURSA
+- **Vergi Dairesi / No**: Nilüfer V.D. — 3020908768
+- **MERSİS No**: 0302090876800001
+- **E-posta**: `kvkk@tagora.com.tr`
+- **Web**: `https://tagora.com.tr`
 
 Bu Aydınlatma Metni; Tagora tarafından hangi kişisel verilerinizin, hangi amaçlarla ve hangi hukuki sebeplere dayanılarak işlendiği, kimlere aktarıldığı, ne kadar süreyle saklandığı ve KVKK m.11 kapsamındaki haklarınızı düzenlemektedir.
 
@@ -238,6 +243,6 @@ Bu Aydınlatma Metni'ni ürün, mevzuat veya iş süreçlerimizdeki değişiklik
 
 KVKK'ya ilişkin tüm sorular ve talepler için:
 - **E-posta**: `kvkk@tagora.com.tr`
-- **Yazılı başvuru adresi**: [Şirket kuruluşu sonrası güncellenecek]
+- **Yazılı başvuru adresi**: DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti. — 23 Nisan Mah. Ata Bulvarı Gizemler 3 Plaza K:1 D:6 Nilüfer / BURSA
 
 Bu metin bilgilendirme amaçlıdır. Kişisel verilerinizle ilgili haklarınız KVKK'da açıkça düzenlenmiştir; hukuki bir sorun için avukatınıza danışmanız önerilir.

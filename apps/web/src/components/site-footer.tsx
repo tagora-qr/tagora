@@ -146,10 +146,15 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <p className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/40">
-          © {YEAR} Tagora Teknoloji · Privacy-First QR Sticker Platform ·
-          Frankfurt sunucularda barındırılır
-        </p>
+        <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/40 space-y-1.5">
+          <p>
+            © {YEAR} <strong className="font-semibold text-white/60">DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.</strong> — Tagora markası
+          </p>
+          <p>
+            23 Nisan Mah. Ata Bulvarı Gizemler 3 Plaza K:1 D:6 Nilüfer / BURSA · Nilüfer V.D. 3020908768 · MERSİS 0302090876800001
+          </p>
+          <p>Frankfurt sunucularda barındırılır</p>
+        </div>
       </div>
     </footer>
   );
