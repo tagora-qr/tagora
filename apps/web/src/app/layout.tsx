@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s · Tagora",
   },
   description:
-    "Bir QR, sonsuz bağlantı. Telefonunu paylaşmadan ulaşılabilir kal. Araba, kapı, evcil hayvan için gizlilik-önce sticker. KVKK uyumlu, AB veri yerleşimi.",
+    "Bir QR, sonsuz bağlantı. Telefonunu paylaşmadan ulaşılabilir kal. Araba, kapı, evcil hayvan için gizlilik-önce sticker. KVKK uyumlu, uçtan uca şifreli chat, kimliğin gizli.",
   applicationName: "Tagora",
   authors: [{ name: "Tagora" }],
   metadataBase: new URL(BASE_URL),
@@ -95,7 +95,7 @@ const organizationJsonLd = {
   url: BASE_URL,
   logo: `${BASE_URL}/opengraph-image`,
   description:
-    "Anonim iletişim için akıllı QR sticker platformu. Telefonunu paylaşmadan ulaşılabilir kal. KVKK uyumlu, AB veri yerleşimi.",
+    "Anonim iletişim için akıllı QR sticker platformu. Telefonunu paylaşmadan ulaşılabilir kal. KVKK uyumlu, uçtan uca şifreli chat, kimliğin gizli.",
   foundingDate: "2026",
   taxID: "3020908768",
   vatID: "0302090876800001",

@@ -25,7 +25,7 @@ export function SiteFooter() {
                 KVKK Uyumlu
               </span>
               <span className="rounded-full border border-white/15 bg-white/10 px-2.5 py-1 text-[10px] font-semibold text-white/80">
-                AB Veri Yerleşimi
+                Uçtan Uca Şifreli
               </span>
             </div>
 
@@ -158,7 +158,7 @@ export function SiteFooter() {
           <p>
             23 Nisan Mah. Ata Bulvarı Gizemler 3 Plaza K:1 D:6 Nilüfer / BURSA · Nilüfer V.D. 3020908768 · MERSİS 0302090876800001
           </p>
-          <p>Frankfurt sunucularda barındırılır</p>
+          <p>KVKK Md.11 self-service — verilerini tek tıkla indir veya sildir</p>
         </div>
       </div>
     </footer>

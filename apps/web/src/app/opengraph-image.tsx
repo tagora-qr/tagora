@@ -152,7 +152,7 @@ export default async function OGImage() {
               color: "rgba(255,255,255,0.9)",
             }}
           >
-            AB Veri Yerleşimi
+            Uçtan Uca Şifreli
           </div>
           <div
             style={{

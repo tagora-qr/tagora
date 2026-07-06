@@ -138,7 +138,7 @@ export const ARTICLES: Article[] = [
       {
         type: "list",
         items: [
-          "Verilerin nerede saklandığı: Türkiye'den bir kullanıcının verisi ABD sunucularında ise KVKK için problem. Tagora tüm veriyi Frankfurt'ta (AB) tutar.",
+          "Verilerin nerede saklandığı ve nasıl korunduğu KVKK için kritik. Tagora aydınlatma metninde tüm süreci şeffaf açıklar — hangi veri, ne kadar süre, hangi hukuki sebeple.",
           "Kimlik açıklığı: Tarayan senin numaranı ve adresini asla görmez — sadece anonim bir chat açılır.",
           "Şifreleme: Chat mesajları uçtan uca şifreli (v1).",
           "Otomatik silme: Mesajlar 90 gün sonra otomatik silinir. Uygulama içinden sen daha erken silebilirsin.",

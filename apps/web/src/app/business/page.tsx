@@ -145,7 +145,7 @@ const FAQ = [
   },
   {
     q: "KVKK ve verilerimizin güvenliği?",
-    a: "Tüm veriler Frankfurt (AB) sunucularında. KVKK m.10 uyumlu, veri işleme sözleşmesi (VDPA) imzalarız. İhtiyaç halinde ISO 27001 sertifikalı altyapı raporu paylaşırız.",
+    a: "KVKK m.10 aydınlatma metni ve m.11 self-service veri hakları. Kurumsal müşteriler için VDPA (veri işleme sözleşmesi) imzalarız. Detaylı altyapı, veri işleme lokasyonu ve şifreleme konularını NDA ile paylaşırız.",
   },
   {
     q: "Nasıl teklif alırım?",
@@ -277,7 +277,7 @@ export default function BusinessPage() {
             {[
               { n: "100+", l: "min adet" },
               { n: "5-7", l: "gün teslim" },
-              { n: "🇪🇺", l: "AB sunucular" },
+              { n: "🔐", l: "Uçtan uca şifreli" },
               { n: "24s", l: "teklif" },
             ].map((s, i) => (
               <div key={i} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur">

@@ -45,7 +45,7 @@ export const USE_CASES: Record<string, UseCaseContent> = {
     metadata: {
       title: "Araba için QR Sticker — Camına Yapıştır, Numaran Gizli Kalsın",
       description:
-        "Tagora araç QR sticker — yanlış park ve kaza için anonim iletişim. Telefonunu camına yazma. KVKK uyumlu, EU sunucular. Kargo dahil 49₺'den başlayan fiyatlar.",
+        "Tagora araç QR sticker — yanlış park ve kaza için anonim iletişim. Telefonunu camına yazma. KVKK uyumlu, uçtan uca şifreli. Kargo dahil 49₺'den başlayan fiyatlar.",
       keywords: [
         "araba QR sticker",
         "araç iletişim etiketi",
@@ -426,7 +426,7 @@ export const USE_CASES: Record<string, UseCaseContent> = {
     metadata: {
       title: "Bisiklet & Scooter QR Sticker — Çalındığında Bulunur",
       description:
-        "Tagora bisiklet ve scooter QR sticker — park yerinde sorun, çalınma, kaza için akıllı iletişim. KVKK uyumlu, EU sunucular.",
+        "Tagora bisiklet ve scooter QR sticker — park yerinde sorun, çalınma, kaza için akıllı iletişim. KVKK uyumlu, kimliğin gizli.",
       keywords: [
         "bisiklet QR sticker",
         "scooter etiketi",

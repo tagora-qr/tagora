@@ -32,7 +32,7 @@ const slides = [
     emoji: "🔒",
     title: "Privacy senin hakkın",
     body:
-      "Veri AB'de. Mesajlar 90 gün sonra silinir. Tek tıkla verimi indir veya hesabımı sil.",
+      "KVKK Md.11 self-service. Mesajlar 90 gün sonra silinir. Tek tıkla verimi indir veya hesabımı sil.",
   },
 ] as const;
 

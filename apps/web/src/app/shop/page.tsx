@@ -67,7 +67,7 @@ export default async function ShopPage() {
             Matte outdoor vinyl · UV korumalı · 5+ yıl dış mekan dayanımı.
           </Info>
           <Info emoji="🔒" title="Privacy-first">
-            Telefon numaran, kimliğin scanner'a gösterilmez. KVKK uyumlu, veri AB'de.
+            Telefon numaran, kimliğin scanner'a gösterilmez. KVKK uyumlu, uçtan uca şifreli.
           </Info>
         </section>
 

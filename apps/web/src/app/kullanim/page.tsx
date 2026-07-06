@@ -106,9 +106,9 @@ export default function KullanimHubPage() {
               </p>
             </div>
             <div>
-              <p className="mb-2 text-lg font-semibold text-accent">🇪🇺 KVKK & AB</p>
+              <p className="mb-2 text-lg font-semibold text-accent">🇹🇷 KVKK Uyumlu</p>
               <p className="text-sm text-white/80">
-                Tüm veri Frankfurt sunucularda, KVKK Md.11 self-service erişim.
+                KVKK Md.11 self-service — verilerini tek tıkla indir veya sildir. Aydınlatma metni tam şeffaf.
               </p>
             </div>
             <div>
