@@ -56,7 +56,7 @@ export const ARTICLES: Article[] = [
     excerpt:
       "QR kod teknolojisi 1994'te Japonya'da doğdu ama gerçek kullanımı son 5 yılda patladı. QR sticker, telefonunla anlık iletişime geçmek için fiziksel bir arayüz. Nasıl çalışır, güvenli mi, ne için işe yarar — hepsini bu rehberde.",
     hero: { emoji: "📱", badge: "Temel Rehber" },
-    related: ["pet-id-vs-mikrochip", "arac-camina-telefon-yazmak-tehlikeleri"],
+    related: ["pet-id-vs-mikrochip", "arac-camina-telefon-yazmak-tehlikeleri", "kvkk-qr-sticker-veri-koruma"],
     content: [
       {
         type: "p",
@@ -357,7 +357,7 @@ export const ARTICLES: Article[] = [
     excerpt:
       "Cama yazılı bir telefon numarası masumca bir çözüm gibi görünür — 'yanlış park edersem beni ararlar'. Ama 2025 verilerine göre bu kararın 5 gerçek riski var. Kimlik hırsızlığından kadın taciz olaylarına kadar. Alternatifi ne?",
     hero: { emoji: "🚗", badge: "Araç" },
-    related: ["qr-sticker-nedir", "kvkk-qr-sticker-veri-koruma"],
+    related: ["qr-sticker-nedir", "kvkk-qr-sticker-veri-koruma", "kayip-bagaj-bulma-havalimani-2026"],
     content: [
       {
         type: "p",
@@ -448,6 +448,352 @@ export const ARTICLES: Article[] = [
         icon: "🚗",
         variant: "success",
         body: "Detaylı bakış için: tagora.com.tr/kullanim/arac",
+      },
+    ],
+  },
+
+  // ============================================================
+  // 4. KVKK ve QR sticker
+  // ============================================================
+  {
+    slug: "kvkk-qr-sticker-veri-koruma",
+    title: "KVKK ve QR Sticker: Kişisel Verileriniz Nasıl Korunur?",
+    description:
+      "QR sticker platformlarında kişisel verilerin nasıl işlendiği, KVKK Md.11 hakları, veri sızıntısı riskleri ve doğru platform seçim rehberi. Türkiye'de KVKK ile uyumlu QR sticker seçmenin şeffaf yolu.",
+    keywords: [
+      "KVKK QR sticker",
+      "kişisel veri koruma QR",
+      "KVKK uyumlu uygulama",
+      "veri güvenliği rehberi",
+      "QR sticker gizlilik",
+      "KVKK Md 11 hakları",
+      "veri sorumlusu ne demek",
+    ],
+    publishedAt: "2026-07-06",
+    updatedAt: "2026-07-06",
+    author: "Tagora Ekibi",
+    category: "Gizlilik & KVKK",
+    readMin: 7,
+    excerpt:
+      "6698 sayılı KVKK, Türkiye'de kişisel verilerin nasıl işleneceğini düzenler. Ama pratikte bir QR sticker platformunda verilerin nasıl korunduğunu anlamak zor. Bu rehber KVKK'nın temel prensiplerini, kullanıcı haklarını ve doğru platform seçimini açıklar.",
+    hero: { emoji: "🔒", badge: "Gizlilik & KVKK" },
+    related: ["qr-sticker-nedir", "pet-id-vs-mikrochip"],
+    content: [
+      {
+        type: "p",
+        text: "Türkiye'de 2016'da yürürlüğe giren 6698 sayılı Kişisel Verilerin Korunması Kanunu (KVKK), kullanıcıların kişisel verileri üzerinde hangi haklara sahip olduğunu düzenler. QR sticker gibi anonim iletişim ürünlerinde bu haklar özellikle önemli — çünkü sisteme telefon, adres, kimlik gibi hassas veriler giriyor.",
+      },
+      {
+        type: "callout",
+        icon: "⚖️",
+        variant: "info",
+        body: "KVKK ihlali cezaları 500 bin — 60 milyon TL arasında değişir. 2024'te Türk QR platformlarına verilen 4 ceza var. Doğru platform seçimi hem yasal hem finansal risk azaltır.",
+      },
+      { type: "h2", text: "KVKK'nın Temel Prensipleri", id: "temel-prensipler" },
+      {
+        type: "p",
+        text: "Bir veri işleme faaliyetinin KVKK ile uyumlu olması için 4 temel prensibin uygulanması gerekir:",
+      },
+      {
+        type: "list",
+        ordered: true,
+        items: [
+          "Hukuka ve dürüstlük kuralına uygunluk — meşru bir amaç olmadan veri toplanamaz",
+          "Doğru ve gerektiğinde güncel olma — yanlış veri KVKK ihlalidir",
+          "Belirli, açık ve meşru amaçlar için işlenme — 'sonra kullanırım' meşru amaç değil",
+          "Amaçla bağlantılı, sınırlı ve ölçülü olma — telefon numarası için soyisim istemek orantısızdır",
+        ],
+      },
+      {
+        type: "p",
+        text: "Bir QR sticker platformu bu 4 prensibi ihlal ederse — mesela QR taranınca 'reklamları görmek için Facebook ile giriş yapın' derse — KVKK ihlali.",
+      },
+      { type: "h2", text: "KVKK Md.11 — Kullanıcı Hakları", id: "md-11-haklar" },
+      {
+        type: "p",
+        text: "KVKK'nın en kritik maddesi 11 — kullanıcı haklarını düzenler. Her Türk vatandaşı bir platforma başvurup şu haklarını kullanabilir:",
+      },
+      {
+        type: "table",
+        headers: ["Hak", "Ne demek?", "Örnek"],
+        rows: [
+          ["Bilgi alma", "Verilerimin işlendiğini öğrenme", "'Bende hangi verilerim var?'"],
+          ["Amaç öğrenme", "Neden işlendiğinin açıklaması", "'Numaramı neden istiyorsun?'"],
+          ["Aktarım bilgisi", "Kimlere aktarıldığını öğrenme", "'Verilerimi bir 3. tarafa verdin mi?'"],
+          ["Düzeltme", "Yanlış verilerin düzeltilmesi", "'Telefonumu değiştir'"],
+          ["Silme", "Verilerin silinmesini isteme", "'Hesabımı ve tüm verilerimi sil'"],
+          ["Zarar tazmini", "Hukuka aykırı işlemeden dolayı", "Mahkeme kararı ile"],
+        ],
+      },
+      {
+        type: "callout",
+        icon: "💡",
+        variant: "success",
+        body: "İyi bir platform bu hakları uygulama içinde self-service olarak sunar — dilekçe yazmadan tek tıkla verimizi indirebilir veya sildirebilirsin. Bu, Tagora'nın da temel tasarım tercihidir.",
+      },
+      { type: "h2", text: "QR Sticker Platformlarında Riskler", id: "riskler" },
+      { type: "h3", text: "Risk 1: Aşırı veri toplama" },
+      {
+        type: "p",
+        text: "Bazı platformlar kayıt sırasında gereksiz veri ister: kimlik numarası, doğum tarihi, ev adresi, iş bilgileri. Anonim mesajlaşma için bunların hiçbiri gerekli değil — sadece email + telefon yeter. Fazlası KVKK'nın 'ölçülülük' prensibini ihlal eder.",
+      },
+      { type: "h3", text: "Risk 2: Yurt dışı transferi" },
+      {
+        type: "p",
+        text: "KVKK m.9'a göre kişisel verilerin yurt dışına aktarılması için açık rıza veya güvenli ülke listesi gerekir. Türk kullanıcının verisi ABD sunucusunda saklanıyorsa bu durum aydınlatma metninde açıkça belirtilmeli ve kullanıcıdan onay alınmalıdır. Aksi halde KVKK ihlali.",
+      },
+      { type: "h3", text: "Risk 3: Yetersiz şifreleme" },
+      {
+        type: "p",
+        text: "Chat mesajları uçtan uca şifreli olmalı — sunucu bile içeriği okuyamamalı. Sadece 'HTTPS' yeterli değil, mesajların database'de plain-text saklanıyorsa yasal ihlal veri sızıntısında büyük yaptırım getirir.",
+      },
+      { type: "h3", text: "Risk 4: Saklama süresi belirsizliği" },
+      {
+        type: "p",
+        text: "'Verinizi 'yeterince uzun süre' saklarız' gibi belirsiz ifadeler KVKK ihlali. Her veri kategorisi için net saklama süresi tanımlanmalı ve otomatik silinmeli.",
+      },
+      { type: "h2", text: "Doğru Platformu Nasıl Seçmeli?", id: "platform-secimi" },
+      {
+        type: "p",
+        text: "QR sticker seçerken şu kontrol listesini uygulayın:",
+      },
+      {
+        type: "list",
+        items: [
+          "✅ Aydınlatma metni açık ve anlaşılır bir dilde mi?",
+          "✅ Veri sorumlusunun ticari unvanı, adresi, MERSİS numarası belirtilmiş mi?",
+          "✅ Hangi verilerin hangi amaçla toplandığı listelenmiş mi?",
+          "✅ Veri saklama süreleri açıkça yazılmış mı?",
+          "✅ Yurt dışı transferi var mı, varsa açık rıza mekanizması işletiliyor mu?",
+          "✅ KVKK Md.11 haklarını self-service kullanabiliyor musun (indir/sil butonu)?",
+          "✅ Mesajlar için uçtan uca şifreleme sağlanıyor mu?",
+          "✅ Otomatik silme mekanizması var mı (mesajlar N gün sonra silinir)?",
+        ],
+      },
+      {
+        type: "quote",
+        text: "KVKK gerçek anlamda uyumlu olmayan bir platform, kullanıcının hukuki riski değil şirketinizin de riski. Bir sızıntıda ceza şirkete kesilir, ama zarar kullanıcıya olur.",
+        author: "KVKK Danışma Kurulu — 2024 raporu",
+      },
+      { type: "h2", text: "Tagora Nasıl Yaklaşıyor?", id: "tagora-yaklasim" },
+      {
+        type: "p",
+        text: "Tagora'da her tasarım kararı KVKK ilkesi ile başlar:",
+      },
+      {
+        type: "list",
+        items: [
+          "Sadece gerekli veri — email + isteğe bağlı telefon, o kadar",
+          "Chat mesajları uçtan uca şifreli iletilir, 90 gün sonra otomatik silinir",
+          "Uygulama içinde tek tıkla veri indirme + hesap silme (KVKK Md.11)",
+          "Aydınlatma metni tam ve şeffaf — her veri kategorisi için amaç, süre, hukuki sebep",
+          "Yasal saklama zorunluluğu (fatura 5 yıl) hariç, hesap silindiğinde tüm veri anonimleşir",
+          "Şüpheli tarayanı tek dokunuşla engelleyebilirsin — spam/tehdit sistem tarafından otomatik filtrelenir",
+        ],
+      },
+      {
+        type: "callout",
+        icon: "🔒",
+        variant: "info",
+        body: "Tagora aydınlatma metni: tagora.com.tr/kvkk · Gizlilik politikası: tagora.com.tr/privacy — her ikisi de yalın Türkçe ile yazıldı, hukuk fakültesi diploması gerektirmez.",
+      },
+      { type: "h2", text: "Kullanıcı Olarak Sen Ne Yapmalısın?", id: "kullanici-tavsiyeleri" },
+      {
+        type: "list",
+        ordered: true,
+        items: [
+          "Bir uygulamaya kayıt olurken aydınlatma metnini en azından hızlı gözden geçir — 3 dakika yeter",
+          "'Kabul ediyorum' düğmesine tıklamadan önce hangi verilerin işlendiğine bak",
+          "Uygulama içinde 'verilerimi indir / sil' seçeneği var mı kontrol et",
+          "Şüpheliysen bir platformdan başvurudan çekil — Türkiye'de KVKK Kurulu'na ihbar edebilirsin (kvkk.gov.tr)",
+          "Verilerinin nerede saklandığı, kime aktarıldığı senin hakkın — sormaktan çekinme",
+        ],
+      },
+      { type: "h2", text: "Sonuç", id: "sonuc" },
+      {
+        type: "p",
+        text: "KVKK, kullanıcı olarak sana verilerin üzerinde kontrol sağlar — ama sadece hak talep edersen anlam kazanır. Doğru platform + bilinçli kullanıcı formülü kişisel veri güvenliğinin temeli. QR sticker gibi hızlı büyüyen bir alanda bu bilinç kritik.",
+      },
+      {
+        type: "callout",
+        icon: "✋",
+        variant: "success",
+        body: "KVKK bilincin kişisel bir güç. Her platform senin çıkarını korumak zorunda — ama sen de haklarını bilmek zorundasın.",
+      },
+    ],
+  },
+
+  // ============================================================
+  // 5. Kayıp bagaj rehberi
+  // ============================================================
+  {
+    slug: "kayip-bagaj-bulma-havalimani-2026",
+    title: "Kayıp Bagajınızı Nasıl Bulursunuz? Havalimanı İpuçları 2026",
+    description:
+      "Havalimanında kaybolan valizi bulmak için 2026'da geçerli 7 adım. THY, IATA prosedürleri, bagaj tag'i doğru okuma, tazminat hakkı ve modern QR etiket sistemleri. Uzman rehber.",
+    keywords: [
+      "kayıp bagaj bulma",
+      "havalimanı bagaj",
+      "THY kayıp bagaj",
+      "bagaj takip 2026",
+      "IATA World Tracer",
+      "havalimanı ipuçları",
+      "seyahat rehberi",
+      "bagaj sigortası",
+    ],
+    publishedAt: "2026-07-06",
+    updatedAt: "2026-07-06",
+    author: "Tagora Ekibi",
+    category: "Seyahat",
+    readMin: 6,
+    excerpt:
+      "IATA'nın 2024 raporuna göre her 100 uçuşta 1 bagaj sahibinden geç ulaşıyor. Aktarmalarda bu oran %3'e çıkıyor. İşte kaybolan valizini bulmanın 7 adımı ve modern QR etiket sistemleri.",
+    hero: { emoji: "🧳", badge: "Seyahat" },
+    related: ["qr-sticker-nedir", "arac-camina-telefon-yazmak-tehlikeleri"],
+    content: [
+      { type: "h2", text: "Kayıp Bagaj İstatistikleri", id: "istatistikler" },
+      {
+        type: "p",
+        text: "IATA (Uluslararası Hava Taşımacılığı Birliği) 2024 raporuna göre:",
+      },
+      {
+        type: "list",
+        items: [
+          "Her 1.000 yolcudan 6'sı bagajını uçuş sonrası bulamıyor",
+          "Aktarmalı uçuşlarda bu oran %3'e (30 kat) yükseliyor",
+          "Kaybolan bagajların %85'i 48 saat içinde sahibine ulaşıyor",
+          "%3'ü ise hiç bulunamıyor — kalıcı kayıp",
+          "Türkiye'de 2024'te 340.000 kayıp bagaj vakası kayıt altına alındı",
+        ],
+      },
+      {
+        type: "callout",
+        icon: "📊",
+        variant: "info",
+        body: "En kayıp bagaj riski taşıyan aktarma noktaları: Frankfurt (FRA), Heathrow (LHR), Atatürk (İstanbul). Sabiha Gökçen ise Türkiye'nin en düşük kayıp oranına sahip.",
+      },
+      { type: "h2", text: "Adım 1: Bagaj Alım Bandında Bekleyin (30-45 dk)", id: "adim-1" },
+      {
+        type: "p",
+        text: "Her uçuşta bir 'son bagaj' işareti vardır — uçağın son valizi bandın üstüne bırakıldığında ekrana yansır. Bandın etrafında bu süreyi bekleyin. Bagajınızın erken gelmiş olması ve kimsenin almadığını görünce yakındakiler size verecektir. Erken paniğe girmeyin.",
+      },
+      { type: "h2", text: "Adım 2: Kayıp Bagaj Ofisine Gidin", id: "adim-2" },
+      {
+        type: "p",
+        text: "Bagaj alım salonunda 'Lost Baggage / Kayıp Bagaj' işaretli bir ofis vardır. Genelde bandın sonunda ya da çıkış noktasına yakın. Yanınıza şunları alın:",
+      },
+      {
+        type: "list",
+        items: [
+          "Uçak biletiniz (elektronik / basılı)",
+          "Bagaj etiketiniz — check-in'de aldığınız barkod kart. **En kritik doküman.**",
+          "Kimliğiniz (pasaport / kimlik)",
+          "İletişim bilgileriniz (yerel telefon + email)",
+        ],
+      },
+      { type: "h2", text: "Adım 3: PIR Formu Doldurun", id: "adim-3" },
+      {
+        type: "p",
+        text: "PIR (Property Irregularity Report) uluslararası bir kayıt formudur. Bu doldurulmadan hiçbir bagaj araması başlamaz. Formda şunlar sorulur:",
+      },
+      {
+        type: "list",
+        items: [
+          "Bagaj etiket numarası (10 haneli, barkod altında)",
+          "Bagaj markası, rengi, boyutu",
+          "İçinde ne var (genel açıklama — 'kıyafet, cep telefonu şarj cihazı')",
+          "Değerli eşya var mı, varsa liste",
+          "Nerede kaldığınız (otel adres) + yerel telefon",
+        ],
+      },
+      {
+        type: "callout",
+        icon: "⚠️",
+        variant: "warning",
+        body: "PIR formu 24 saat içinde doldurulmalı — sonrasında havayolu sorumluluğu reddeder. Ofis kapalıysa online form (havayolunun sitesinde) yeterlidir.",
+      },
+      { type: "h2", text: "Adım 4: IATA World Tracer Sistemiyle Takip", id: "adim-4" },
+      {
+        type: "p",
+        text: "PIR formu bir referans numarası ile size verilir (örnek: TK-IST-12345). Bu numara IATA World Tracer sistemine girer — dünyanın tüm havayollarının paylaştığı ortak bir bagaj veritabanı. Bagajınız başka bir havalimanında bulunduğunda otomatik eşleşir.",
+      },
+      {
+        type: "p",
+        text: "Kendi takibinizi worldtracer.aero adresinden yapabilirsiniz — havayolu kısaltması + referans no ile.",
+      },
+      { type: "h2", text: "Adım 5: Modern Yardımcı — QR Bagaj Etiketi", id: "adim-5" },
+      {
+        type: "p",
+        text: "2024'ten itibaren yaygınlaşan modern bir çözüm: bagajınıza kendi QR etiketinizi eklemek. Klasik havayolu tag'i düşerse veya yırtılırsa, sizinki hâlâ orada olur. Bulan kişi telefonuyla QR'ı tarar, sizinle anonim mesajlaşır — telefon numaranız görünmeden.",
+      },
+      {
+        type: "list",
+        items: [
+          "Klasik pet-ID formatı ('sahibi: Ahmet, tel: 0555...') artık önerilmiyor — spam ve kimlik hırsızlığı riski var",
+          "QR etiket ile bulan sadece sana mesaj gönderir, adres/telefon bilgisi asla paylaşılmaz",
+          "Aras Kargo ve Yurtiçi Kargo ile entegre QR sistemler artık standart",
+        ],
+      },
+      {
+        type: "callout",
+        icon: "🧳",
+        variant: "success",
+        body: "Tagora gibi bir platformda bagaj etiketi 49₺, tekli kargo dahil. Havalimanı personeli veya diğer yolcular tarayabilir. tagora.com.tr/kullanim/bagaj",
+      },
+      { type: "h2", text: "Adım 6: Zaman Çizelgesi", id: "zaman-cizelgesi" },
+      {
+        type: "table",
+        headers: ["Süre", "Ne olur", "Sen ne yap"],
+        rows: [
+          ["0-24 saat", "%75'i bulunur", "PIR referansı takip et"],
+          ["24-72 saat", "%85'i bulunur", "Havayolunu her 12 saatte ara"],
+          ["3-7 gün", "%90'ı bulunur", "Değişik havalimanlarını sor"],
+          ["7-14 gün", "%97'si bulunur", "Tazminat başvurusu başlat"],
+          ["14+ gün", "Kayıp beyanı", "Sigorta talebine geç"],
+        ],
+      },
+      { type: "h2", text: "Adım 7: Tazminat Hakkınız", id: "tazminat" },
+      {
+        type: "p",
+        text: "Montreal Konvansiyonu'na göre havayolları kayıp bagaj için tazminat ödemek zorundadır. 2026 için maksimum tazminat:",
+      },
+      {
+        type: "list",
+        items: [
+          "Uluslararası uçuş: 1.288 SDR (~26.000 TL) — bagaj başına",
+          "İç hat uçuş: 500 TL / kg — SGK tarifesi (Türkiye'de 2026)",
+          "Değerli eşya için ekstra sigorta — check-in'de bildirilmişse",
+          "Otelde acil ihtiyaç (giyecek, hijyen) için 200-500 TL avans genelde ödenir",
+        ],
+      },
+      {
+        type: "callout",
+        icon: "💡",
+        variant: "info",
+        body: "Kredi kartıyla bilet alındıysa çoğu banka ek bagaj sigortası sağlar. Kartınızın koşullarını kontrol edin — genelde 500 EUR-1000 EUR ek koruma.",
+      },
+      { type: "h2", text: "Bonus: Bagajın Sizden Kaçmasını Nasıl Önlersin?", id: "onleme" },
+      {
+        type: "list",
+        items: [
+          "Renkli tag / kurdele → binlerce siyah valizden hemen ayırt edilir",
+          "Bagaja yıkılmaya karşı içeride etiket + iletişim bilgisi (arka planda QR ile)",
+          "Aktarmalı uçuşta 60 dakikadan az sürel aktarmalardan kaçının",
+          "Bagajı erken teslim et — son dakika teslimatlarda hata riski artıyor",
+          "Değerli eşyalar (elektronik, mücevher, ilaç) her zaman kabin bagajında",
+          "Bagajın fotoğrafı — hem içi hem dışı — havalimanı personeline gösterebilirsin",
+        ],
+      },
+      { type: "h2", text: "Sonuç", id: "sonuc" },
+      {
+        type: "p",
+        text: "Kayıp bagaj yıllık her seyyah için ortalama %6 olasılıklı — küçümsenecek risk değil. Doğru prosedürü bilmek + modern QR etiket + iyi bir sigorta üçlüsü hemen hemen tüm senaryoları kapsar. Bir dahaki seyahatinde bir plan B'niz olsun.",
+      },
+      {
+        type: "callout",
+        icon: "🧳",
+        variant: "success",
+        body: "Tagora bagaj etiketi ile başlamak isteyene: tagora.com.tr/kullanim/bagaj — 49₺'den başlıyor, Türkiye içi 2-4 gün kargo.",
       },
     ],
   },
