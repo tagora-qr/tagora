@@ -88,10 +88,10 @@ export function CheckoutForm({
           Alıcı Bilgileri
         </h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Ad Soyad *" name="buyer_name" defaultValue={defaultName} required autoComplete="name" placeholder="Ömer Kılınç" />
-          <Field label="E-posta *" name="buyer_email" defaultValue={defaultEmail} required type="email" autoComplete="email" placeholder="omer@example.com" />
+          <Field label="Ad Soyad *" name="buyer_name" defaultValue={defaultName} required autoComplete="name" placeholder="Adınız ve soyadınız" />
+          <Field label="E-posta *" name="buyer_email" defaultValue={defaultEmail} required type="email" autoComplete="email" placeholder="ornek@eposta.com" />
           <Field label="Telefon *" name="buyer_phone" defaultValue={defaultPhone} required type="tel" autoComplete="tel" placeholder="+90 5xx xxx xxxx" />
-          <Field label="TC Kimlik No (opsiyonel)" name="buyer_identity_number" placeholder="11111111111" maxLength={11} inputMode="numeric" />
+          <Field label="TC Kimlik No (opsiyonel)" name="buyer_identity_number" placeholder="11 haneli TC kimlik" maxLength={11} inputMode="numeric" />
         </div>
       </section>
 
@@ -102,8 +102,8 @@ export function CheckoutForm({
         <div className="grid gap-4 sm:grid-cols-2">
           <TextareaField label="Adres *" name="shipping_address" required placeholder="Mahalle, sokak, apartman, daire no" className="sm:col-span-2" />
           <SelectField label="Şehir *" name="shipping_city" options={TR_CITIES} required />
-          <Field label="İlçe" name="shipping_district" placeholder="Kadıköy" />
-          <Field label="Posta Kodu" name="shipping_zip" placeholder="34000" maxLength={5} inputMode="numeric" />
+          <Field label="İlçe" name="shipping_district" placeholder="İlçe adı" />
+          <Field label="Posta Kodu" name="shipping_zip" placeholder="5 haneli posta kodu" maxLength={5} inputMode="numeric" />
         </div>
       </section>
 

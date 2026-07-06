@@ -58,7 +58,7 @@ export function LoginForm({ next = "/dashboard" }: { next?: string }) {
           required
           autoComplete="email"
           autoFocus
-          placeholder="omer@complify.io"
+          placeholder="ornek@eposta.com"
           className="w-full rounded-xl border border-navy/15 bg-white px-3.5 py-2.5 text-base text-charcoal placeholder:text-charcoal/40 focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20"
         />
       </label>

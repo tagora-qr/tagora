@@ -45,7 +45,7 @@ export function WaitlistForm() {
         required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="e-postan@..."
+        placeholder="ornek@eposta.com"
         className="flex-1 rounded-xl border border-navy/15 px-4 py-3 text-base focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20"
         autoComplete="email"
       />
