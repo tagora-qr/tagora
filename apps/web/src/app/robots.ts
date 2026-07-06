@@ -5,8 +5,9 @@
  * Public sayfaları allow, private/admin sayfaları disallow, sitemap referansı.
  */
 import type { MetadataRoute } from "next";
+import { getBaseUrl } from "@/lib/base-url";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.com.tr";
+const BASE_URL = getBaseUrl();
 
 export default function robots(): MetadataRoute.Robots {
   return {

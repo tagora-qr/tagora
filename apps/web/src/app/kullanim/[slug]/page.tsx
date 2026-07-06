@@ -10,10 +10,11 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { USE_CASES, USE_CASE_SLUGS } from "../use-cases";
+import { getBaseUrl } from "@/lib/base-url";
 
 type Params = Promise<{ slug: string }>;
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.com.tr";
+const BASE_URL = getBaseUrl();
 
 export async function generateStaticParams() {
   return USE_CASE_SLUGS.map((slug) => ({ slug }));

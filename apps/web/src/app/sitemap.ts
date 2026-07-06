@@ -5,8 +5,9 @@
  * Google/Bing crawler'ları için Tagora'nın canlı sayfa haritası.
  */
 import type { MetadataRoute } from "next";
+import { getBaseUrl } from "@/lib/base-url";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.com.tr";
+const BASE_URL = getBaseUrl();
 
 // Kullanım alanları — SEO landing sayfaları
 const USE_CASE_SLUGS = ["arac", "kapi", "pet", "bagaj", "bisiklet"];

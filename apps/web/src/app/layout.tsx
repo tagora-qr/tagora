@@ -3,10 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { PostHogProvider } from "@/components/analytics/posthog-provider";
 import { CookieConsentBanner } from "@/components/analytics/cookie-consent";
+import { getBaseUrl } from "@/lib/base-url";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.com.tr";
+const BASE_URL = getBaseUrl();
 
 export const metadata: Metadata = {
   title: {
