@@ -5,8 +5,45 @@
  */
 import Link from "next/link";
 import { Logo } from "@/components/logo";
-import { USE_CASE_LABELS, TAGORA } from "@tagora/shared";
+import { TAGORA } from "@tagora/shared";
 import { WaitlistForm } from "./waitlist-form";
+
+// SEO: use case link'leri — kullanım detay sayfalarına iç link
+const USE_CASE_LINKS = [
+  { slug: "arac", emoji: "🚗", label: "Araba" },
+  { slug: "kapi", emoji: "🚪", label: "Kapı & Zil" },
+  { slug: "pet", emoji: "🐕", label: "Evcil Hayvan" },
+  { slug: "bagaj", emoji: "🧳", label: "Bagaj" },
+  { slug: "bisiklet", emoji: "🚴", label: "Bisiklet" },
+];
+
+// SEO: FAQ schema markup için homepage FAQ
+const FAQ_ITEMS = [
+  {
+    q: "Tagora QR sticker nedir?",
+    a: "Tagora, arabaya, kapıya, evcil hayvanın tasmasına yapıştırdığın akıllı bir QR koddur. Biri kodu taradığında telefonunu paylaşmadan seninle anonim mesajlaşabilir. Yanlış park, kaza, kayıp bagaj, kaybolan pet gibi senaryolar için ideal.",
+  },
+  {
+    q: "Telefon numaramı paylaşmama gerek yok mu?",
+    a: "Yok. Tagora'nın tüm noktası bu — telefonun, adresin, kimliğin hiçbir zaman karşı tarafa gitmez. QR taranınca anonim chat açılır, sen istersen cevap verirsin.",
+  },
+  {
+    q: "Tagora KVKK uyumlu mu, verilerim güvende mi?",
+    a: "Evet. Tüm veriler Frankfurt'taki AB sunucularında saklanır. KVKK Md.11 self-service — hesap ayarlarından tüm verini bir tıkla indirebilir veya sildirebilirsin. Mesajlar 90 gün sonra otomatik silinir.",
+  },
+  {
+    q: "Sticker ne kadar dayanıklı, dış mekan için uygun mu?",
+    a: "Endüstriyel akrilik yapıştırıcı + UV dayanıklı baskı. Yağmur, güneş, kış — 5+ yıl solmadan durur. Araç için ters-baskı (inside window decal) varyantı 8+ yıl dayanır.",
+  },
+  {
+    q: "Sticker'ı çalan biri beni takip edebilir mi?",
+    a: "Hayır. QR sadece anonim mesajlaşma başlatır — konum, kimlik, ev adresi hiç paylaşılmaz. Ayrıca sen her mesajı görüp cevaplarsın, birisini şüpheli görürsen engelleyebilirsin.",
+  },
+  {
+    q: "Kaç paras, kargo dahil mi?",
+    a: "Tekli sticker 49₺, 5'li paket 149₺, 10'lu 249₺, 25'li iş paketi 499₺. Türkiye içi 15₺ kargo, 2-4 gün teslim. KDV dahil.",
+  },
+];
 
 export const metadata = {
   title: "Tagora — Anonim İletişim için Akıllı QR Sticker",
@@ -14,9 +51,24 @@ export const metadata = {
     "Telefonunu cama yazma. Tagora yapıştır, anonim ulaşılabilir kal. KVKK uyumlu.",
 };
 
+// SEO: FAQPage JSON-LD — homepage FAQ'ı Google için structured data
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQ_ITEMS.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
 export default function HomePage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <SiteHeader />
 
       {/* HERO */}
@@ -115,23 +167,55 @@ export default function HomePage() {
           <p className="mb-12 text-center text-charcoal/60">
             Araç sadece başlangıç — Tagora her objen için.
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {(Object.keys(USE_CASE_LABELS) as Array<keyof typeof USE_CASE_LABELS>)
-              .filter((k) => k !== "other")
-              .map((k) => (
-                <div
-                  key={k}
-                  className="rounded-2xl border border-navy/10 bg-white p-5 text-center"
-                >
-                  <div className="mb-3 text-4xl" aria-hidden="true">
-                    {USE_CASE_LABELS[k]?.emoji}
-                  </div>
-                  <h4 className="font-semibold text-navy">
-                    {USE_CASE_LABELS[k]?.tr}
-                  </h4>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {USE_CASE_LINKS.map((uc) => (
+              <Link
+                key={uc.slug}
+                href={`/kullanim/${uc.slug}` as never}
+                className="group rounded-2xl border border-navy/10 bg-white p-5 text-center transition hover:border-accent/40 hover:shadow-md"
+              >
+                <div className="mb-3 text-4xl transition group-hover:scale-110" aria-hidden="true">
+                  {uc.emoji}
                 </div>
-              ))}
+                <h3 className="font-semibold text-navy">{uc.label}</h3>
+                <p className="mt-1 text-xs text-accent group-hover:underline">
+                  Detay →
+                </p>
+              </Link>
+            ))}
           </div>
+          <p className="mt-8 text-center">
+            <Link
+              href="/kullanim"
+              className="text-sm font-medium text-navy underline hover:text-accent"
+            >
+              Tüm kullanım alanları ve senaryolar →
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section id="sss" className="mx-auto max-w-3xl px-4 py-16">
+        <h2 className="mb-4 text-center text-3xl font-bold text-navy">
+          Sık sorulan sorular
+        </h2>
+        <p className="mb-12 text-center text-charcoal/60">
+          Tagora hakkında merak edilenler
+        </p>
+        <div className="space-y-3">
+          {FAQ_ITEMS.map((f, i) => (
+            <details
+              key={i}
+              className="group rounded-2xl border border-navy/10 bg-white p-5 open:border-navy/30 open:shadow-sm"
+            >
+              <summary className="cursor-pointer list-none font-semibold text-navy group-open:mb-3">
+                <span className="mr-2 text-accent">›</span>
+                {f.q}
+              </summary>
+              <p className="pl-4 text-sm text-charcoal/75 leading-relaxed">{f.a}</p>
+            </details>
+          ))}
         </div>
       </section>
 
@@ -191,20 +275,39 @@ function SiteHeader() {
 function SiteFooter() {
   return (
     <footer className="border-t border-navy/10 bg-navy text-white">
-      <div className="mx-auto max-w-5xl px-4 py-12">
-        <div className="grid gap-8 sm:grid-cols-4">
+      <div className="mx-auto max-w-6xl px-4 py-12">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-5">
           <div className="sm:col-span-2">
             <Logo variant="light" />
             <p className="mt-3 text-sm text-white/70">
               {TAGORA.longTagline.tr}
             </p>
+            <div className="mt-4 flex items-center gap-3">
+              <span className="rounded-full bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 text-[10px] font-semibold text-emerald-400">
+                KVKK Uyumlu
+              </span>
+              <span className="rounded-full bg-white/10 border border-white/15 px-2.5 py-1 text-[10px] font-semibold text-white/80">
+                AB Veri Yerleşimi
+              </span>
+            </div>
           </div>
           <div>
             <h4 className="mb-3 text-sm font-semibold">Ürün</h4>
             <ul className="space-y-2 text-sm text-white/70">
-              <li><Link href="#how">Nasıl Çalışır</Link></li>
-              <li><Link href="/shop">Sticker Sipariş</Link></li>
-              <li><Link href="/login">Giriş</Link></li>
+              <li><Link href="#how" className="hover:text-white">Nasıl Çalışır</Link></li>
+              <li><Link href="/shop" className="hover:text-white">Sticker Sipariş</Link></li>
+              <li><Link href="#sss" className="hover:text-white">SSS</Link></li>
+              <li><Link href="/login" className="hover:text-white">Giriş</Link></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="mb-3 text-sm font-semibold">Kullanım Alanları</h4>
+            <ul className="space-y-2 text-sm text-white/70">
+              <li><Link href={"/kullanim/arac" as never} className="hover:text-white">🚗 Araba</Link></li>
+              <li><Link href={"/kullanim/kapi" as never} className="hover:text-white">🚪 Kapı</Link></li>
+              <li><Link href={"/kullanim/pet" as never} className="hover:text-white">🐕 Evcil Hayvan</Link></li>
+              <li><Link href={"/kullanim/bagaj" as never} className="hover:text-white">🧳 Bagaj</Link></li>
+              <li><Link href={"/kullanim/bisiklet" as never} className="hover:text-white">🚴 Bisiklet</Link></li>
             </ul>
           </div>
           <div>
@@ -218,7 +321,7 @@ function SiteFooter() {
           </div>
         </div>
         <p className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/40">
-          © 2026 Tagora Teknoloji · Privacy-First QR Sticker Platform
+          © 2026 Tagora Teknoloji · Privacy-First QR Sticker Platform · Frankfurt sunucularda barındırılır
         </p>
       </div>
     </footer>
