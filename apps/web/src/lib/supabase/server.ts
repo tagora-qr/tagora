@@ -5,6 +5,7 @@
  * Auth context: kullanıcının auth.uid()'sini taşır → RLS politikalarımız kullanır.
  */
 import { createServerClient } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { NextRequest } from "next/server";
 import type { User } from "@supabase/supabase-js";
@@ -83,24 +84,24 @@ export async function getAuthenticatedUser(
  *
  * Kullanım: admin akışları, token batch generation, KVKK cron.
  * ASLA client'a expose etme.
+ *
+ * NOT: @supabase/supabase-js'ın createClient'ını kullanıyoruz çünkü
+ * @supabase/ssr cookie/session detection ile karışıp bazen service_role
+ * bypass yapmayabiliyor. Bu raw client'ta o kavramlar yok — tam bypass.
  */
 export function createSupabaseServiceClient() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set");
   }
-  return createServerClient<Database>(
+  return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
     {
-      cookies: {
-        getAll() {
-          return [];
-        },
-        setAll() {
-          // no-op
-        },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
       },
-      auth: { persistSession: false },
     },
   );
 }
