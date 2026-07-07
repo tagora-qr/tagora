@@ -10,7 +10,7 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import {
-  createSupabaseServerClient,
+  getAuthenticatedUser,
   createSupabaseServiceClient,
 } from "@/lib/supabase/server";
 import { isValidStickerToken } from "@tagora/shared";
@@ -27,10 +27,8 @@ interface Body {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Hybrid auth: cookie (web) veya Bearer token (mobile)
+  const { user, supabase } = await getAuthenticatedUser(req);
 
   if (!user) {
     return NextResponse.json({ ok: false, error: "Giriş gerekli." }, { status: 401 });

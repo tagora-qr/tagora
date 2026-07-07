@@ -158,7 +158,7 @@ export default function Login() {
               <TextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder="omer@complify.io"
+                placeholder="ornek@mail.com"
                 placeholderTextColor={colors.muted}
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -245,8 +245,8 @@ export default function Login() {
               </Pressable>
 
               <Text style={styles.consent}>
-                Kod gelmediyse spam klasörünü kontrol et. Supabase e-postası
-                bazen 30-60 saniye sürebilir.
+                Kod gelmediyse spam klasörünü kontrol et. E-posta bazen 30-60
+                saniye sürebilir.
               </Text>
             </>
           )}

@@ -56,18 +56,23 @@ function AuthGate() {
   useEffect(() => {
     if (loading) return;
     const group = segments[0];
-    // Auth gerektirmeyen gruplar: (auth) onboarding/login, (public) scanner deep link
-    const inPublicGroup = group === "(auth)" || group === "(public)";
+    const inAuthGroup = group === "(auth)"; // onboarding/login
+    const inPublicGroup = group === "(public)"; // scanner deep link
     const inTabs = group === "(tabs)";
 
     if (!session) {
-      // Session yok — public/auth grubunda değilsen onboarding'e
-      if (!inPublicGroup) {
+      // Session yok — sadece auth/public group'ta olabilir, değilsen onboarding'e
+      if (!inAuthGroup && !inPublicGroup) {
         router.replace("/(auth)/onboarding");
       }
     } else {
-      // Session var — tabs veya public değilsek tabs'a (initial `/` dahil)
-      if (
+      // Session var:
+      // - (auth) group'ta (login/onboarding) → tabs'a git (login sonrası kritik!)
+      // - (public), (tabs), claim, inbox, sticker → olduğun yerde kal
+      // - başka her yerde → tabs'a git
+      if (inAuthGroup) {
+        router.replace("/(tabs)/");
+      } else if (
         !inTabs &&
         !inPublicGroup &&
         group !== "claim" &&

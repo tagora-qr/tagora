@@ -6,6 +6,8 @@
  */
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { NextRequest } from "next/server";
+import type { User } from "@supabase/supabase-js";
 import type { Database } from "@tagora/db";
 
 export async function createSupabaseServerClient() {
@@ -31,6 +33,49 @@ export async function createSupabaseServerClient() {
       },
     },
   );
+}
+
+/**
+ * Hybrid auth resolver — hem cookie hem Bearer token'dan user çözer.
+ *
+ * Web'den gelen istekler (aynı origin): cookie üzerinden auth.
+ * Mobile'dan gelen istekler: `Authorization: Bearer <supabase_jwt>` header'ı.
+ *
+ * Dönüş: `{ user, supabase }` — supabase client user'ın RLS context'iyle çalışır.
+ */
+export async function getAuthenticatedUser(
+  req: NextRequest,
+): Promise<{ user: User | null; supabase: Awaited<ReturnType<typeof createSupabaseServerClient>> }> {
+  const authHeader = req.headers.get("authorization");
+  const bearerToken = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
+
+  if (bearerToken) {
+    // Mobile flow — Bearer token'ı olan bir server client oluştur
+    const client = createServerClient<Database>(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return [];
+          },
+          setAll() {
+            // no-op — Bearer flow'da cookie yazmıyoruz
+          },
+        },
+        global: {
+          headers: { Authorization: `Bearer ${bearerToken}` },
+        },
+      },
+    );
+    const { data } = await client.auth.getUser(bearerToken);
+    return { user: data.user, supabase: client };
+  }
+
+  // Web flow — cookie tabanlı
+  const supabase = await createSupabaseServerClient();
+  const { data } = await supabase.auth.getUser();
+  return { user: data.user, supabase };
 }
 
 /**

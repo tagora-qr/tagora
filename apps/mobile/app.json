@@ -8,13 +8,16 @@
     "scheme": "tagora",
     "newArchEnabled": true,
     "backgroundColor": "#FFFFFF",
+    "icon": "./assets/icon.png",
     "splash": {
+      "image": "./assets/splash.png",
       "backgroundColor": "#0F1B3D",
       "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.tagora.mobile",
+      "buildNumber": "1",
       "associatedDomains": [
         "applinks:tagora.link",
         "applinks:www.tagora.link"
@@ -26,11 +29,12 @@
     },
     "android": {
       "package": "app.tagora.mobile",
+      "versionCode": 1,
       "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F1B3D"
       },
       "permissions": [
-        "CAMERA",
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
@@ -89,6 +93,12 @@
         "projectId": "2d66fb45-da7c-4b19-b6e7-f061c7d32a39"
       }
     },
-    "owner": "omerkilinc"
+    "owner": "omerkilinc",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/2d66fb45-da7c-4b19-b6e7-f061c7d32a39"
+    }
   }
 }
