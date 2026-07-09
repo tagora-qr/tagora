@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
- * Tagora — Sticker Print Batch Generator
+ * Tagora — Sticker Token Batch Generator
  *
- * Her sticker için unique Base62 token + QR kod üretir, template SVG'ye
- * enjekte eder, output klasörüne yazar. Manifest CSV ile beraber üreticiye
- * gönderilmeye hazır ZIP.
+ * Sadece token üretir + CSV manifest + Supabase insert (opsiyonel).
+ * SVG/QR üretmez — matbaacı kendi tasarımını kullanır, biz sadece token'ları
+ * ve tasarım eşleştirmesini yönetiriz.
  *
  * Kullanım:
  *   node scripts/generate-print-batch.mjs <use_case> <count> [--design <slug>] [--insert]
@@ -17,65 +17,27 @@
  * --insert flag'i tokenları Supabase'e insert eder (production için).
  * --design <slug> DB'ye insert edilen sticker'lara design_id set eder
  *   (varsayılan: classic). Geçerli slug'lar: split, fresh, ocean, classic
- * Insert olmadan sadece dosya + CSV üretir (test / preview için).
  */
 
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
-import QRCode from "qrcode";
 import { createClient } from "@supabase/supabase-js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
-const TEMPLATES_DIR = join(ROOT, "design", "stickers");
 const OUTPUT_ROOT = join(ROOT, "output", "print-batches");
 
 // =============================================================================
-// USE CASE CONFIG
+// USE CASE CONFIG — sadece SKU/size (SVG üretmiyoruz artık)
 // =============================================================================
-// Her SKU için: template dosyası + QR yerleşim koordinatları + boyut
-// 5×5 template beyaz kart: x=35, y=55, w=170, h=115 → merkez (120, 112.5)
-// 3×3 template beyaz kart: x=20, y=35, w=140, h=105 → merkez (90, 87.5)
 const CONFIGS = {
-  vehicle: {
-    template: "sticker-vehicle-5x5.svg",
-    size: "5x5",
-    sku: "TAG-VEHICLE-5",
-    placeholderTranslate: "translate(50, 68)",
-    // QR square 105 unit, kart merkez (120, 112.5) → sol üst köşe (67.5, 60)
-    qrSlot: { x: 67.5, y: 60, size: 105 },
-  },
-  door: {
-    template: "sticker-door-5x5.svg",
-    size: "5x5",
-    sku: "TAG-DOOR-5",
-    placeholderTranslate: "translate(50, 68)",
-    qrSlot: { x: 67.5, y: 60, size: 105 },
-  },
-  luggage: {
-    template: "sticker-luggage-5x5.svg",
-    size: "5x5",
-    sku: "TAG-LUGGAGE-5",
-    placeholderTranslate: "translate(50, 68)",
-    qrSlot: { x: 67.5, y: 60, size: 105 },
-  },
-  pet: {
-    template: "sticker-pet-3x3.svg",
-    size: "3x3",
-    sku: "TAG-PET-3",
-    placeholderTranslate: "translate(30, 45)",
-    // QR square 92 unit, kart merkez (90, 87.5) → sol üst köşe (44, 41.5)
-    qrSlot: { x: 44, y: 41.5, size: 92 },
-  },
-  bike: {
-    template: "sticker-bike-3x3.svg",
-    size: "3x3",
-    sku: "TAG-BIKE-3",
-    placeholderTranslate: "translate(30, 45)",
-    qrSlot: { x: 44, y: 41.5, size: 92 },
-  },
+  vehicle: { sku: "TAG-VEHICLE-5", size: "5x5" },
+  door:    { sku: "TAG-DOOR-5",    size: "5x5" },
+  luggage: { sku: "TAG-LUGGAGE-5", size: "5x5" },
+  pet:     { sku: "TAG-PET-3",     size: "3x3" },
+  bike:    { sku: "TAG-BIKE-3",    size: "3x3" },
 };
 
 // =============================================================================
@@ -107,97 +69,6 @@ function generateStickerTokenBatch(count) {
 }
 
 // =============================================================================
-// SVG QR INJECTOR
-// =============================================================================
-
-/**
- * Balanced SVG group finder — nested <g> içeren gruplar için depth-tracking
- * ile outer </g>'yi bulur.
- * @returns {{ startIdx: number, endIdx: number } | null}
- */
-function findGroupRange(svg, startTagPattern) {
-  const startIdx = svg.indexOf(startTagPattern);
-  if (startIdx === -1) return null;
-
-  let i = startIdx + startTagPattern.length;
-  let depth = 1;
-
-  while (i < svg.length && depth > 0) {
-    // Bir sonraki <g veya </g> — hangisi önce?
-    const nextOpen = svg.indexOf("<g", i);
-    const nextClose = svg.indexOf("</g>", i);
-
-    if (nextClose === -1) return null;
-
-    if (nextOpen !== -1 && nextOpen < nextClose) {
-      // Yeni bir <g> açıldı — depth artır
-      depth++;
-      i = nextOpen + 2;
-    } else {
-      // </g> önce — depth azalt
-      depth--;
-      i = nextClose + 4; // "</g>" 4 karakter
-    }
-  }
-
-  if (depth !== 0) return null;
-  return { startIdx, endIdx: i };
-}
-
-/**
- * QR SVG üretir, template'e enjekte eder.
- * @param {string} template - Template SVG içeriği
- * @param {string} url - QR'a encode edilecek URL
- * @param {object} slot - { x, y, size } — QR yerleşim yeri (SVG units)
- * @param {string} placeholderPattern - Değiştirilecek placeholder blok
- * @returns {Promise<string>} Yeni SVG içeriği
- */
-async function injectQR(template, url, slot, placeholderPattern) {
-  // qrcode kütüphanesi ile standalone SVG üret
-  const qrSvg = await QRCode.toString(url, {
-    type: "svg",
-    errorCorrectionLevel: "H",
-    margin: 0,
-    color: {
-      dark: "#0F1B3D",
-      light: "#FFFFFF00", // transparent
-    },
-  });
-
-  // qrcode kütüphanesinin çıktısından viewBox + path'i extract et.
-  // Örnek: '<svg xmlns=... viewBox="0 0 33 33" ...><path d="..." fill="#0F1B3D"/></svg>'
-  // QR modül grid'i version'a göre 21×21..37×37 arası değişir.
-  const viewBoxMatch = qrSvg.match(/viewBox="([^"]+)"/u);
-  const viewBox = viewBoxMatch ? viewBoxMatch[1] : "0 0 33 33";
-  const pathMatch = qrSvg.match(/<path[^>]*d="[^"]+"[^/]*\/>/u);
-  if (!pathMatch) {
-    throw new Error("QR SVG'den path extract edilemedi");
-  }
-  const qrPath = pathMatch[0];
-
-  // Balanced parser ile placeholder <g>'yi bul (nested <g> içerse bile)
-  const startTag = `<g transform="${placeholderPattern}">`;
-  const range = findGroupRange(template, startTag);
-  if (!range) {
-    throw new Error(
-      `Placeholder pattern bulunamadı: ${placeholderPattern}. Template SVG'yi kontrol et.`,
-    );
-  }
-
-  // Nested SVG ile insert — viewBox otomatik scale eder path'i slot boyutuna
-  const replacement =
-    `<svg x="${slot.x}" y="${slot.y}" ` +
-    `width="${slot.size}" height="${slot.size}" ` +
-    `viewBox="${viewBox}" role="img" aria-label="QR code">${qrPath}</svg>`;
-
-  return (
-    template.slice(0, range.startIdx) +
-    replacement +
-    template.slice(range.endIdx)
-  );
-}
-
-// =============================================================================
 // ENV LOADER
 // =============================================================================
 async function loadEnv() {
@@ -220,12 +91,13 @@ async function loadEnv() {
 }
 
 // =============================================================================
-// SUPABASE INSERT
+// SUPABASE HELPERS
 // =============================================================================
+
 /**
- * Design slug → id resolver
+ * Design slug → { id, name } resolver
  */
-async function resolveDesignId(supabase, slug) {
+async function resolveDesign(supabase, slug) {
   const { data, error } = await supabase
     .from("sticker_designs")
     .select("id, name")
@@ -233,28 +105,15 @@ async function resolveDesignId(supabase, slug) {
     .maybeSingle();
 
   if (error) throw new Error(`Design fetch hatası: ${error.message}`);
-  if (!data) throw new Error(`Design bulunamadı: slug='${slug}'. Geçerli slug'lar: split, fresh, ocean, classic`);
+  if (!data) {
+    throw new Error(
+      `Design bulunamadı: slug='${slug}'. Geçerli slug'lar: split, fresh, ocean, classic`,
+    );
+  }
   return data;
 }
 
-async function insertTokensToDb(tokens, useCase, designSlug) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !key) {
-    throw new Error(
-      ".env.local'de NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY olmalı.",
-    );
-  }
-
-  const supabase = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  // Design slug → id resolve
-  const design = await resolveDesignId(supabase, designSlug);
-  console.log(`   🎨 Design: ${design.name} (${designSlug})`);
-
+async function insertTokensToDb(supabase, tokens, useCase, design) {
   const rows = tokens.map((token) => ({
     token,
     use_case: useCase,
@@ -286,15 +145,7 @@ async function insertTokensToDb(tokens, useCase, designSlug) {
   return { insertedCount, errors };
 }
 
-async function insertBatchRecord({ name, useCase, sku, size, count, outputDir }) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return;
-
-  const supabase = createClient(url, key, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
+async function insertBatchRecord(supabase, { name, useCase, sku, size, count, outputDir, designSlug }) {
   const { error } = await supabase.from("print_batches").insert({
     name,
     use_case: useCase,
@@ -302,6 +153,8 @@ async function insertBatchRecord({ name, useCase, sku, size, count, outputDir })
     size,
     count,
     output_dir: outputDir,
+    // print_batches tablosunda design_id kolonu yok — kaydetmeye çalışmıyoruz.
+    // (İleride eklenebilir; şu an batch adında design bilgisi geçiyor.)
   });
 
   if (error) {
@@ -335,13 +188,10 @@ async function main() {
   const doInsert = flags.includes("--insert");
   const designSlug = parseDesignFlag(flags);
 
-  // Insert için env değişkenleri gerekli
-  if (doInsert) {
-    await loadEnv();
-  }
-
   if (!useCase || !countStr) {
-    console.error("Kullanım: node scripts/generate-print-batch.mjs <use_case> <count> [--design <slug>] [--insert]");
+    console.error(
+      "Kullanım: node scripts/generate-print-batch.mjs <use_case> <count> [--design <slug>] [--insert]",
+    );
     console.error("use_case: vehicle | door | luggage | pet | bike");
     console.error("design:   split | fresh | ocean | classic (varsayılan: classic)");
     process.exit(1);
@@ -349,7 +199,9 @@ async function main() {
 
   const config = CONFIGS[useCase];
   if (!config) {
-    console.error(`Bilinmeyen use_case: ${useCase}. Geçerli: ${Object.keys(CONFIGS).join(", ")}`);
+    console.error(
+      `Bilinmeyen use_case: ${useCase}. Geçerli: ${Object.keys(CONFIGS).join(", ")}`,
+    );
     process.exit(1);
   }
 
@@ -359,91 +211,109 @@ async function main() {
     process.exit(1);
   }
 
+  // Env yükle (insert için gerekli)
+  await loadEnv();
+
   const date = new Date().toISOString().slice(0, 10);
-  const batchName = `${date}-${useCase}-${count}`;
+  const batchName = `${date}-${useCase}-${designSlug}-${count}`;
   const outputDir = join(OUTPUT_ROOT, batchName);
   await mkdir(outputDir, { recursive: true });
 
   console.log(`\n🎨 Tagora Sticker Batch Generator`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(`Use case:    ${useCase} (${config.sku}, ${config.size})`);
-  console.log(`Design:      ${designSlug}${doInsert ? "" : " (DB insert yok, sadece dosya)"}`);
+  console.log(`Design:      ${designSlug}${doInsert ? "" : " (DB insert yok, sadece CSV)"}`);
   console.log(`Adet:        ${count}`);
   console.log(`Output:      ${outputDir}\n`);
 
-  // Template'i yükle
-  const templatePath = join(TEMPLATES_DIR, config.template);
-  const template = await readFile(templatePath, "utf-8");
+  // Design bilgisini önceden çek (insert olmasa da CSV'ye eklemek için)
+  let design = { id: null, name: designSlug };
+  if (doInsert || process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (url && key) {
+      const supabase = createClient(url, key, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      try {
+        design = await resolveDesign(supabase, designSlug);
+      } catch (e) {
+        if (doInsert) throw e;
+        console.warn(`⚠️  Design fetch atlandı (insert yok): ${e.message}`);
+      }
+    }
+  }
 
   // Token'ları üret
   console.log(`⚙️  Token üretiliyor...`);
   const tokens = generateStickerTokenBatch(count);
+  console.log(`   ${count} unique token oluşturuldu\n`);
 
-  // Her token için SVG üret
-  console.log(`⚙️  QR + SVG oluşturuluyor...`);
+  // Manifest CSV yaz
+  console.log(`⚙️  CSV manifest yazılıyor...`);
   const manifest = [
-    "token,url,use_case,sku,size,filename",
+    "token,url,use_case,sku,size,design_slug,design_name",
   ];
-
-  const padWidth = String(count).length;
-  let done = 0;
-
   for (const token of tokens) {
     const url = `https://tagora.link/s/${token}`;
-    const svg = await injectQR(
-      template,
-      url,
-      config.qrSlot,
-      config.placeholderTranslate,
+    manifest.push(
+      `${token},${url},${useCase},${config.sku},${config.size},${designSlug},"${design.name}"`,
     );
-
-    const filename = `${config.sku}-${String(++done).padStart(padWidth, "0")}-${token}.svg`;
-    await writeFile(join(outputDir, filename), svg, "utf-8");
-    manifest.push(`${token},${url},${useCase},${config.sku},${config.size},${filename}`);
-
-    if (done % 100 === 0 || done === count) {
-      process.stdout.write(`\r    ${done} / ${count}`);
-    }
   }
-  process.stdout.write("\n");
-
-  // Manifest yaz
   await writeFile(join(outputDir, "manifest.csv"), manifest.join("\n"), "utf-8");
+  console.log(`   ✓ manifest.csv (${count} satır)\n`);
 
-  // README yaz — üretici için talimat
+  // README yaz — matbaacı için talimat
   const readme = `# Tagora Print Batch — ${batchName}
 
 ## Batch Info
 - **Use Case:** ${useCase}
 - **SKU:** ${config.sku}
 - **Boyut:** ${config.size} cm (${config.size === "5x5" ? "50×50 mm" : "30×30 mm"})
+- **Design:** ${design.name} (${designSlug})
 - **Adet:** ${count}
 - **Oluşturulma:** ${date}
 
 ## Dosyalar
-- \`${config.sku}-XXXX-<token>.svg\` — Her sticker için ayrı, unique QR ile
-- \`manifest.csv\` — Token + URL + filename mapping (arşiv için)
+- \`manifest.csv\` — Token + URL + design mapping (matbaacıya + arşive)
 
-## Üretici için notlar
-- SVG'ler print-ready: viewBox belirtildi, width mm cinsinden set edildi
-- Bleed 3mm (5×5) veya 2mm (3×3) eklenmeli — üretici export sırasında ekler
-- Renk: RGB olarak SVG'de — CMYK dönüşümü üretici tarafında (Navy #0F1B3D → Pantone 289C yaklaşık)
-- Malzeme: Matte outdoor vinyl, UV korumalı 5+ yıl (bkz. design/stickers/sticker-brief.md)
-- QR test: Random 10 sticker mobile QR reader ile test edilmeli — hepsi \`tagora.link/s/<token>\`'a git.mel
+## Matbaacı için notlar
+- Tasarım dosyaları ayrıca sağlanır (Illustrator AI/PDF): \`${designSlug}\` şablonu
+- QR kod her sticker için farklı: URL sütununu her sticker'a benzersiz olarak yerleştir
+- Materyal: Matte outdoor vinyl, UV korumalı 5+ yıl (bkz. design/stickers/sticker-brief.md)
+- Renk: Navy #0F1B3D → Pantone 289C, Accent #D4F36A → Pantone 388C
+- QR test: Random 10 sticker mobile QR reader ile test edilmeli — hepsi \`tagora.link/s/<token>\`'a gitmeli
 
 ## İletişim
 omer@complify.io — Ömer Kılınç, Tagora
 `;
   await writeFile(join(outputDir, "README.md"), readme, "utf-8");
 
-  console.log(`\n✅ Batch hazır:`);
+  console.log(`✅ Batch dosyaları hazır:`);
   console.log(`   📁 ${outputDir}`);
-  console.log(`   📄 ${count} SVG + manifest.csv + README.md`);
+  console.log(`   📄 manifest.csv + README.md`);
 
   if (doInsert) {
     console.log(`\n⚙️  Supabase'e insert ediliyor...`);
+    console.log(`   🎨 Design: ${design.name} (${designSlug})`);
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+      throw new Error(
+        ".env.local'de NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY olmalı.",
+      );
+    }
+    const supabase = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    });
+
     try {
-      const { insertedCount, errors } = await insertTokensToDb(tokens, useCase, designSlug);
+      const { insertedCount, errors } = await insertTokensToDb(
+        supabase,
+        tokens,
+        useCase,
+        design,
+      );
       if (errors.length > 0) {
         console.log(`\n⚠️  ${errors.length} chunk hata verdi:`);
         errors.forEach((e) => console.log(`   • ${e}`));
@@ -451,27 +321,32 @@ omer@complify.io — Ömer Kılınç, Tagora
       console.log(`\n✅ ${insertedCount} / ${count} sticker DB'ye insert edildi.`);
       console.log(`   status='manufactured' · use_case='${useCase}' · design='${designSlug}'`);
 
-      // Batch kaydı da ekle
-      await insertBatchRecord({
+      // Batch kaydı
+      await insertBatchRecord(supabase, {
         name: batchName,
         useCase,
         sku: config.sku,
         size: config.size,
         count,
         outputDir,
+        designSlug,
       });
       console.log(`\n📦 Batch kaydı eklendi: ${batchName}`);
 
-      console.log(`\n💡 Sonraki adım: SVG'leri üretici ile paylaş (ZIP olarak).`);
+      console.log(`\n💡 Sonraki adım: manifest.csv'yi tasarım dosyaları ile matbaaya yolla.`);
     } catch (e) {
       console.error(`\n❌ DB insert başarısız: ${e.message}`);
-      console.error(`   SVG'ler oluşturuldu ama DB'de yoklar. Sticker'lar taranırsa 404 alınır.`);
-      console.error(`   Fix'ten sonra tekrar dene: node scripts/generate-print-batch.mjs ${useCase} ${count} --insert`);
+      console.error(`   Manifest CSV oluşturuldu ama DB'de yoklar.`);
+      console.error(
+        `   Fix'ten sonra tekrar dene: node scripts/generate-print-batch.mjs ${useCase} ${count} --design ${designSlug} --insert`,
+      );
       process.exit(1);
     }
   } else {
     console.log(`\n💡 Bu preview batch (DB'ye insert YAPILMADI).`);
-    console.log(`   Production için: node scripts/generate-print-batch.mjs ${useCase} ${count} --design ${designSlug} --insert`);
+    console.log(
+      `   Production için: node scripts/generate-print-batch.mjs ${useCase} ${count} --design ${designSlug} --insert`,
+    );
     console.log(`   Insert olmadan sticker taranırsa "sticker bulunamadı" hatası döner.`);
   }
 

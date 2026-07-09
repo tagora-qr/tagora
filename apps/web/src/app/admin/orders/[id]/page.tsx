@@ -53,12 +53,42 @@ export default async function AdminOrderDetailPage({ params }: { params: Params 
     .select("*")
     .eq("order_id", id);
 
-  // Fulfilment — atanan sticker'lar
+  // Tasarımlar (lookup için)
+  const { data: designsData } = await supabase
+    .from("sticker_designs")
+    .select("id, slug, name")
+    .order("sort_order", { ascending: true });
+  const designs = (designsData ?? []) as Array<{
+    id: string;
+    slug: string;
+    name: string;
+  }>;
+  const designById = new Map(designs.map((d) => [d.id, d]));
+
+  // Karma paket allocations — talep edilen tasarım dağılımı
+  const { data: allocationsData } = await supabase
+    .from("order_design_allocations")
+    .select("design_id, quantity")
+    .eq("order_id", id);
+  const designAllocations = (allocationsData ?? []) as Array<{
+    design_id: string;
+    quantity: number;
+  }>;
+
+  // Fulfilment — atanan sticker'lar (design_id ile beraber)
   const { data: assignedStickers } = await supabase
     .from("stickers")
-    .select("id, token, status, allocated_at")
+    .select("id, token, status, allocated_at, design_id")
     .eq("order_id", id)
     .order("allocated_at", { ascending: true });
+
+  // Design bazlı: talep vs. atanan
+  const assignedByDesign = new Map<string, number>();
+  ((assignedStickers ?? []) as Array<{ design_id: string | null }>).forEach((s) => {
+    if (s.design_id) {
+      assignedByDesign.set(s.design_id, (assignedByDesign.get(s.design_id) ?? 0) + 1);
+    }
+  });
 
   const [demandRes, allocatedRes] = await Promise.all([
     supabase.rpc("order_sticker_demand" as never, { _order_id: id } as never),
@@ -120,6 +150,69 @@ export default async function AdminOrderDetailPage({ params }: { params: Params 
         allocated={allocated}
       />
 
+      {/* Tasarım Dağılımı (karma paket) */}
+      {designAllocations.length > 0 && (
+        <div className="rounded-2xl border border-navy/10 bg-white shadow-sm">
+          <div className="border-b border-navy/10 px-4 py-3">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-charcoal/60">
+              🎨 Tasarım Dağılımı
+            </h2>
+            <p className="mt-0.5 text-xs text-charcoal/50">
+              Müşterinin seçtiği karışım — her tasarımdan kaç adet talep + kaç atandı
+            </p>
+          </div>
+          <div className="divide-y divide-navy/5">
+            {designAllocations
+              .sort((a, b) => {
+                const da = designById.get(a.design_id);
+                const db = designById.get(b.design_id);
+                return (da?.slug ?? "").localeCompare(db?.slug ?? "");
+              })
+              .map((a) => {
+                const design = designById.get(a.design_id);
+                const assigned = assignedByDesign.get(a.design_id) ?? 0;
+                const pct = a.quantity > 0 ? Math.round((assigned / a.quantity) * 100) : 0;
+                const complete = assigned === a.quantity;
+                return (
+                  <div
+                    key={a.design_id}
+                    className="flex items-center gap-4 px-4 py-3"
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <DesignDot slug={design?.slug ?? ""} />
+                        <p className="text-sm font-semibold text-navy">
+                          {design?.name ?? "Bilinmiyor"}
+                        </p>
+                        <span className="text-xs text-charcoal/50 font-mono">
+                          {design?.slug ?? "—"}
+                        </span>
+                      </div>
+                      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-navy/[0.05]">
+                        <div
+                          className={
+                            "h-full transition-all " +
+                            (complete ? "bg-emerald-500" : "bg-amber-500")
+                          }
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="tabular-nums text-sm font-bold text-navy">
+                        {assigned} / {a.quantity}
+                      </p>
+                      <p className="text-[10px] text-charcoal/50">
+                        {complete ? "✓ tamam" : `${pct}%`}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
       {/* Atanan sticker'lar */}
       {(assignedStickers ?? []).length > 0 && (
         <div className="rounded-2xl border border-navy/10 bg-white shadow-sm">
@@ -141,29 +234,49 @@ export default async function AdminOrderDetailPage({ params }: { params: Params 
               <thead className="sticky top-0 bg-navy/[0.02]">
                 <tr>
                   <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Token</th>
+                  <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Tasarım</th>
                   <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Status</th>
                   <th className="px-4 py-2 text-left font-semibold text-charcoal/60">Atandı</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-navy/5">
-                {((assignedStickers ?? []) as { id: string; token: string; status: string; allocated_at: string | null }[]).map((s) => (
-                  <tr key={s.id}>
-                    <td className="px-4 py-2 font-mono">{s.token}</td>
-                    <td className="px-4 py-2">
-                      <span className={
-                        "inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium " +
-                        (s.status === "allocated" ? "bg-amber-50 text-amber-700"
-                          : s.status === "shipped" ? "bg-indigo-50 text-indigo-700"
-                          : s.status === "delivered" ? "bg-purple-50 text-purple-700"
-                          : s.status === "claimed" || s.status === "active" ? "bg-emerald-50 text-emerald-700"
-                          : "bg-navy/5 text-charcoal")
-                      }>{s.status}</span>
-                    </td>
-                    <td className="px-4 py-2 text-charcoal/60 tabular-nums">
-                      {s.allocated_at ? new Date(s.allocated_at).toLocaleString("tr-TR") : "—"}
-                    </td>
-                  </tr>
-                ))}
+                {((assignedStickers ?? []) as {
+                  id: string;
+                  token: string;
+                  status: string;
+                  allocated_at: string | null;
+                  design_id: string | null;
+                }[]).map((s) => {
+                  const design = s.design_id ? designById.get(s.design_id) : null;
+                  return (
+                    <tr key={s.id}>
+                      <td className="px-4 py-2 font-mono">{s.token}</td>
+                      <td className="px-4 py-2">
+                        {design ? (
+                          <span className="inline-flex items-center gap-1.5">
+                            <DesignDot slug={design.slug} />
+                            <span className="text-charcoal">{design.name}</span>
+                          </span>
+                        ) : (
+                          <span className="text-charcoal/30">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className={
+                          "inline-flex rounded-full px-2 py-0.5 text-[10px] font-medium " +
+                          (s.status === "allocated" ? "bg-amber-50 text-amber-700"
+                            : s.status === "shipped" ? "bg-indigo-50 text-indigo-700"
+                            : s.status === "delivered" ? "bg-purple-50 text-purple-700"
+                            : s.status === "claimed" || s.status === "active" ? "bg-emerald-50 text-emerald-700"
+                            : "bg-navy/5 text-charcoal")
+                        }>{s.status}</span>
+                      </td>
+                      <td className="px-4 py-2 text-charcoal/60 tabular-nums">
+                        {s.allocated_at ? new Date(s.allocated_at).toLocaleString("tr-TR") : "—"}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -310,6 +423,24 @@ interface OrderItemRow {
   quantity: number;
   unit_price_try: number;
   line_total_try: number;
+}
+
+function DesignDot({ slug }: { slug: string }) {
+  const colors: Record<string, string> = {
+    split: "bg-emerald-500",
+    fresh: "bg-lime-500",
+    ocean: "bg-blue-500",
+    classic: "bg-navy",
+  };
+  return (
+    <span
+      className={
+        "inline-block h-2.5 w-2.5 rounded-full " +
+        (colors[slug] ?? "bg-charcoal/30")
+      }
+      aria-hidden
+    />
+  );
 }
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
