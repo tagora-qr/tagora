@@ -94,7 +94,7 @@ function SubscriptionCard({
     return (
       <div className="rounded-2xl border border-emerald-200 bg-emerald-50/40 p-5">
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="text-lg">🎉</span>
               <p className="font-semibold text-emerald-900">
@@ -119,6 +119,12 @@ function SubscriptionCard({
               </p>
             )}
           </div>
+          <Link
+            href={"/dashboard/subscription" as never}
+            className="whitespace-nowrap rounded-lg border border-emerald-300 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-50"
+          >
+            Detay →
+          </Link>
         </div>
       </div>
     );

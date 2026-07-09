@@ -181,6 +181,23 @@ export default function ProfileScreen() {
           <Row label="E-posta" value={profile?.email ?? user?.email ?? "—"} />
           <Row label="Plan" value={getPlanLabel(subscription)} />
           <Row label="Dil" value={(profile?.locale ?? "tr").toUpperCase()} />
+          <View style={styles.sep} />
+          <Pressable
+            onPress={() => openWebPage("/dashboard/settings")}
+            style={styles.actionRow}
+            disabled={handoffBusy}
+          >
+            <Text style={styles.actionEmoji}>✏️</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.actionLabel}>
+                {handoffBusy ? "Açılıyor…" : "Bilgileri düzenle"}
+              </Text>
+              <Text style={styles.actionSub}>
+                Email, isim, telefon numarası
+              </Text>
+            </View>
+            <Text style={styles.chev}>›</Text>
+          </Pressable>
         </View>
 
         {/* Subscription CTA — durum bazlı */}

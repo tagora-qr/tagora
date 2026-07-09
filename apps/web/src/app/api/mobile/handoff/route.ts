@@ -21,6 +21,7 @@ import { createSupabaseServiceClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 // Sadece bu path prefix'lerine handoff izni ver — external URL'ye asla izin yok
+// Not: /dashboard prefix'i tüm dashboard alt yollarını kapsar (settings, subscription vs)
 const ALLOWED_REDIRECTS = [
   "/shop",
   "/dashboard",
