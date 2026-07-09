@@ -53,7 +53,7 @@ export default async function AdminOrdersPage({
   let query = supabase
     .from("orders")
     .select(
-      "id, order_no, status, total_try, buyer_name, buyer_email, shipping_city, created_at, paid_at",
+      "id, order_no, status, total_try, discount_try, coupon_code, buyer_name, buyer_email, shipping_city, created_at, paid_at",
       { count: "exact" },
     )
     .order("created_at", { ascending: false });
@@ -117,6 +117,7 @@ export default async function AdminOrdersPage({
               <Th>Durum</Th>
               <Th>Alıcı</Th>
               <Th>Şehir</Th>
+              <Th>Kupon</Th>
               <Th align="right">Tutar</Th>
               <Th>Sipariş</Th>
               <Th>Ödeme</Th>
@@ -125,7 +126,7 @@ export default async function AdminOrdersPage({
           <tbody className="divide-y divide-navy/5">
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={7} className="py-12 text-center text-charcoal/50">
+                <td colSpan={8} className="py-12 text-center text-charcoal/50">
                   Filtreye uyan sipariş yok.
                 </td>
               </tr>
@@ -156,6 +157,20 @@ export default async function AdminOrdersPage({
                     </div>
                   </Td>
                   <Td>{o.shipping_city}</Td>
+                  <Td>
+                    {o.coupon_code ? (
+                      <div className="flex flex-col items-start gap-0.5">
+                        <span className="inline-flex rounded-full bg-emerald-50 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-700">
+                          🎟️ {o.coupon_code}
+                        </span>
+                        <span className="tabular-nums text-[10px] text-emerald-700">
+                          −{Number(o.discount_try ?? 0).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-charcoal/30">—</span>
+                    )}
+                  </Td>
                   <Td align="right">
                     <span className="tabular-nums font-medium">
                       {Number(o.total_try).toLocaleString("tr-TR", {
@@ -197,6 +212,8 @@ interface OrderRow {
   order_no: string;
   status: string;
   total_try: number;
+  discount_try: number | null;
+  coupon_code: string | null;
   buyer_name: string;
   buyer_email: string;
   shipping_city: string;

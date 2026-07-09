@@ -318,8 +318,18 @@ export default async function AdminOrderDetailPage({ params }: { params: Params 
         <Card title="Ödeme">
           <DL rows={[
             ["Ara toplam", `${Number(o.subtotal_try).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`],
+            ...(Number(o.discount_try ?? 0) > 0
+              ? [
+                  [
+                    o.coupon_code ? `İndirim (${o.coupon_code})` : "İndirim",
+                    <span key="d" className="text-emerald-700 tabular-nums">
+                      −{Number(o.discount_try ?? 0).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺
+                    </span>,
+                  ] as [string, React.ReactNode],
+                ]
+              : []),
             ["Kargo", `${Number(o.shipping_try).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`],
-            ["Toplam", `${Number(o.total_try).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`],
+            ["Toplam", <strong key="t">{`${Number(o.total_try).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`}</strong>],
             ["iyzico Payment ID", o.iyzico_payment_id ? <span key="p" className="font-mono text-[10px]">{o.iyzico_payment_id}</span> : "—"],
             ["Ödeme Tarihi", o.paid_at ? new Date(o.paid_at).toLocaleString("tr-TR") : "—"],
           ]} />
@@ -394,6 +404,9 @@ interface OrderFull {
   subtotal_try: number;
   shipping_try: number;
   total_try: number;
+  discount_try: number | null;
+  coupon_id: string | null;
+  coupon_code: string | null;
   iyzico_payment_id: string | null;
   iyzico_conversation_id: string | null;
   iyzico_token: string | null;
