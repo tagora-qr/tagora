@@ -109,7 +109,8 @@ export function getQuickTemplates(
   useCase: StickerUseCase | null | undefined,
   locale: Locale = "tr",
 ): { id: string; emoji?: string; body: string }[] {
-  const list = useCase ? QUICK_TEMPLATES[useCase] : QUICK_TEMPLATES.other;
+  const list =
+    (useCase && QUICK_TEMPLATES[useCase]) ?? QUICK_TEMPLATES.other ?? [];
   return list.map((t) => ({
     id: t.id,
     emoji: t.emoji,
