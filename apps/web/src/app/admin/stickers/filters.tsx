@@ -28,12 +28,21 @@ const STATUSES = [
   { value: "retired", label: "Retired" },
 ];
 
+interface DesignOpt {
+  slug: string;
+  name: string;
+}
+
 export function StickersTableFilters({
   currentUseCase,
   currentStatus,
+  currentDesign,
+  designs,
 }: {
   currentUseCase: string;
   currentStatus: string;
+  currentDesign: string;
+  designs: DesignOpt[];
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -73,6 +82,27 @@ export function StickersTableFilters({
       </div>
 
       <div className="flex items-center gap-2">
+        <label htmlFor="design" className="text-xs font-semibold text-charcoal/60">
+          TASARIM
+        </label>
+        <select
+          id="design"
+          value={currentDesign}
+          disabled={pending}
+          onChange={(e) => update("design", e.target.value)}
+          className="rounded-lg border border-navy/15 bg-white px-3 py-1.5 text-sm text-charcoal focus:border-navy focus:outline-none"
+        >
+          <option value="all">Tümü</option>
+          {designs.map((d) => (
+            <option key={d.slug} value={d.slug}>
+              {d.name}
+            </option>
+          ))}
+          <option value="none">(tasarımsız)</option>
+        </select>
+      </div>
+
+      <div className="flex items-center gap-2">
         <label htmlFor="status" className="text-xs font-semibold text-charcoal/60">
           STATUS
         </label>
@@ -96,16 +126,29 @@ export function StickersTableFilters({
       )}
 
       <div className="ml-auto">
-        <ExportButton status={currentStatus} useCase={currentUseCase} />
+        <ExportButton
+          status={currentStatus}
+          useCase={currentUseCase}
+          design={currentDesign}
+        />
       </div>
     </div>
   );
 }
 
-function ExportButton({ status, useCase }: { status: string; useCase: string }) {
+function ExportButton({
+  status,
+  useCase,
+  design,
+}: {
+  status: string;
+  useCase: string;
+  design: string;
+}) {
   const params = new URLSearchParams();
   if (status !== "all") params.set("status", status);
   if (useCase !== "all") params.set("use_case", useCase);
+  if (design !== "all") params.set("design", design);
   const href = `/api/admin/stickers/export${params.toString() ? "?" + params.toString() : ""}`;
   return (
     <a

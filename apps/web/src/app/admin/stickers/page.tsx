@@ -13,6 +13,7 @@ const PAGE_SIZE = 25;
 type SearchParams = Promise<{
   status?: string;
   use_case?: string;
+  design?: string;
   page?: string;
 }>;
 
@@ -24,19 +25,42 @@ export default async function AdminStickersPage({
   const params = await searchParams;
   const status = params.status && params.status !== "all" ? params.status : null;
   const useCase = params.use_case && params.use_case !== "all" ? params.use_case : null;
+  const designParam = params.design && params.design !== "all" ? params.design : null;
   const page = Math.max(1, parseInt(params.page ?? "1", 10) || 1);
 
   const supabase = createSupabaseServiceClient();
 
+  // Tasarım listesi (filter + lookup için)
+  const { data: designsData } = await supabase
+    .from("sticker_designs")
+    .select("id, slug, name")
+    .order("sort_order", { ascending: true });
+  const designs = (designsData ?? []) as Array<{
+    id: string;
+    slug: string;
+    name: string;
+  }>;
+  const designById = new Map(designs.map((d) => [d.id, d]));
+
   let query = supabase
     .from("stickers")
-    .select("id, token, status, use_case, label, owner_id, scan_count, created_at, claimed_at", {
-      count: "exact",
-    })
+    .select(
+      "id, token, status, use_case, label, owner_id, scan_count, created_at, claimed_at, design_id",
+      { count: "exact" },
+    )
     .order("created_at", { ascending: false });
 
   if (status) query = query.eq("status", status);
   if (useCase) query = query.eq("use_case", useCase);
+  if (designParam) {
+    if (designParam === "none") {
+      query = query.is("design_id", null);
+    } else {
+      // designParam bir slug — id'ye çevir
+      const design = designs.find((d) => d.slug === designParam);
+      if (design) query = query.eq("design_id", design.id);
+    }
+  }
 
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
@@ -60,6 +84,8 @@ export default async function AdminStickersPage({
       <StickersTableFilters
         currentStatus={status ?? "all"}
         currentUseCase={useCase ?? "all"}
+        currentDesign={designParam ?? "all"}
+        designs={designs.map((d) => ({ slug: d.slug, name: d.name }))}
       />
 
       <div className="overflow-x-auto rounded-2xl border border-navy/10 bg-white shadow-sm">
@@ -68,6 +94,7 @@ export default async function AdminStickersPage({
             <tr>
               <Th>Token</Th>
               <Th>Use Case</Th>
+              <Th>Tasarım</Th>
               <Th>Status</Th>
               <Th>Label</Th>
               <Th>Owner</Th>
@@ -78,54 +105,64 @@ export default async function AdminStickersPage({
           </thead>
           <tbody className="divide-y divide-navy/5">
             {stickers && stickers.length > 0 ? (
-              (stickers as unknown as StickerRow[]).map((s) => (
-                <tr key={s.id} className="transition hover:bg-navy/[0.02]">
-                  <Td>
-                    <Link
-                      href={`/admin/stickers/${s.id}` as never}
-                      className="font-mono text-xs text-navy hover:underline"
-                    >
-                      {s.token}
-                    </Link>
-                  </Td>
-                  <Td>
-                    <UseCaseBadge value={s.use_case} />
-                  </Td>
-                  <Td>
-                    <StatusBadge value={s.status} />
-                  </Td>
-                  <Td>{s.label || <span className="text-charcoal/30">—</span>}</Td>
-                  <Td>
-                    {s.owner_id ? (
-                      <span className="font-mono text-[10px] text-charcoal/60">
-                        {s.owner_id.slice(0, 8)}…
-                      </span>
-                    ) : (
-                      <span className="text-charcoal/30">—</span>
-                    )}
-                  </Td>
-                  <Td align="right">
-                    <span className="tabular-nums">{s.scan_count.toLocaleString("tr-TR")}</span>
-                  </Td>
-                  <Td>
-                    <span className="text-xs">
-                      {new Date(s.created_at).toLocaleDateString("tr-TR")}
-                    </span>
-                  </Td>
-                  <Td>
-                    {s.claimed_at ? (
+              (stickers as unknown as StickerRow[]).map((s) => {
+                const design = s.design_id ? designById.get(s.design_id) : null;
+                return (
+                  <tr key={s.id} className="transition hover:bg-navy/[0.02]">
+                    <Td>
+                      <Link
+                        href={`/admin/stickers/${s.id}` as never}
+                        className="font-mono text-xs text-navy hover:underline"
+                      >
+                        {s.token}
+                      </Link>
+                    </Td>
+                    <Td>
+                      <UseCaseBadge value={s.use_case} />
+                    </Td>
+                    <Td>
+                      {design ? (
+                        <DesignBadge slug={design.slug} name={design.name} />
+                      ) : (
+                        <span className="text-charcoal/30">—</span>
+                      )}
+                    </Td>
+                    <Td>
+                      <StatusBadge value={s.status} />
+                    </Td>
+                    <Td>{s.label || <span className="text-charcoal/30">—</span>}</Td>
+                    <Td>
+                      {s.owner_id ? (
+                        <span className="font-mono text-[10px] text-charcoal/60">
+                          {s.owner_id.slice(0, 8)}…
+                        </span>
+                      ) : (
+                        <span className="text-charcoal/30">—</span>
+                      )}
+                    </Td>
+                    <Td align="right">
+                      <span className="tabular-nums">{s.scan_count.toLocaleString("tr-TR")}</span>
+                    </Td>
+                    <Td>
                       <span className="text-xs">
-                        {new Date(s.claimed_at).toLocaleDateString("tr-TR")}
+                        {new Date(s.created_at).toLocaleDateString("tr-TR")}
                       </span>
-                    ) : (
-                      <span className="text-charcoal/30">—</span>
-                    )}
-                  </Td>
-                </tr>
-              ))
+                    </Td>
+                    <Td>
+                      {s.claimed_at ? (
+                        <span className="text-xs">
+                          {new Date(s.claimed_at).toLocaleDateString("tr-TR")}
+                        </span>
+                      ) : (
+                        <span className="text-charcoal/30">—</span>
+                      )}
+                    </Td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
-                <td colSpan={8} className="py-12 text-center text-charcoal/50">
+                <td colSpan={9} className="py-12 text-center text-charcoal/50">
                   Filtreye uyan sticker yok.
                 </td>
               </tr>
@@ -142,6 +179,7 @@ export default async function AdminStickersPage({
             disabled={page === 1}
             status={status}
             useCase={useCase}
+            design={designParam}
           >
             ← Önceki
           </PageLink>
@@ -153,6 +191,7 @@ export default async function AdminStickersPage({
             disabled={page >= totalPages}
             status={status}
             useCase={useCase}
+            design={designParam}
           >
             Sonraki →
           </PageLink>
@@ -172,6 +211,26 @@ interface StickerRow {
   scan_count: number;
   created_at: string;
   claimed_at: string | null;
+  design_id: string | null;
+}
+
+function DesignBadge({ slug, name }: { slug: string; name: string }) {
+  const colors: Record<string, string> = {
+    split: "bg-emerald-50 text-emerald-700",
+    fresh: "bg-lime-50 text-lime-700",
+    ocean: "bg-blue-50 text-blue-700",
+    classic: "bg-navy/10 text-navy",
+  };
+  return (
+    <span
+      className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+        colors[slug] ?? "bg-navy/5 text-charcoal"
+      }`}
+      title={slug}
+    >
+      {name}
+    </span>
+  );
 }
 
 function Th({ children, align }: { children: React.ReactNode; align?: "left" | "right" }) {
@@ -241,12 +300,14 @@ function PageLink({
   children,
   status,
   useCase,
+  design,
 }: {
   page: number;
   disabled: boolean;
   children: React.ReactNode;
   status: string | null;
   useCase: string | null;
+  design: string | null;
 }) {
   if (disabled) {
     return (
@@ -259,6 +320,7 @@ function PageLink({
   params.set("page", String(page));
   if (status) params.set("status", status);
   if (useCase) params.set("use_case", useCase);
+  if (design) params.set("design", design);
   return (
     <Link
       href={`/admin/stickers?${params.toString()}` as never}
