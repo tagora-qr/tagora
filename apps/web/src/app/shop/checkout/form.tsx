@@ -1,9 +1,18 @@
 "use client";
 
 /**
- * Checkout formu — alıcı + kargo bilgisi + ödeme başlat.
+ * Checkout formu — tasarım + alıcı + kargo bilgisi + ödeme başlat.
  */
+import Image from "next/image";
 import { useState } from "react";
+
+interface Design {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  preview_url: string | null;
+}
 
 interface Props {
   packageSlug: string;
@@ -11,6 +20,7 @@ interface Props {
   defaultEmail: string;
   defaultName: string;
   defaultPhone: string;
+  designs: Design[];
 }
 
 const TR_CITIES = [
@@ -33,19 +43,30 @@ export function CheckoutForm({
   defaultEmail,
   defaultName,
   defaultPhone,
+  designs,
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(
+    designs[0]?.id ?? null,
+  );
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    if (!selectedDesignId) {
+      setError("Lütfen bir tasarım seç.");
+      return;
+    }
+
     setBusy(true);
 
     const fd = new FormData(e.currentTarget);
     const body = {
       package_slug: packageSlug,
       package_id: packageId,
+      design_id: selectedDesignId,
       buyer_name: (fd.get("buyer_name") as string).trim(),
       buyer_email: (fd.get("buyer_email") as string).trim(),
       buyer_phone: (fd.get("buyer_phone") as string).trim(),
@@ -83,6 +104,65 @@ export function CheckoutForm({
       onSubmit={onSubmit}
       className="space-y-6 rounded-2xl border border-navy/10 bg-white p-6 shadow-sm"
     >
+      <section>
+        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-charcoal/60">
+          Tasarım Seç
+        </h2>
+        {designs.length === 0 ? (
+          <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+            Şu an satın alınabilir tasarım yok. Lütfen daha sonra tekrar dene.
+          </p>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {designs.map((d) => {
+              const selected = d.id === selectedDesignId;
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  onClick={() => setSelectedDesignId(d.id)}
+                  className={
+                    "flex flex-col overflow-hidden rounded-xl border-2 bg-white text-left transition " +
+                    (selected
+                      ? "border-navy shadow-md ring-2 ring-navy/20"
+                      : "border-navy/10 hover:border-navy/30")
+                  }
+                >
+                  <div className="relative aspect-square bg-bgSubtle">
+                    {d.preview_url ? (
+                      <Image
+                        src={d.preview_url}
+                        alt={d.name}
+                        fill
+                        sizes="(min-width: 1024px) 20vw, (min-width: 640px) 40vw, 90vw"
+                        className="object-contain p-2"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-charcoal/30">
+                        Önizleme yok
+                      </div>
+                    )}
+                    {selected && (
+                      <span className="absolute right-2 top-2 rounded-full bg-navy px-2 py-0.5 text-[10px] font-bold text-accent shadow">
+                        SEÇİLDİ
+                      </span>
+                    )}
+                  </div>
+                  <div className="border-t border-navy/10 px-3 py-2">
+                    <p className="text-sm font-semibold text-navy">{d.name}</p>
+                    {d.description && (
+                      <p className="mt-0.5 line-clamp-2 text-[11px] text-charcoal/60">
+                        {d.description}
+                      </p>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       <section>
         <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-charcoal/60">
           Alıcı Bilgileri

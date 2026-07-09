@@ -48,6 +48,20 @@ export default async function CheckoutPage({
   if (!pkg) redirect("/shop");
   const p = pkg as StickerPackage;
 
+  // Aktif tasarımları çek (müşteri seçecek)
+  const { data: designsRaw } = await supabase
+    .from("sticker_designs")
+    .select("id, slug, name, description, preview_url")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  const designs = (designsRaw ?? []) as Array<{
+    id: string;
+    slug: string;
+    name: string;
+    description: string | null;
+    preview_url: string | null;
+  }>;
+
   // Kullanıcı profili (email, isim ön-doldur)
   const { data: profileRaw } = await supabase
     .from("users")
@@ -89,6 +103,7 @@ export default async function CheckoutPage({
               defaultEmail={profile.email ?? user.email ?? ""}
               defaultName={profile.display_name ?? ""}
               defaultPhone={profile.phone ?? ""}
+              designs={designs}
             />
           </div>
 
