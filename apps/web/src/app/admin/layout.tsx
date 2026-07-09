@@ -15,6 +15,7 @@ const NAV = [
   { href: "/admin", label: "Overview", icon: "📊" },
   { href: "/admin/orders", label: "Siparişler", icon: "🛒" },
   { href: "/admin/coupons", label: "Kuponlar", icon: "🎟️" },
+  { href: "/admin/subscriptions", label: "Abonelikler", icon: "🔁" },
   { href: "/admin/business-leads", label: "B2B Talepler", icon: "💼" },
   { href: "/admin/stickers", label: "Stickerlar", icon: "🏷️" },
   { href: "/admin/batches", label: "Batch'ler", icon: "📦" },
