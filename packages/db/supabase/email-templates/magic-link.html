@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tagora giriş kodun</title>
+</head>
+<body style="margin:0;padding:0;background:#F9F7F1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;color:#0F1B3D;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#F9F7F1;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;background:#FFFFFF;border-radius:20px;border:1px solid rgba(15,27,61,0.08);overflow:hidden;">
+          <!-- Header -->
+          <tr>
+            <td style="padding:32px 32px 8px 32px;">
+              <span style="display:inline-block;background:#0F1B3D;color:#D4F36A;font-size:14px;font-weight:800;letter-spacing:0.02em;padding:6px 12px;border-radius:8px;">TAGORA</span>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:24px 32px 8px 32px;">
+              <h1 style="margin:0 0 12px 0;font-size:24px;line-height:1.3;font-weight:800;color:#0F1B3D;">
+                Giriş kodun hazır 🔑
+              </h1>
+              <p style="margin:0 0 24px 0;font-size:15px;line-height:1.6;color:#0F1B3D;">
+                Tagora hesabına giriş yapmak için aşağıdaki 6 haneli kodu uygulamaya gir:
+              </p>
+
+              <!-- OTP kutusu -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px 0;">
+                <tr>
+                  <td align="center" style="background:#F9F7F1;border-radius:16px;padding:24px;">
+                    <p style="margin:0 0 8px 0;font-size:12px;color:#6B7280;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;">Giriş Kodu</p>
+                    <p style="margin:0;font-size:36px;line-height:1;color:#0F1B3D;font-weight:800;letter-spacing:0.2em;font-family:'Menlo','Consolas',monospace;">{{ .Token }}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 8px 0;font-size:13px;line-height:1.6;color:#6B7280;">
+                Bu kod <strong>1 saat</strong> geçerli. Web sitesindeysen aşağıdaki linke de tıklayabilirsin:
+              </p>
+
+              <!-- CTA (alternatif) -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px 0;">
+                <tr>
+                  <td style="background:#0F1B3D;border-radius:12px;">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;padding:12px 24px;color:#D4F36A;font-size:14px;font-weight:700;text-decoration:none;">
+                      Web'de Aç →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Warning -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px 0;background:#FEF3C7;border-radius:12px;border:1px solid #FCD34D;">
+                <tr>
+                  <td style="padding:14px 16px;">
+                    <p style="margin:0;font-size:13px;line-height:1.5;color:#78350F;">
+                      ⚠️ <strong>Bu kodu sen istemedin mi?</strong> Bu email'i görmezden gelebilirsin. Hesabın güvende — kimse şifreni bilmeden içeri giremez.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 32px 32px 32px;border-top:1px solid rgba(15,27,61,0.08);">
+              <p style="margin:0 0 8px 0;font-size:12px;line-height:1.5;color:#6B7280;">
+                Bu email <a href="https://tagora.com.tr" style="color:#0F1B3D;text-decoration:underline;">tagora.com.tr</a> hesabınla ilgili otomatik bir bildirimdir.
+              </p>
+              <p style="margin:0;font-size:11px;line-height:1.5;color:#6B7280;">
+                DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti. · Bursa
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
