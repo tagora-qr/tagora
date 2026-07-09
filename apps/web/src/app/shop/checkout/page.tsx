@@ -100,6 +100,7 @@ export default async function CheckoutPage({
             <CheckoutForm
               packageSlug={p.slug}
               packageId={p.id}
+              stickerCount={p.sticker_count}
               defaultEmail={profile.email ?? user.email ?? ""}
               defaultName={profile.display_name ?? ""}
               defaultPhone={profile.phone ?? ""}

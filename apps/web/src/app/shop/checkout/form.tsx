@@ -1,10 +1,13 @@
 "use client";
 
 /**
- * Checkout formu — tasarım + alıcı + kargo bilgisi + ödeme başlat.
+ * Checkout formu — karma tasarım + alıcı + kargo bilgisi + ödeme başlat.
+ *
+ * Kullanıcı 5'li paket alırken tasarımları karışık seçebilir:
+ * 2 split + 2 fresh + 1 classic gibi. Toplam paket.sticker_count'a eşit olmalı.
  */
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface Design {
   id: string;
@@ -17,6 +20,7 @@ interface Design {
 interface Props {
   packageSlug: string;
   packageId: string;
+  stickerCount: number;
   defaultEmail: string;
   defaultName: string;
   defaultPhone: string;
@@ -40,6 +44,7 @@ const TR_CITIES = [
 export function CheckoutForm({
   packageSlug,
   packageId,
+  stickerCount,
   defaultEmail,
   defaultName,
   defaultPhone,
@@ -47,26 +52,57 @@ export function CheckoutForm({
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedDesignId, setSelectedDesignId] = useState<string | null>(
-    designs[0]?.id ?? null,
+
+  // Karma paket: her design için ne kadar seçildi. Varsayılan: hepsi ilk tasarımda.
+  const [allocations, setAllocations] = useState<Record<string, number>>(() => {
+    const init: Record<string, number> = {};
+    designs.forEach((d, i) => {
+      init[d.id] = i === 0 ? stickerCount : 0;
+    });
+    return init;
+  });
+
+  const totalSelected = useMemo(
+    () => Object.values(allocations).reduce((sum, v) => sum + v, 0),
+    [allocations],
   );
+  const remaining = stickerCount - totalSelected;
+  const isValid = totalSelected === stickerCount;
+
+  const bumpAllocation = (designId: string, delta: number) => {
+    setAllocations((prev) => {
+      const current = prev[designId] ?? 0;
+      const next = current + delta;
+      if (next < 0) return prev;
+      // Toplam paket boyutunu aşmasın
+      if (delta > 0 && totalSelected >= stickerCount) return prev;
+      return { ...prev, [designId]: next };
+    });
+  };
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
 
-    if (!selectedDesignId) {
-      setError("Lütfen bir tasarım seç.");
+    if (!isValid) {
+      setError(
+        `Tasarım dağılımı hatalı: toplam ${totalSelected} seçildi, ${stickerCount} olmalı.`,
+      );
       return;
     }
 
     setBusy(true);
 
+    // Sadece quantity > 0 olanları backend'e gönder
+    const allocationsArray = Object.entries(allocations)
+      .filter(([, qty]) => qty > 0)
+      .map(([design_id, quantity]) => ({ design_id, quantity }));
+
     const fd = new FormData(e.currentTarget);
     const body = {
       package_slug: packageSlug,
       package_id: packageId,
-      design_id: selectedDesignId,
+      allocations: allocationsArray,
       buyer_name: (fd.get("buyer_name") as string).trim(),
       buyer_email: (fd.get("buyer_email") as string).trim(),
       buyer_phone: (fd.get("buyer_phone") as string).trim(),
@@ -105,9 +141,29 @@ export function CheckoutForm({
       className="space-y-6 rounded-2xl border border-navy/10 bg-white p-6 shadow-sm"
     >
       <section>
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-charcoal/60">
-          Tasarım Seç
-        </h2>
+        <div className="mb-3 flex items-baseline justify-between">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-charcoal/60">
+            Tasarım Seç
+          </h2>
+          <span
+            className={
+              "text-sm font-bold tabular-nums " +
+              (isValid
+                ? "text-emerald-700"
+                : remaining > 0
+                  ? "text-navy"
+                  : "text-red-600")
+            }
+          >
+            {totalSelected} / {stickerCount}
+            {isValid && " ✓"}
+          </span>
+        </div>
+
+        <p className="mb-3 text-xs text-charcoal/60">
+          Farklı tasarımlardan karıştırabilirsin. Toplam {stickerCount} olmalı.
+        </p>
+
         {designs.length === 0 ? (
           <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
             Şu an satın alınabilir tasarım yok. Lütfen daha sonra tekrar dene.
@@ -115,17 +171,17 @@ export function CheckoutForm({
         ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {designs.map((d) => {
-              const selected = d.id === selectedDesignId;
+              const qty = allocations[d.id] ?? 0;
+              const hasSelection = qty > 0;
+              const canIncrement = totalSelected < stickerCount;
               return (
-                <button
+                <div
                   key={d.id}
-                  type="button"
-                  onClick={() => setSelectedDesignId(d.id)}
                   className={
                     "flex flex-col overflow-hidden rounded-xl border-2 bg-white text-left transition " +
-                    (selected
+                    (hasSelection
                       ? "border-navy shadow-md ring-2 ring-navy/20"
-                      : "border-navy/10 hover:border-navy/30")
+                      : "border-navy/10")
                   }
                 >
                   <div className="relative aspect-square bg-bgSubtle">
@@ -142,9 +198,9 @@ export function CheckoutForm({
                         Önizleme yok
                       </div>
                     )}
-                    {selected && (
+                    {hasSelection && (
                       <span className="absolute right-2 top-2 rounded-full bg-navy px-2 py-0.5 text-[10px] font-bold text-accent shadow">
-                        SEÇİLDİ
+                        {qty} ADET
                       </span>
                     )}
                   </div>
@@ -156,7 +212,32 @@ export function CheckoutForm({
                       </p>
                     )}
                   </div>
-                </button>
+
+                  {/* Quantity selector */}
+                  <div className="flex items-center justify-between gap-2 border-t border-navy/10 bg-navy/[0.02] px-3 py-2">
+                    <button
+                      type="button"
+                      onClick={() => bumpAllocation(d.id, -1)}
+                      disabled={qty === 0 || busy}
+                      className="h-8 w-8 rounded-lg border border-navy/15 bg-white font-bold text-navy transition hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-30"
+                      aria-label={`${d.name} tasarımından bir azalt`}
+                    >
+                      −
+                    </button>
+                    <span className="min-w-[2ch] text-center text-lg font-bold tabular-nums text-navy">
+                      {qty}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => bumpAllocation(d.id, 1)}
+                      disabled={!canIncrement || busy}
+                      className="h-8 w-8 rounded-lg border border-navy/15 bg-white font-bold text-navy transition hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-30"
+                      aria-label={`${d.name} tasarımından bir arttır`}
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
               );
             })}
           </div>
@@ -200,10 +281,14 @@ export function CheckoutForm({
       <div className="border-t border-navy/10 pt-5">
         <button
           type="submit"
-          disabled={busy}
+          disabled={busy || !isValid}
           className="btn-primary w-full"
         >
-          {busy ? "Ödeme sayfasına yönlendiriliyor…" : "Güvenli Ödemeye Geç →"}
+          {busy
+            ? "Ödeme sayfasına yönlendiriliyor…"
+            : !isValid
+              ? `${remaining > 0 ? `${remaining} tasarım daha seç` : "Fazla seçim var"}`
+              : "Güvenli Ödemeye Geç →"}
         </button>
         <p className="mt-3 text-center text-xs text-charcoal/50">
           Ödeme <strong>iyzico</strong> üzerinden alınır. Kart bilgin Tagora sunucularına gelmez.

@@ -17,10 +17,15 @@ import type { StickerPackage } from "@tagora/db";
 
 const SHIPPING_TRY = 15;
 
+interface DesignAllocation {
+  design_id: string;
+  quantity: number;
+}
+
 interface RequestBody {
   package_slug: string;
   package_id: string;
-  design_id: string;
+  allocations: DesignAllocation[];
   buyer_name: string;
   buyer_email: string;
   buyer_phone: string;
@@ -61,57 +66,99 @@ export async function POST(req: NextRequest) {
   }
   const pkg = pkgRaw as StickerPackage;
 
-  // 2b) Design — geçerli mi, aktif mi, stokta yeterli var mı?
-  if (!body.design_id) {
+  // 2b) Karma tasarım dağılımı — validate + stok kontrolü
+  const allocations = Array.isArray(body.allocations) ? body.allocations : [];
+  if (allocations.length === 0) {
     return NextResponse.json(
       { ok: false, error: "Tasarım seçilmedi" },
       { status: 400 },
     );
   }
 
-  const { data: designRaw } = await service
-    .from("sticker_designs")
-    .select("id, slug, name, is_active")
-    .eq("id", body.design_id)
-    .maybeSingle();
+  // Her allocation için: geçerli quantity, unique design_id
+  const seenDesigns = new Set<string>();
+  let totalRequested = 0;
+  for (const a of allocations) {
+    if (!a.design_id || typeof a.quantity !== "number" || a.quantity < 1) {
+      return NextResponse.json(
+        { ok: false, error: "Geçersiz tasarım dağılımı" },
+        { status: 400 },
+      );
+    }
+    if (seenDesigns.has(a.design_id)) {
+      return NextResponse.json(
+        { ok: false, error: "Aynı tasarım birden fazla kez gönderildi" },
+        { status: 400 },
+      );
+    }
+    seenDesigns.add(a.design_id);
+    totalRequested += a.quantity;
+  }
 
-  const design = designRaw as {
-    id: string;
-    slug: string;
-    name: string;
-    is_active: boolean;
-  } | null;
-
-  if (!design || !design.is_active) {
+  // Toplam paket boyutuna eşit mi?
+  if (totalRequested !== pkg.sticker_count) {
     return NextResponse.json(
-      { ok: false, error: "Seçilen tasarım artık mevcut değil" },
+      {
+        ok: false,
+        error: `Tasarım dağılımı toplamı hatalı: ${totalRequested} seçildi, ${pkg.sticker_count} olmalı`,
+      },
       { status: 400 },
     );
   }
 
-  // Stok kontrolü: seçilen design'da yeterli manufactured + owner_id NULL sticker var mı?
-  const { count: availableCount, error: stockErr } = await service
-    .from("stickers")
-    .select("id", { count: "exact", head: true })
-    .eq("design_id", design.id)
-    .eq("status", "manufactured")
-    .is("owner_id", null);
+  // Design'ları çek (adı + aktifliği için)
+  const { data: designsRaw } = await service
+    .from("sticker_designs")
+    .select("id, slug, name, is_active")
+    .in("id", allocations.map((a) => a.design_id));
+  const designs = (designsRaw ?? []) as Array<{
+    id: string;
+    slug: string;
+    name: string;
+    is_active: boolean;
+  }>;
 
-  if (stockErr) {
+  // Tüm design'lar bulundu ve aktif mi?
+  if (designs.length !== allocations.length) {
     return NextResponse.json(
-      { ok: false, error: "Stok sorgusu başarısız: " + stockErr.message },
-      { status: 500 },
+      { ok: false, error: "Bazı tasarımlar bulunamadı" },
+      { status: 400 },
+    );
+  }
+  const inactive = designs.find((d) => !d.is_active);
+  if (inactive) {
+    return NextResponse.json(
+      { ok: false, error: `"${inactive.name}" tasarımı artık mevcut değil` },
+      { status: 400 },
     );
   }
 
-  if ((availableCount ?? 0) < pkg.sticker_count) {
-    return NextResponse.json(
-      {
-        ok: false,
-        error: `"${design.name}" tasarımında yeterli stok yok (${availableCount ?? 0} kaldı, ${pkg.sticker_count} gerekli). Lütfen başka bir tasarım seç.`,
-      },
-      { status: 409 },
-    );
+  // Her design için stok kontrolü
+  for (const a of allocations) {
+    const design = designs.find((d) => d.id === a.design_id)!;
+    const { count: available, error: stockErr } = await service
+      .from("stickers")
+      .select("id", { count: "exact", head: true })
+      .eq("design_id", a.design_id)
+      .eq("status", "manufactured")
+      .is("owner_id", null);
+
+    if (stockErr) {
+      return NextResponse.json(
+        { ok: false, error: "Stok sorgusu başarısız: " + stockErr.message },
+        { status: 500 },
+      );
+    }
+
+    if ((available ?? 0) < a.quantity) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `"${design.name}" tasarımında yeterli stok yok (${available ?? 0} kaldı, ${a.quantity} gerekli).`,
+        },
+        { status: 409 },
+      );
+    }
   }
 
   // 3) Basic validation
@@ -141,6 +188,10 @@ export async function POST(req: NextRequest) {
 
   // Kısa order no: TAG-2026-000123 (retry ile unique)
   let orderNo = generateOrderNo();
+  // Karma paket olsa da orders.design_id'ye ilk tasarımı (baskın olanı) yaz.
+  // Bu backward compat + genel raporlama için (admin liste bir tasarım gösterebilsin).
+  const primaryDesign = allocations.reduce((a, b) => (b.quantity > a.quantity ? b : a));
+
   const { data: orderRaw, error: orderErr } = await service
     .from("orders")
     .insert({
@@ -150,7 +201,7 @@ export async function POST(req: NextRequest) {
       subtotal_try: subtotal,
       shipping_try: SHIPPING_TRY,
       total_try: total,
-      design_id: design.id,
+      design_id: primaryDesign.design_id,
       buyer_name: name,
       buyer_email: email,
       buyer_phone: phone,
@@ -185,6 +236,20 @@ export async function POST(req: NextRequest) {
     package_slug: pkg.slug,
     sticker_count: pkg.sticker_count,
   });
+
+  // order_design_allocations — karma tasarım dağılımı
+  const allocationRows = allocations.map((a) => ({
+    order_id: order.id,
+    design_id: a.design_id,
+    quantity: a.quantity,
+  }));
+  const { error: allocErr } = await service
+    .from("order_design_allocations")
+    .insert(allocationRows);
+  if (allocErr) {
+    // Fatal değil, sadece log — order yine de kaydedildi.
+    console.error("[checkout] order_design_allocations insert hatası:", allocErr.message);
+  }
 
   // 6) iyzico Checkout Form Initialize
   const origin = new URL(req.url).origin;
