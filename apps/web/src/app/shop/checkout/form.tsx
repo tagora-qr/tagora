@@ -25,6 +25,9 @@ interface Props {
   defaultName: string;
   defaultPhone: string;
   designs: Design[];
+  /** İlk sipariş → 1 yıl abonelik bedava kalemi göster */
+  isFirstYearFree: boolean;
+  subscriptionTry: number;
 }
 
 const TR_CITIES = [
@@ -58,6 +61,8 @@ export function CheckoutForm({
   defaultName,
   defaultPhone,
   designs,
+  isFirstYearFree,
+  subscriptionTry,
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -412,6 +417,16 @@ export function CheckoutForm({
               accent="text-emerald-700"
             />
             <Row label="Kargo" value={fmt(15)} />
+            {isFirstYearFree && (
+              <>
+                <Row label="Yıllık kullanım ücreti" value={fmt(subscriptionTry)} />
+                <Row
+                  label="İlk yıl bedava 🎁"
+                  value={`−${fmt(subscriptionTry)}`}
+                  accent="text-emerald-700"
+                />
+              </>
+            )}
             <div className="mt-2 flex items-center justify-between border-t border-navy/10 pt-2">
               <span className="font-bold text-navy">Toplam</span>
               <span className="text-lg font-bold text-navy tabular-nums">

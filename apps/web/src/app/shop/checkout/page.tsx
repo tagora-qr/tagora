@@ -62,21 +62,27 @@ export default async function CheckoutPage({
     preview_url: string | null;
   }>;
 
-  // Kullanıcı profili (email, isim ön-doldur)
+  // Kullanıcı profili (email, isim ön-doldur + subscription durumu)
   const { data: profileRaw } = await supabase
     .from("users")
-    .select("email, display_name, phone")
+    .select("email, display_name, phone, subscription_expires_at")
     .eq("auth_user_id", user.id)
     .maybeSingle();
   const profile = (profileRaw ?? {}) as {
     email?: string;
     display_name?: string | null;
     phone?: string | null;
+    subscription_expires_at?: string | null;
   };
+
+  // İlk sticker'ını alan biri → 1 yıl bedava kullanım. Zaten trial başlamışsa
+  // kalem gösterme (kafa karışıklığı olmasın).
+  const isFirstYearFree = !profile.subscription_expires_at;
+  const SUBSCRIPTION_TRY = 99;
 
   // Kargo: 15 TL sabit (v1), sonra tartıya göre dinamik
   const SHIPPING_TRY = 15;
-  const total = Number(p.price_try) + SHIPPING_TRY;
+  const total = Number(p.price_try) + SHIPPING_TRY; // Abonelik +99 -99 = net 0
 
   return (
     <div className="min-h-screen bg-bgSubtle">
@@ -105,6 +111,8 @@ export default async function CheckoutPage({
               defaultName={profile.display_name ?? ""}
               defaultPhone={profile.phone ?? ""}
               designs={designs}
+              isFirstYearFree={isFirstYearFree}
+              subscriptionTry={SUBSCRIPTION_TRY}
             />
           </div>
 
@@ -131,6 +139,19 @@ export default async function CheckoutPage({
             <div className="mt-4 space-y-1 border-t border-navy/10 pt-3 text-sm">
               <Row label="Ara toplam" value={`${Number(p.price_try).toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`} />
               <Row label="Kargo (Türkiye içi)" value={`${SHIPPING_TRY.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`} />
+              {isFirstYearFree && (
+                <>
+                  <Row
+                    label="Yıllık kullanım ücreti"
+                    value={`${SUBSCRIPTION_TRY.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`}
+                  />
+                  <Row
+                    label="İlk yıl bedava 🎁"
+                    value={`−${SUBSCRIPTION_TRY.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`}
+                    accent="text-emerald-700"
+                  />
+                </>
+              )}
             </div>
 
             <div className="mt-3 flex items-center justify-between border-t border-navy/10 pt-3">
@@ -139,6 +160,14 @@ export default async function CheckoutPage({
                 {total.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺
               </span>
             </div>
+
+            {isFirstYearFree && (
+              <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-[11px] leading-snug text-emerald-800">
+                🎁 <strong>1 yıl ücretsiz kullanım</strong> siparişinle otomatik başlar.
+                1 yıl sonunda yenilemek istersen 99 ₺/yıl. Otomatik ödeme yok, sen
+                yönetirsin.
+              </p>
+            )}
 
             <p className="mt-4 text-[10px] text-charcoal/50">
               KDV dahil. Ödeme iyzico güvenli ödeme altyapısıyla alınır. Kart bilgin
@@ -151,10 +180,18 @@ export default async function CheckoutPage({
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: string;
+}) {
   return (
-    <div className="flex items-center justify-between">
-      <span className="text-charcoal/60">{label}</span>
+    <div className={`flex items-center justify-between ${accent ?? ""}`}>
+      <span className={accent ? "" : "text-charcoal/60"}>{label}</span>
       <span className="tabular-nums">{value}</span>
     </div>
   );

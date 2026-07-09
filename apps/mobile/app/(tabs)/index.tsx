@@ -79,7 +79,12 @@ export default function StickersScreen() {
           </View>
         }
         ListEmptyComponent={
-          loading ? null : <EmptyState onClaim={() => router.push("/claim")} />
+          loading ? null : (
+            <EmptyState
+              onClaim={() => router.push("/claim")}
+              onBuy={() => router.push("/(tabs)/profile" as never)}
+            />
+          )
         }
         renderItem={({ item }) => (
           <StickerCard
@@ -131,19 +136,32 @@ function StickerCard({
   );
 }
 
-function EmptyState({ onClaim }: { onClaim: () => void }) {
+function EmptyState({
+  onClaim,
+  onBuy,
+}: {
+  onClaim: () => void;
+  onBuy: () => void;
+}) {
   return (
     <View style={styles.empty}>
       <Text style={styles.emptyEmoji}>📦</Text>
       <Text style={styles.emptyTitle}>Henüz sticker&apos;ın yok</Text>
       <Text style={styles.emptyBody}>
-        İlk siparişini ver veya elindeki QR&apos;ı kameraya göster.
+        Yeni sticker satın al veya elindeki QR&apos;ı kameraya göster.
       </Text>
       <Button
-        label="QR ile Sticker Ekle"
-        onPress={onClaim}
+        label="Sticker Satın Al"
+        onPress={onBuy}
         size="lg"
         style={{ marginTop: spacing.xl }}
+      />
+      <Button
+        label="Elimdeki QR'ı Tara"
+        onPress={onClaim}
+        variant="secondary"
+        size="lg"
+        style={{ marginTop: spacing.sm }}
       />
     </View>
   );
