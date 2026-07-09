@@ -26,6 +26,7 @@ interface RequestBody {
   package_slug: string;
   package_id: string;
   allocations: DesignAllocation[];
+  coupon_code: string | null;
   buyer_name: string;
   buyer_email: string;
   buyer_phone: string;
@@ -182,9 +183,113 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Profil yok" }, { status: 500 });
   }
 
-  // 5) Order kaydı
+  // 5) Kupon (opsiyonel) — validate + discount hesap
   const subtotal = Number(pkg.price_try);
-  const total = subtotal + SHIPPING_TRY;
+  let discount = 0;
+  let coupon: {
+    id: string;
+    code: string;
+    type: "percentage" | "fixed";
+    value: number;
+    min_order_try: number | null;
+    max_uses: number | null;
+    max_uses_per_user: number | null;
+    used_count: number;
+    valid_from: string | null;
+    valid_until: string | null;
+    is_active: boolean;
+  } | null = null;
+
+  const couponCodeRaw = body.coupon_code?.trim().toUpperCase();
+  if (couponCodeRaw) {
+    const { data: couponRaw } = await service
+      .from("coupons")
+      .select(
+        "id, code, type, value, min_order_try, max_uses, max_uses_per_user, used_count, valid_from, valid_until, is_active",
+      )
+      .eq("code", couponCodeRaw)
+      .maybeSingle();
+
+    coupon = couponRaw as typeof coupon;
+
+    if (!coupon) {
+      return NextResponse.json(
+        { ok: false, error: "Kupon bulunamadı" },
+        { status: 400 },
+      );
+    }
+    if (!coupon.is_active) {
+      return NextResponse.json(
+        { ok: false, error: "Kupon aktif değil" },
+        { status: 400 },
+      );
+    }
+
+    const now = new Date();
+    if (coupon.valid_from && new Date(coupon.valid_from) > now) {
+      return NextResponse.json(
+        { ok: false, error: "Kupon henüz geçerli değil" },
+        { status: 400 },
+      );
+    }
+    if (coupon.valid_until && new Date(coupon.valid_until) < now) {
+      return NextResponse.json(
+        { ok: false, error: "Kuponun süresi dolmuş" },
+        { status: 400 },
+      );
+    }
+    if (coupon.max_uses !== null && coupon.used_count >= coupon.max_uses) {
+      return NextResponse.json(
+        { ok: false, error: "Kupon kullanım limiti dolmuş" },
+        { status: 400 },
+      );
+    }
+    if (
+      coupon.min_order_try !== null &&
+      subtotal < Number(coupon.min_order_try)
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: `Bu kupon için en az ${Number(coupon.min_order_try).toLocaleString("tr-TR")} ₺ tutarında sipariş gerekli`,
+        },
+        { status: 400 },
+      );
+    }
+
+    // Kullanıcı başı limit
+    if (coupon.max_uses_per_user !== null) {
+      const { count: userUses } = await service
+        .from("coupon_uses")
+        .select("id", { count: "exact", head: true })
+        .eq("coupon_id", coupon.id)
+        .eq("user_id", tagoraUserId);
+
+      if ((userUses ?? 0) >= coupon.max_uses_per_user) {
+        return NextResponse.json(
+          {
+            ok: false,
+            error: "Bu kuponu zaten kullandın",
+          },
+          { status: 400 },
+        );
+      }
+    }
+
+    // Discount hesap
+    if (coupon.type === "percentage") {
+      discount = Math.round((subtotal * Number(coupon.value)) / 100 * 100) / 100;
+    } else {
+      // fixed
+      discount = Math.min(Number(coupon.value), subtotal);
+    }
+    // Guarantee: discount subtotal'ı geçmesin
+    if (discount > subtotal) discount = subtotal;
+  }
+
+  // 6) Order kaydı — total = subtotal + shipping - discount
+  const total = Math.max(0, subtotal + SHIPPING_TRY - discount);
+  const isFullDiscount = total === 0; // %100 kupon + kargo ücretsiz senaryosu
 
   // Kısa order no: TAG-2026-000123 (retry ile unique)
   let orderNo = generateOrderNo();
@@ -197,10 +302,13 @@ export async function POST(req: NextRequest) {
     .insert({
       order_no: orderNo,
       user_id: tagoraUserId,
-      status: "pending",
+      status: isFullDiscount ? "paid" : "pending",
       subtotal_try: subtotal,
       shipping_try: SHIPPING_TRY,
+      discount_try: discount,
       total_try: total,
+      coupon_id: coupon?.id ?? null,
+      coupon_code: coupon?.code ?? null,
       design_id: primaryDesign.design_id,
       buyer_name: name,
       buyer_email: email,
@@ -251,7 +359,37 @@ export async function POST(req: NextRequest) {
     console.error("[checkout] order_design_allocations insert hatası:", allocErr.message);
   }
 
-  // 6) iyzico Checkout Form Initialize
+  // Coupon kullanım kaydı (varsa)
+  if (coupon) {
+    const { error: couponUseErr } = await service.from("coupon_uses").insert({
+      coupon_id: coupon.id,
+      order_id: order.id,
+      user_id: tagoraUserId,
+      discount_try: discount,
+    });
+    if (couponUseErr) {
+      console.error("[checkout] coupon_uses insert hatası:", couponUseErr.message);
+    }
+  }
+
+  // 6a) Full discount senaryosu (total=0): iyzico'yu skip et, sipariş zaten "paid"
+  if (isFullDiscount) {
+    // paid_at set et — audit için
+    await service
+      .from("orders")
+      .update({ paid_at: new Date().toISOString() })
+      .eq("id", order.id);
+
+    return NextResponse.json({
+      ok: true,
+      order_no: orderNo,
+      // Client bunu görünce "ödeme yapıldı" sayfasına yönlendirir
+      payment_page_url: `/dashboard/orders/${orderNo}?free=1`,
+      free: true,
+    });
+  }
+
+  // 6b) iyzico Checkout Form Initialize (normal ödemeli sipariş)
   const origin = new URL(req.url).origin;
   const [firstName, ...rest] = name.split(" ");
   const surname = rest.length > 0 ? rest.join(" ") : firstName;

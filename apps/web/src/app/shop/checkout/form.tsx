@@ -41,6 +41,15 @@ const TR_CITIES = [
   "Sivas", "Şırnak", "Tokat", "Tunceli", "Uşak", "Yalova", "Yozgat", "Zonguldak",
 ];
 
+interface AppliedCoupon {
+  code: string;
+  type: "percentage" | "fixed";
+  value: number;
+  description: string | null;
+  discount: number;
+  subtotal: number;
+}
+
 export function CheckoutForm({
   packageSlug,
   packageId,
@@ -52,6 +61,12 @@ export function CheckoutForm({
 }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Kupon state
+  const [couponInput, setCouponInput] = useState("");
+  const [applyingCoupon, setApplyingCoupon] = useState(false);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
 
   // Karma paket: her design için ne kadar seçildi. Varsayılan: hepsi ilk tasarımda.
   const [allocations, setAllocations] = useState<Record<string, number>>(() => {
@@ -80,6 +95,47 @@ export function CheckoutForm({
     });
   };
 
+  const applyCoupon = async () => {
+    setCouponError(null);
+    const code = couponInput.trim().toUpperCase();
+    if (!code) {
+      setCouponError("Kod boş olamaz");
+      return;
+    }
+    setApplyingCoupon(true);
+    try {
+      const res = await fetch("/api/checkout/validate-coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, package_id: packageId }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        setCouponError(json.error ?? "Kupon uygulanamadı");
+        setApplyingCoupon(false);
+        return;
+      }
+      setAppliedCoupon({
+        code: json.coupon.code,
+        type: json.coupon.type,
+        value: json.coupon.value,
+        description: json.coupon.description,
+        discount: json.discount,
+        subtotal: json.subtotal,
+      });
+      setCouponInput("");
+    } catch (e) {
+      setCouponError((e as Error).message);
+    } finally {
+      setApplyingCoupon(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError(null);
+  };
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -103,6 +159,7 @@ export function CheckoutForm({
       package_slug: packageSlug,
       package_id: packageId,
       allocations: allocationsArray,
+      coupon_code: appliedCoupon?.code ?? null,
       buyer_name: (fd.get("buyer_name") as string).trim(),
       buyer_email: (fd.get("buyer_email") as string).trim(),
       buyer_phone: (fd.get("buyer_phone") as string).trim(),
@@ -272,6 +329,99 @@ export function CheckoutForm({
         <TextareaField label="Not (opsiyonel)" name="customer_note" placeholder="Kargo notları vs." />
       </section>
 
+      {/* Kupon */}
+      <section>
+        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-charcoal/60">
+          İndirim Kuponu
+        </h2>
+        {!appliedCoupon ? (
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={couponInput}
+                onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    applyCoupon();
+                  }
+                }}
+                placeholder="Örn: HEDIYE10"
+                disabled={applyingCoupon}
+                className="flex-1 rounded-xl border border-navy/15 bg-white px-3.5 py-2.5 font-mono text-base uppercase tracking-wider text-charcoal placeholder:text-charcoal/40 focus:border-navy focus:outline-none focus:ring-2 focus:ring-navy/20"
+              />
+              <button
+                type="button"
+                onClick={applyCoupon}
+                disabled={applyingCoupon || !couponInput.trim()}
+                className="rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-accent hover:bg-navy-800 disabled:opacity-40"
+              >
+                {applyingCoupon ? "…" : "Uygula"}
+              </button>
+            </div>
+            {couponError && (
+              <p className="text-sm text-red-700">⚠️ {couponError}</p>
+            )}
+          </div>
+        ) : (
+          <div className="rounded-xl border-2 border-emerald-200 bg-emerald-50 p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+                    ✓ UYGULANDI
+                  </span>
+                  <span className="font-mono text-sm font-bold text-emerald-900">
+                    {appliedCoupon.code}
+                  </span>
+                </div>
+                {appliedCoupon.description && (
+                  <p className="mt-1 text-xs text-emerald-800/80">
+                    {appliedCoupon.description}
+                  </p>
+                )}
+                <p className="mt-2 text-sm font-semibold text-emerald-900 tabular-nums">
+                  {appliedCoupon.type === "percentage"
+                    ? `%${appliedCoupon.value} indirim`
+                    : `${appliedCoupon.value.toLocaleString("tr-TR")} ₺ indirim`}
+                  {" → "}
+                  <span className="text-emerald-800">
+                    −{appliedCoupon.discount.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺
+                  </span>
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={removeCoupon}
+                className="text-xs font-medium text-emerald-800 underline hover:text-emerald-900"
+              >
+                Kaldır
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Toplam breakdown */}
+        {appliedCoupon && (
+          <div className="mt-3 rounded-lg border border-navy/10 bg-navy/[0.02] p-3 text-sm">
+            <Row label="Ara toplam" value={fmt(appliedCoupon.subtotal)} />
+            <Row
+              label={`İndirim (${appliedCoupon.code})`}
+              value={`−${fmt(appliedCoupon.discount)}`}
+              accent="text-emerald-700"
+            />
+            <Row label="Kargo" value={fmt(15)} />
+            <div className="mt-2 flex items-center justify-between border-t border-navy/10 pt-2">
+              <span className="font-bold text-navy">Toplam</span>
+              <span className="text-lg font-bold text-navy tabular-nums">
+                {fmt(Math.max(0, appliedCoupon.subtotal + 15 - appliedCoupon.discount))}
+              </span>
+            </div>
+          </div>
+        )}
+      </section>
+
       {error && (
         <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
           ⚠️ {error}
@@ -295,6 +445,29 @@ export function CheckoutForm({
         </p>
       </div>
     </form>
+  );
+}
+
+function fmt(v: number) {
+  return `${v.toLocaleString("tr-TR", { minimumFractionDigits: 2 })} ₺`;
+}
+
+function Row({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: string;
+  accent?: string;
+}) {
+  return (
+    <div className="flex items-center justify-between py-0.5">
+      <span className="text-xs text-charcoal/70">{label}</span>
+      <span className={"tabular-nums text-sm font-medium " + (accent ?? "text-charcoal")}>
+        {value}
+      </span>
+    </div>
   );
 }
 
