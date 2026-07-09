@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Rounded background (iOS style) -->
+  <rect width="1024" height="1024" rx="224" ry="224" fill="#0F1B3D"/>
+  <!-- Subtle grid pattern -->
+  <pattern id="grid" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#F5B83C" stroke-width="1" opacity="0.05"/>
+  </pattern>
+  <rect width="1024" height="1024" rx="224" ry="224" fill="url(#grid)"/>
+
+  <!-- T logo — geometric (matches web logo) -->
+  <g transform="translate(288, 288)">
+    <!-- Top horizontal bar -->
+    <rect x="0" y="80" width="448" height="72" rx="12" fill="#D4F36A"/>
+    <!-- Vertical bar -->
+    <rect x="188" y="80" width="72" height="368" rx="12" fill="#D4F36A"/>
+    <!-- QR corner detail (top-right) -->
+    <rect x="360" y="176" width="40" height="40" rx="6" fill="#D4F36A"/>
+    <!-- QR corner detail (bottom-left) -->
+    <rect x="48" y="400" width="40" height="40" rx="6" fill="#D4F36A"/>
+  </g>
+</svg>

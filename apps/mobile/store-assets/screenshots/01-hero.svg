@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1080" y2="1920" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0F1B3D"/>
+      <stop offset="1" stop-color="#1A2F5C"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="540" cy="600" r="700" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#F5B83C" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#F5B83C" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="screenBg" x1="0" y1="0" x2="0" y2="1152" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FAF7F0"/>
+      <stop offset="1" stop-color="#F0EBDC"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1080" height="1920" fill="url(#bg)"/>
+  <rect width="1080" height="1920" fill="url(#glow)"/>
+
+  <text x="540" y="180" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="72" font-weight="800" fill="#FFFFFF">Anonim iletişim</text>
+  <text x="540" y="270" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="56" font-weight="600" fill="#D4F36A">artık çok kolay</text>
+
+  <g transform="translate(240, 380)">
+    <rect x="10" y="20" width="600" height="1200" rx="80" fill="#000000" opacity="0.4"/>
+    <rect x="0" y="0" width="600" height="1200" rx="80" fill="#0A0A18"/>
+    <rect x="0" y="0" width="600" height="1200" rx="80" fill="none" stroke="#2A2A3E" stroke-width="4"/>
+    <rect x="20" y="24" width="560" height="1152" rx="60" fill="url(#screenBg)"/>
+    <rect x="250" y="24" width="100" height="30" rx="15" fill="#000000"/>
+
+    <text x="60" y="90" font-family="Helvetica, Arial, sans-serif" font-size="20" font-weight="600" fill="#0F1B3D">9:41</text>
+
+    <g transform="translate(490, 76)">
+      <rect x="0" y="0" width="24" height="12" rx="2" fill="#0F1B3D"/>
+      <rect x="30" y="0" width="24" height="12" rx="2" fill="#0F1B3D"/>
+      <rect x="60" y="-2" width="30" height="14" rx="4" fill="none" stroke="#0F1B3D" stroke-width="2"/>
+      <rect x="63" y="1" width="20" height="8" rx="2" fill="#0F1B3D"/>
+    </g>
+
+    <g transform="translate(60, 140)">
+      <rect x="0" y="0" width="60" height="60" rx="14" fill="#F5B83C"/>
+      <text x="30" y="45" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#0F1B3D">T</text>
+      <text x="80" y="45" font-family="Helvetica, Arial, sans-serif" font-size="32" font-weight="800" fill="#0F1B3D">Tagora</text>
+    </g>
+
+    <g transform="translate(150, 280)">
+      <rect x="0" y="0" width="300" height="300" rx="24" fill="#0F1B3D"/>
+      <rect x="30" y="30" width="240" height="240" rx="16" fill="#FFFFFF"/>
+      <g transform="translate(50, 50)">
+        <rect x="0" y="0" width="40" height="40" fill="#0F1B3D"/>
+        <rect x="5" y="5" width="30" height="30" fill="#FFFFFF"/>
+        <rect x="12" y="12" width="16" height="16" fill="#0F1B3D"/>
+        <rect x="160" y="0" width="40" height="40" fill="#0F1B3D"/>
+        <rect x="165" y="5" width="30" height="30" fill="#FFFFFF"/>
+        <rect x="172" y="12" width="16" height="16" fill="#0F1B3D"/>
+        <rect x="0" y="160" width="40" height="40" fill="#0F1B3D"/>
+        <rect x="5" y="165" width="30" height="30" fill="#FFFFFF"/>
+        <rect x="12" y="172" width="16" height="16" fill="#0F1B3D"/>
+        <rect x="60" y="0" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="80" y="0" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="100" y="0" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="120" y="0" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="60" y="20" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="90" y="20" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="130" y="20" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="70" y="40" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="110" y="40" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="0" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="20" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="40" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="60" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="90" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="120" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="150" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="180" y="60" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="10" y="80" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="50" y="80" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="80" y="80" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="110" y="80" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="140" y="80" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="170" y="80" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="30" y="100" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="70" y="100" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="100" y="100" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="130" y="100" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="160" y="100" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="0" y="120" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="40" y="120" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="60" y="120" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="90" y="120" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="120" y="120" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="150" y="120" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="60" y="150" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="90" y="150" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="130" y="150" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="70" y="170" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="110" y="170" width="10" height="10" fill="#0F1B3D"/>
+        <rect x="150" y="170" width="10" height="10" fill="#0F1B3D"/>
+      </g>
+    </g>
+
+    <g transform="translate(60, 640)">
+      <rect x="0" y="0" width="480" height="120" rx="20" fill="#D4F36A"/>
+      <text x="30" y="46" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#0F1B3D">Kimliğin gizli</text>
+      <text x="30" y="82" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#0F1B3D">Ne isim, ne numara. Sadece anonim mesaj.</text>
+    </g>
+
+    <g transform="translate(60, 790)">
+      <rect x="0" y="0" width="480" height="120" rx="20" fill="#F5B83C"/>
+      <text x="30" y="46" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#0F1B3D">Anında bildirim</text>
+      <text x="30" y="82" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#0F1B3D">QR okunduğunda push notification.</text>
+    </g>
+
+    <g transform="translate(60, 940)">
+      <rect x="0" y="0" width="480" height="120" rx="20" fill="#0F1B3D"/>
+      <text x="30" y="46" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#FFFFFF">KVKK uyumlu</text>
+      <text x="30" y="82" font-family="Helvetica, Arial, sans-serif" font-size="19" fill="#D4F36A">Türkiye'de tasarlandı, hukuka uygun.</text>
+    </g>
+
+    <g transform="translate(60, 1080)">
+      <rect x="0" y="0" width="480" height="70" rx="16" fill="#0F1B3D"/>
+      <text x="240" y="46" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="#D4F36A">Hemen Başla</text>
+    </g>
+  </g>
+
+  <text x="540" y="1720" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#FFFFFF">Uçtan uca şifreli</text>
+  <text x="540" y="1780" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="30" font-weight="500" fill="#B8C0D0">Kimliğin sende, kontrol sende</text>
+</svg>

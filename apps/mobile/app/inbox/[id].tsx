@@ -15,7 +15,7 @@ import {
   Alert,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { supabase } from "@/lib/supabase";
 import { formatRelativeTime } from "@/lib/utils";
 import { USE_CASE_LABELS } from "@tagora/shared";
@@ -26,6 +26,7 @@ export default function ChatScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const conversationId = params.id;
+  const insets = useSafeAreaInsets();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [stickerInfo, setStickerInfo] = useState<{
@@ -292,7 +293,12 @@ export default function ChatScreen() {
           }
         />
 
-        <View style={styles.compose}>
+        <View
+          style={[
+            styles.compose,
+            { paddingBottom: Math.max(insets.bottom, spacing.md) + spacing.sm },
+          ]}
+        >
           <TextInput
             value={draft}
             onChangeText={setDraft}
@@ -428,7 +434,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.navyMuted,
-    paddingBottom: Platform.OS === "ios" ? spacing.md : spacing.lg,
+    // paddingBottom inline olarak veriliyor — safe area insets'e göre
   },
   composeInput: {
     flex: 1,

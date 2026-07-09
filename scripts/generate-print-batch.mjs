@@ -7,13 +7,16 @@
  * gönderilmeye hazır ZIP.
  *
  * Kullanım:
- *   node scripts/generate-print-batch.mjs <use_case> <count> [--insert]
+ *   node scripts/generate-print-batch.mjs <use_case> <count> [--design <slug>] [--insert]
  *
  * Örnekler:
  *   node scripts/generate-print-batch.mjs vehicle 100
  *   node scripts/generate-print-batch.mjs pet 500 --insert
+ *   node scripts/generate-print-batch.mjs vehicle 100 --design split --insert
  *
  * --insert flag'i tokenları Supabase'e insert eder (production için).
+ * --design <slug> DB'ye insert edilen sticker'lara design_id set eder
+ *   (varsayılan: classic). Geçerli slug'lar: split, fresh, ocean, classic
  * Insert olmadan sadece dosya + CSV üretir (test / preview için).
  */
 
@@ -219,7 +222,22 @@ async function loadEnv() {
 // =============================================================================
 // SUPABASE INSERT
 // =============================================================================
-async function insertTokensToDb(tokens, useCase) {
+/**
+ * Design slug → id resolver
+ */
+async function resolveDesignId(supabase, slug) {
+  const { data, error } = await supabase
+    .from("sticker_designs")
+    .select("id, name")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) throw new Error(`Design fetch hatası: ${error.message}`);
+  if (!data) throw new Error(`Design bulunamadı: slug='${slug}'. Geçerli slug'lar: split, fresh, ocean, classic`);
+  return data;
+}
+
+async function insertTokensToDb(tokens, useCase, designSlug) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -233,10 +251,15 @@ async function insertTokensToDb(tokens, useCase) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
+  // Design slug → id resolve
+  const design = await resolveDesignId(supabase, designSlug);
+  console.log(`   🎨 Design: ${design.name} (${designSlug})`);
+
   const rows = tokens.map((token) => ({
     token,
     use_case: useCase,
     status: "manufactured",
+    design_id: design.id,
   }));
 
   // Chunked insert — 500'lük parçalar (Supabase 1000 limit güvenli altında)
@@ -290,9 +313,27 @@ async function insertBatchRecord({ name, useCase, sku, size, count, outputDir })
 // MAIN
 // =============================================================================
 
+/**
+ * Parse --design <slug> flag
+ */
+function parseDesignFlag(flags) {
+  const idx = flags.indexOf("--design");
+  if (idx === -1) return "classic"; // default
+  const slug = flags[idx + 1];
+  if (!slug) {
+    throw new Error("--design flag'i sonrasında bir slug bekleniyor (örn: --design split)");
+  }
+  const valid = ["split", "fresh", "ocean", "classic"];
+  if (!valid.includes(slug)) {
+    throw new Error(`Geçersiz design slug: '${slug}'. Geçerli slug'lar: ${valid.join(", ")}`);
+  }
+  return slug;
+}
+
 async function main() {
   const [useCase, countStr, ...flags] = process.argv.slice(2);
   const doInsert = flags.includes("--insert");
+  const designSlug = parseDesignFlag(flags);
 
   // Insert için env değişkenleri gerekli
   if (doInsert) {
@@ -300,8 +341,9 @@ async function main() {
   }
 
   if (!useCase || !countStr) {
-    console.error("Kullanım: node scripts/generate-print-batch.mjs <use_case> <count> [--insert]");
+    console.error("Kullanım: node scripts/generate-print-batch.mjs <use_case> <count> [--design <slug>] [--insert]");
     console.error("use_case: vehicle | door | luggage | pet | bike");
+    console.error("design:   split | fresh | ocean | classic (varsayılan: classic)");
     process.exit(1);
   }
 
@@ -325,6 +367,7 @@ async function main() {
   console.log(`\n🎨 Tagora Sticker Batch Generator`);
   console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
   console.log(`Use case:    ${useCase} (${config.sku}, ${config.size})`);
+  console.log(`Design:      ${designSlug}${doInsert ? "" : " (DB insert yok, sadece dosya)"}`);
   console.log(`Adet:        ${count}`);
   console.log(`Output:      ${outputDir}\n`);
 
@@ -400,13 +443,13 @@ omer@complify.io — Ömer Kılınç, Tagora
   if (doInsert) {
     console.log(`\n⚙️  Supabase'e insert ediliyor...`);
     try {
-      const { insertedCount, errors } = await insertTokensToDb(tokens, useCase);
+      const { insertedCount, errors } = await insertTokensToDb(tokens, useCase, designSlug);
       if (errors.length > 0) {
         console.log(`\n⚠️  ${errors.length} chunk hata verdi:`);
         errors.forEach((e) => console.log(`   • ${e}`));
       }
       console.log(`\n✅ ${insertedCount} / ${count} sticker DB'ye insert edildi.`);
-      console.log(`   status='manufactured' · use_case='${useCase}'`);
+      console.log(`   status='manufactured' · use_case='${useCase}' · design='${designSlug}'`);
 
       // Batch kaydı da ekle
       await insertBatchRecord({
@@ -428,7 +471,7 @@ omer@complify.io — Ömer Kılınç, Tagora
     }
   } else {
     console.log(`\n💡 Bu preview batch (DB'ye insert YAPILMADI).`);
-    console.log(`   Production için: node scripts/generate-print-batch.mjs ${useCase} ${count} --insert`);
+    console.log(`   Production için: node scripts/generate-print-batch.mjs ${useCase} ${count} --design ${designSlug} --insert`);
     console.log(`   Insert olmadan sticker taranırsa "sticker bulunamadı" hatası döner.`);
   }
 

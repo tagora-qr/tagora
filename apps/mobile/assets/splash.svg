@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1284 2778" width="1284" height="2778">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F1B3D"/>
+      <stop offset="50%" stop-color="#1A2F5C"/>
+      <stop offset="100%" stop-color="#0F1B3D"/>
+    </linearGradient>
+    <pattern id="grid" x="0" y="0" width="80" height="80" patternUnits="userSpaceOnUse">
+      <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#F5B83C" stroke-width="1" opacity="0.05"/>
+    </pattern>
+  </defs>
+  <rect width="1284" height="2778" fill="url(#bg)"/>
+  <rect width="1284" height="2778" fill="url(#grid)"/>
+
+  <!-- T logo — centered -->
+  <g transform="translate(392, 1180)">
+    <rect x="0" y="80" width="500" height="80" rx="16" fill="#D4F36A"/>
+    <rect x="210" y="80" width="80" height="420" rx="16" fill="#D4F36A"/>
+    <rect x="400" y="200" width="50" height="50" rx="8" fill="#D4F36A"/>
+    <rect x="50" y="450" width="50" height="50" rx="8" fill="#D4F36A"/>
+  </g>
+
+  <!-- Wordmark below -->
+  <text x="642" y="1830" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="80" font-weight="800" fill="#FFFFFF" letter-spacing="-0.02em">Tagora</text>
+  <text x="642" y="1900" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="30" font-weight="500" fill="rgba(255,255,255,0.6)">Anonim iletişim için akıllı QR</text>
+</svg>

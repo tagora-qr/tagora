@@ -20,6 +20,7 @@ const SHIPPING_TRY = 15;
 interface RequestBody {
   package_slug: string;
   package_id: string;
+  design_id: string;
   buyer_name: string;
   buyer_email: string;
   buyer_phone: string;
@@ -60,6 +61,59 @@ export async function POST(req: NextRequest) {
   }
   const pkg = pkgRaw as StickerPackage;
 
+  // 2b) Design — geçerli mi, aktif mi, stokta yeterli var mı?
+  if (!body.design_id) {
+    return NextResponse.json(
+      { ok: false, error: "Tasarım seçilmedi" },
+      { status: 400 },
+    );
+  }
+
+  const { data: designRaw } = await service
+    .from("sticker_designs")
+    .select("id, slug, name, is_active")
+    .eq("id", body.design_id)
+    .maybeSingle();
+
+  const design = designRaw as {
+    id: string;
+    slug: string;
+    name: string;
+    is_active: boolean;
+  } | null;
+
+  if (!design || !design.is_active) {
+    return NextResponse.json(
+      { ok: false, error: "Seçilen tasarım artık mevcut değil" },
+      { status: 400 },
+    );
+  }
+
+  // Stok kontrolü: seçilen design'da yeterli manufactured + owner_id NULL sticker var mı?
+  const { count: availableCount, error: stockErr } = await service
+    .from("stickers")
+    .select("id", { count: "exact", head: true })
+    .eq("design_id", design.id)
+    .eq("status", "manufactured")
+    .is("owner_id", null);
+
+  if (stockErr) {
+    return NextResponse.json(
+      { ok: false, error: "Stok sorgusu başarısız: " + stockErr.message },
+      { status: 500 },
+    );
+  }
+
+  if ((availableCount ?? 0) < pkg.sticker_count) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: `"${design.name}" tasarımında yeterli stok yok (${availableCount ?? 0} kaldı, ${pkg.sticker_count} gerekli). Lütfen başka bir tasarım seç.`,
+      },
+      { status: 409 },
+    );
+  }
+
   // 3) Basic validation
   const name = body.buyer_name?.trim();
   const email = body.buyer_email?.trim();
@@ -96,6 +150,7 @@ export async function POST(req: NextRequest) {
       subtotal_try: subtotal,
       shipping_try: SHIPPING_TRY,
       total_try: total,
+      design_id: design.id,
       buyer_name: name,
       buyer_email: email,
       buyer_phone: phone,
