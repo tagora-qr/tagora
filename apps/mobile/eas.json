@@ -18,7 +18,7 @@
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://dknjolwqiqcaahoqubwk.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbmpvbHdxaXFjYWFob3F1YndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxODcwMTYsImV4cCI6MjA5ODc2MzAxNn0.4AS2SaZOT-48cPxatQDXGrVqi3bsNYFm4QES4Hc9Hqw",
-        "EXPO_PUBLIC_APP_URL": "https://tagora-omega.vercel.app"
+        "EXPO_PUBLIC_APP_URL": "https://tagora.com.tr"
       }
     },
     "production": {
@@ -33,7 +33,7 @@
       "env": {
         "EXPO_PUBLIC_SUPABASE_URL": "https://dknjolwqiqcaahoqubwk.supabase.co",
         "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRrbmpvbHdxaXFjYWFob3F1YndrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxODcwMTYsImV4cCI6MjA5ODc2MzAxNn0.4AS2SaZOT-48cPxatQDXGrVqi3bsNYFm4QES4Hc9Hqw",
-        "EXPO_PUBLIC_APP_URL": "https://tagora-omega.vercel.app"
+        "EXPO_PUBLIC_APP_URL": "https://tagora.com.tr"
       }
     }
   },

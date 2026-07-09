@@ -1,5 +1,9 @@
 # Release Notes
 
+## v0.2.1 — 2026-07-10 (patch)
+
+- Profil ekranındaki web linkleri (satın al, siparişlerim, ayarlar, gizlilik) artık `tagora.com.tr` kullanıyor. v0.2.0'da Vercel URL'i açılıyordu — düzeltildi.
+
 ## v0.2.0 — 2026-07-10
 
 Bu sürüm ile abonelik sistemi, mobil ödeme akışı ve profil ekranı komple yenilendi.

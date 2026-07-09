@@ -17,6 +17,7 @@
  */
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
+import { getBaseUrl } from "@/lib/base-url";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +36,7 @@ const ALLOWED_REDIRECTS = [
   "/",
 ] as const;
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://tagora.com.tr";
+// getBaseUrl() vercel.app default domain'ini reddeder, canonical tagora.com.tr'yi zorlar
 
 interface Body {
   redirect?: string;
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
   const safePath = isAllowed ? requestedPath : "/dashboard";
 
   // 3) Magic link üret (email verified user için — genelde Supabase Auth kullanıcısı)
-  const redirectTo = new URL(safePath, APP_URL).toString();
+  const redirectTo = new URL(safePath, getBaseUrl()).toString();
 
   const { data: linkData, error: linkErr } = await service.auth.admin.generateLink({
     type: "magiclink",
