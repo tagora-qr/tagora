@@ -21,12 +21,17 @@ import { formatRelativeTime } from "@/lib/utils";
 import { USE_CASE_LABELS } from "@tagora/shared";
 import { colors, radius, spacing, typography } from "@/lib/theme";
 import type { Message, StickerUseCase } from "@tagora/db";
+import { useAuth } from "@/lib/auth-context";
+import { computeSubscription } from "@/lib/subscription";
+import { SubscriptionBanner } from "@/components/SubscriptionBanner";
 
 export default function ChatScreen() {
   const params = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const conversationId = params.id;
   const insets = useSafeAreaInsets();
+  const { profile } = useAuth();
+  const subscription = computeSubscription(profile);
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [stickerInfo, setStickerInfo] = useState<{
@@ -125,6 +130,13 @@ export default function ChatScreen() {
   const send = async () => {
     const text = draft.trim();
     if (!text) return;
+    if (!subscription.canReply) {
+      Alert.alert(
+        "Cevap yazma kapalı",
+        "Aboneliğin sona erdiği için mesaj gönderemiyorsun. Yenilemek için tagora.com.tr/dashboard/subscription adresine git.",
+      );
+      return;
+    }
     setSending(true);
     const { data, error } = await supabase
       .from("messages")
@@ -293,6 +305,10 @@ export default function ChatScreen() {
           }
         />
 
+        {subscription.shouldShowBanner && (
+          <SubscriptionBanner info={subscription} compact />
+        )}
+
         <View
           style={[
             styles.compose,
@@ -302,16 +318,29 @@ export default function ChatScreen() {
           <TextInput
             value={draft}
             onChangeText={setDraft}
-            placeholder="Cevap yaz…"
+            placeholder={
+              subscription.canReply
+                ? "Cevap yaz…"
+                : "🔒 Aboneliğini yenile — cevap yazma kapalı"
+            }
             placeholderTextColor={colors.muted}
-            style={styles.composeInput}
+            style={[
+              styles.composeInput,
+              !subscription.canReply && styles.composeInputLocked,
+            ]}
             multiline
             maxLength={2000}
+            editable={subscription.canReply}
           />
           <Pressable
             onPress={send}
-            disabled={sending || !draft.trim()}
-            style={[styles.sendBtn, (!draft.trim() || sending) && { opacity: 0.5 }]}
+            disabled={sending || !draft.trim() || !subscription.canReply}
+            style={[
+              styles.sendBtn,
+              (!draft.trim() || sending || !subscription.canReply) && {
+                opacity: 0.4,
+              },
+            ]}
           >
             <Text style={styles.sendBtnText}>{sending ? "…" : "Gönder"}</Text>
           </Pressable>
@@ -448,6 +477,11 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     fontSize: 15,
     color: colors.charcoal,
+  },
+  composeInputLocked: {
+    backgroundColor: "#F3F4F6",
+    borderColor: "#FCA5A5",
+    color: colors.muted,
   },
   sendBtn: {
     backgroundColor: colors.navy,

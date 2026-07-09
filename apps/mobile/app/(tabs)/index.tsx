@@ -7,13 +7,18 @@ import { useRouter, useFocusEffect } from "expo-router";
 import { Screen } from "@/components/Screen";
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
+import { SubscriptionBanner } from "@/components/SubscriptionBanner";
 import { supabase } from "@/lib/supabase";
 import { colors, radius, spacing, typography } from "@/lib/theme";
+import { useAuth } from "@/lib/auth-context";
+import { computeSubscription } from "@/lib/subscription";
 import { USE_CASE_LABELS } from "@tagora/shared";
 import type { Sticker } from "@tagora/db";
 
 export default function StickersScreen() {
   const router = useRouter();
+  const { profile } = useAuth();
+  const subscription = computeSubscription(profile);
   const [stickers, setStickers] = useState<Sticker[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -66,7 +71,12 @@ export default function StickersScreen() {
           />
         }
         ListHeaderComponent={
-          <Text style={styles.title}>Stickerlarım</Text>
+          <View>
+            {subscription.shouldShowBanner && (
+              <SubscriptionBanner info={subscription} />
+            )}
+            <Text style={styles.title}>Stickerlarım</Text>
+          </View>
         }
         ListEmptyComponent={
           loading ? null : <EmptyState onClaim={() => router.push("/claim")} />
