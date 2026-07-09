@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tagora",
     "slug": "tagora",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "tagora",
@@ -17,7 +17,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "app.tagora.mobile",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "associatedDomains": [
         "applinks:tagora.link",
         "applinks:www.tagora.link"
@@ -29,7 +29,7 @@
     },
     "android": {
       "package": "app.tagora.mobile",
-      "versionCode": 1,
+      "versionCode": 2,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#0F1B3D"
