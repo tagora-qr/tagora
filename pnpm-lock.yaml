@@ -171,6 +171,10 @@ importers:
         version: 5.9.3
 
   packages/shared:
+    dependencies:
+      '@tagora/db':
+        specifier: workspace:*
+        version: link:../db
     devDependencies:
       typescript:
         specifier: ^5.6.0
