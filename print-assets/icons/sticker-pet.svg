@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Green circle background -->
+  <circle cx="256" cy="256" r="240" fill="#D4F36A"/>
+
+  <!-- Dog face — friendly cartoon -->
+  <g transform="translate(0, 40)">
+    <!-- Ears (behind) -->
+    <ellipse cx="150" cy="180" rx="42" ry="70" fill="#8B4513" transform="rotate(-20 150 180)"/>
+    <ellipse cx="362" cy="180" rx="42" ry="70" fill="#8B4513" transform="rotate(20 362 180)"/>
+    <ellipse cx="150" cy="185" rx="26" ry="50" fill="#D2691E" transform="rotate(-20 150 185)"/>
+    <ellipse cx="362" cy="185" rx="26" ry="50" fill="#D2691E" transform="rotate(20 362 185)"/>
+
+    <!-- Head -->
+    <circle cx="256" cy="230" r="130" fill="#D2691E"/>
+
+    <!-- Snout area lighter -->
+    <ellipse cx="256" cy="290" rx="80" ry="60" fill="#F4A460"/>
+
+    <!-- Eyes -->
+    <circle cx="212" cy="220" r="18" fill="#FFFFFF"/>
+    <circle cx="300" cy="220" r="18" fill="#FFFFFF"/>
+    <circle cx="212" cy="222" r="12" fill="#1A202C"/>
+    <circle cx="300" cy="222" r="12" fill="#1A202C"/>
+    <circle cx="216" cy="218" r="4" fill="#FFFFFF"/>
+    <circle cx="304" cy="218" r="4" fill="#FFFFFF"/>
+
+    <!-- Nose -->
+    <ellipse cx="256" cy="278" rx="18" ry="14" fill="#1A202C"/>
+    <ellipse cx="252" cy="274" rx="4" ry="3" fill="#FFFFFF" opacity="0.6"/>
+
+    <!-- Mouth -->
+    <path d="M 256 296 L 256 320 Q 250 330 240 328 M 256 320 Q 262 330 272 328"
+          stroke="#1A202C" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+    <!-- Tongue peek -->
+    <ellipse cx="256" cy="332" rx="10" ry="6" fill="#FF69B4"/>
+  </g>
+</svg>

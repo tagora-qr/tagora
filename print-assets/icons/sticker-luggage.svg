@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Green circle background -->
+  <circle cx="256" cy="256" r="240" fill="#D4F36A"/>
+
+  <!-- Luggage — classic blue suitcase -->
+  <g>
+    <!-- Handle -->
+    <rect x="220" y="80" width="72" height="12" rx="4" fill="#0F1B3D"/>
+    <rect x="220" y="86" width="12" height="52" fill="#0F1B3D"/>
+    <rect x="280" y="86" width="12" height="52" fill="#0F1B3D"/>
+    <rect x="228" y="126" width="56" height="8" rx="2" fill="#4A5568"/>
+
+    <!-- Suitcase body -->
+    <rect x="112" y="138" width="288" height="272" rx="24" fill="#3182CE"/>
+    <!-- Highlight -->
+    <rect x="112" y="138" width="288" height="60" rx="24" fill="#4A90D9"/>
+    <rect x="112" y="180" width="288" height="20" fill="#4A90D9"/>
+
+    <!-- Center divider (opening line) -->
+    <rect x="112" y="266" width="288" height="6" fill="#1E4C8B"/>
+    <rect x="112" y="266" width="288" height="2" fill="#0F1B3D"/>
+
+    <!-- Vertical stripes -->
+    <rect x="184" y="138" width="6" height="272" fill="#1E4C8B" opacity="0.4"/>
+    <rect x="322" y="138" width="6" height="272" fill="#1E4C8B" opacity="0.4"/>
+
+    <!-- Corner reinforcements -->
+    <rect x="132" y="158" width="20" height="20" rx="4" fill="#0F1B3D"/>
+    <rect x="360" y="158" width="20" height="20" rx="4" fill="#0F1B3D"/>
+    <rect x="132" y="370" width="20" height="20" rx="4" fill="#0F1B3D"/>
+    <rect x="360" y="370" width="20" height="20" rx="4" fill="#0F1B3D"/>
+
+    <!-- Wheels -->
+    <rect x="140" y="410" width="40" height="18" rx="9" fill="#1A202C"/>
+    <rect x="332" y="410" width="40" height="18" rx="9" fill="#1A202C"/>
+
+    <!-- ID tag -->
+    <g transform="translate(226, 208)">
+      <rect x="0" y="0" width="60" height="42" rx="4" fill="#FEF3C7"/>
+      <rect x="0" y="0" width="60" height="10" rx="4" fill="#F5B83C"/>
+      <rect x="8" y="18" width="44" height="3" rx="1" fill="#0F1B3D"/>
+      <rect x="8" y="26" width="36" height="3" rx="1" fill="#0F1B3D"/>
+      <rect x="8" y="34" width="28" height="3" rx="1" fill="#0F1B3D"/>
+    </g>
+  </g>
+</svg>

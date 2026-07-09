@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Pet — stylized dog paw print, universally recognizable -->
+  <g fill="#0F1B3D">
+    <!-- Main pad (bottom center) -->
+    <path d="M 256 380 Q 180 380 175 320 Q 175 280 210 260 Q 230 250 256 250 Q 282 250 302 260 Q 337 280 337 320 Q 332 380 256 380 Z"/>
+    <!-- Top left toe -->
+    <ellipse cx="175" cy="215" rx="30" ry="42"/>
+    <!-- Top left-center toe -->
+    <ellipse cx="222" cy="160" rx="28" ry="46"/>
+    <!-- Top right-center toe -->
+    <ellipse cx="290" cy="160" rx="28" ry="46"/>
+    <!-- Top right toe -->
+    <ellipse cx="337" cy="215" rx="30" ry="42"/>
+  </g>
+</svg>

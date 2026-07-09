@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Other — tag/label icon (universal "misc" symbol) -->
+  <g fill="#0F1B3D">
+    <!-- Tag body (angled) -->
+    <path d="M 100 240 L 240 100 Q 260 80 288 80 L 400 80 Q 432 80 432 112 L 432 224 Q 432 252 412 272 L 272 412 Q 244 440 216 412 L 100 296 Q 72 268 100 240 Z"/>
+  </g>
+  <!-- Tag hole -->
+  <circle cx="360" cy="152" r="24" fill="#FFFFFF"/>
+  <!-- Tag string hole rim -->
+  <circle cx="360" cy="152" r="10" fill="#0F1B3D"/>
+  <!-- Cord going through -->
+  <path d="M 380 130 Q 400 100 420 60" fill="none" stroke="#0F1B3D" stroke-width="10" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Car — front 3/4 view, print-ready single color -->
+  <g fill="#0F1B3D">
+    <!-- Body -->
+    <path d="M 90 300 L 90 340 Q 90 370 120 370 L 140 370 Q 150 400 176 400 Q 202 400 212 370 L 300 370 Q 310 400 336 400 Q 362 400 372 370 L 392 370 Q 422 370 422 340 L 422 300 L 412 260 L 380 220 Q 370 205 350 200 L 162 200 Q 142 205 132 220 L 100 260 Z"/>
+  </g>
+  <!-- Cabin (window area) - cut out -->
+  <path d="M 175 220 L 205 220 L 205 260 L 155 260 Z" fill="#FFFFFF"/>
+  <path d="M 215 220 L 305 220 L 305 260 L 215 260 Z" fill="#FFFFFF"/>
+  <path d="M 315 220 L 345 220 L 365 260 L 315 260 Z" fill="#FFFFFF"/>
+  <!-- Wheels -->
+  <circle cx="176" cy="370" r="30" fill="#0F1B3D"/>
+  <circle cx="176" cy="370" r="14" fill="#FFFFFF"/>
+  <circle cx="336" cy="370" r="30" fill="#0F1B3D"/>
+  <circle cx="336" cy="370" r="14" fill="#FFFFFF"/>
+  <!-- Headlight -->
+  <rect x="100" y="285" width="20" height="14" rx="4" fill="#FFFFFF"/>
+  <!-- Grille -->
+  <rect x="105" y="315" width="30" height="4" rx="2" fill="#FFFFFF"/>
+</svg>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Green circle background (Tagora accent) -->
+  <circle cx="256" cy="256" r="240" fill="#D4F36A"/>
+
+  <!-- Car — red, cartoon-style -->
+  <g transform="translate(64, 128)">
+    <!-- Body -->
+    <path d="M 32 176 L 32 216 Q 32 244 60 244 L 78 244 Q 90 272 116 272 Q 142 272 154 244 L 230 244 Q 242 272 268 272 Q 294 272 306 244 L 324 244 Q 352 244 352 216 L 352 176 L 342 138 L 314 100 Q 304 86 286 82 L 98 82 Q 80 86 70 100 L 42 138 Z" fill="#E53E3E"/>
+    <!-- Windows -->
+    <path d="M 108 100 L 130 100 L 130 138 L 88 138 Z" fill="#B8E4FF"/>
+    <path d="M 138 100 L 226 100 L 226 138 L 138 138 Z" fill="#B8E4FF"/>
+    <path d="M 234 100 L 262 100 L 282 138 L 234 138 Z" fill="#B8E4FF"/>
+    <!-- Body highlight -->
+    <path d="M 32 176 L 42 138 L 70 100 L 98 82 L 286 82 L 314 100 L 342 138 L 352 176 L 32 176 Z" fill="none" stroke="#0F1B3D" stroke-width="6"/>
+    <!-- Wheels -->
+    <circle cx="116" cy="244" r="28" fill="#1A202C"/>
+    <circle cx="116" cy="244" r="12" fill="#4A5568"/>
+    <circle cx="268" cy="244" r="28" fill="#1A202C"/>
+    <circle cx="268" cy="244" r="12" fill="#4A5568"/>
+    <!-- Headlights -->
+    <rect x="38" y="162" width="16" height="12" rx="3" fill="#FFF8DC"/>
+    <!-- Grille -->
+    <rect x="42" y="190" width="24" height="4" rx="2" fill="#0F1B3D"/>
+    <rect x="42" y="200" width="24" height="4" rx="2" fill="#0F1B3D"/>
+  </g>
+</svg>

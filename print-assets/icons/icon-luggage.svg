@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Luggage — hard-shell suitcase with handle and wheels -->
+  <g fill="#0F1B3D">
+    <!-- Handle -->
+    <rect x="216" y="70" width="80" height="14" rx="4"/>
+    <rect x="216" y="84" width="14" height="50"/>
+    <rect x="282" y="84" width="14" height="50"/>
+    <!-- Suitcase body -->
+    <rect x="112" y="140" width="288" height="280" rx="24"/>
+  </g>
+  <!-- Center divider (opening line) -->
+  <rect x="112" y="272" width="288" height="8" fill="#FFFFFF"/>
+  <!-- Vertical stripes / stitching detail -->
+  <rect x="180" y="140" width="6" height="280" fill="#FFFFFF" opacity="0.4"/>
+  <rect x="326" y="140" width="6" height="280" fill="#FFFFFF" opacity="0.4"/>
+  <!-- Corner reinforcement -->
+  <rect x="132" y="160" width="20" height="20" rx="4" fill="#FFFFFF"/>
+  <rect x="360" y="160" width="20" height="20" rx="4" fill="#FFFFFF"/>
+  <rect x="132" y="380" width="20" height="20" rx="4" fill="#FFFFFF"/>
+  <rect x="360" y="380" width="20" height="20" rx="4" fill="#FFFFFF"/>
+  <!-- Wheels -->
+  <g fill="#0F1B3D">
+    <rect x="140" y="420" width="40" height="20" rx="10"/>
+    <rect x="332" y="420" width="40" height="20" rx="10"/>
+  </g>
+  <!-- ID tag hint -->
+  <rect x="230" y="200" width="52" height="36" rx="4" fill="#FFFFFF"/>
+  <rect x="240" y="212" width="32" height="4" rx="2" fill="#0F1B3D"/>
+  <rect x="240" y="222" width="24" height="4" rx="2" fill="#0F1B3D"/>
+</svg>

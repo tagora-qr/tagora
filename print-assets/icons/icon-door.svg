@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Door — front view with knob and panels -->
+  <g fill="#0F1B3D">
+    <!-- Door frame -->
+    <rect x="130" y="80" width="252" height="380" rx="8"/>
+  </g>
+  <!-- Inner cutout -->
+  <rect x="150" y="100" width="212" height="340" rx="4" fill="#FFFFFF"/>
+  <g fill="#0F1B3D">
+    <!-- Upper panel -->
+    <rect x="170" y="120" width="172" height="120" rx="4"/>
+    <!-- Lower panel -->
+    <rect x="170" y="260" width="172" height="160" rx="4"/>
+  </g>
+  <!-- Inner panel cutouts -->
+  <rect x="184" y="134" width="144" height="92" rx="2" fill="#FFFFFF"/>
+  <rect x="184" y="274" width="144" height="132" rx="2" fill="#FFFFFF"/>
+  <!-- Door knob -->
+  <circle cx="326" cy="260" r="12" fill="#0F1B3D"/>
+  <circle cx="326" cy="260" r="5" fill="#FFFFFF"/>
+  <!-- Threshold line -->
+  <rect x="130" y="460" width="252" height="20" rx="4" fill="#0F1B3D"/>
+</svg>

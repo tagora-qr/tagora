@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Green circle background -->
+  <circle cx="256" cy="256" r="240" fill="#D4F36A"/>
+
+  <!-- Door — wooden brown -->
+  <g>
+    <!-- Door frame outer -->
+    <rect x="140" y="80" width="232" height="360" rx="6" fill="#3D2817"/>
+    <!-- Door body -->
+    <rect x="154" y="94" width="204" height="332" rx="4" fill="#8B4513"/>
+
+    <!-- Wood grain -->
+    <rect x="180" y="130" width="152" height="82" rx="4" fill="none" stroke="#3D2817" stroke-width="3"/>
+    <rect x="180" y="228" width="152" height="82" rx="4" fill="none" stroke="#3D2817" stroke-width="3"/>
+    <rect x="180" y="326" width="152" height="82" rx="4" fill="none" stroke="#3D2817" stroke-width="3"/>
+
+    <!-- Wood texture lines -->
+    <line x1="194" y1="140" x2="318" y2="140" stroke="#6B3410" stroke-width="1.5" opacity="0.5"/>
+    <line x1="194" y1="238" x2="318" y2="238" stroke="#6B3410" stroke-width="1.5" opacity="0.5"/>
+    <line x1="194" y1="336" x2="318" y2="336" stroke="#6B3410" stroke-width="1.5" opacity="0.5"/>
+
+    <!-- Door knob -->
+    <circle cx="332" cy="260" r="14" fill="#FFD700"/>
+    <circle cx="332" cy="260" r="8" fill="#DAA520"/>
+    <circle cx="330" cy="258" r="3" fill="#FFFFFF" opacity="0.7"/>
+
+    <!-- Threshold -->
+    <rect x="128" y="440" width="256" height="16" rx="4" fill="#2D1810"/>
+  </g>
+</svg>
