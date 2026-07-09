@@ -145,5 +145,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, sticker: updated });
+  // İlk sticker aktivasyonunda subscription trial'ı başlat (varsa dokunmaz).
+  // Fatal olmayan bir hata — sticker claim yine başarılı sayılır.
+  const { data: trialStarted, error: trialErr } = await admin.rpc(
+    "start_user_trial_if_none" as never,
+    { _user_id: tagoraUser.id } as never,
+  );
+  if (trialErr) {
+    console.error("[claim] start_user_trial_if_none hatası:", trialErr.message);
+  }
+
+  return NextResponse.json({
+    ok: true,
+    sticker: updated,
+    trial_started: Boolean(trialStarted),
+  });
 }
