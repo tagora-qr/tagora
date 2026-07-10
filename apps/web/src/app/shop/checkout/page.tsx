@@ -10,6 +10,7 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/logo";
 import { CheckoutForm } from "./form";
+import { encodeNext } from "@/lib/auth-next";
 import type { StickerPackage } from "@tagora/db";
 
 export const metadata = {
@@ -34,7 +35,8 @@ export default async function CheckoutPage({
   // Auth check
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    redirect(`/login?next=${encodeURIComponent(`/shop/checkout?package=${slug}`)}`);
+    // Base64url encode to survive URL parsing through Supabase magic-link chain
+    redirect(`/login?next=${encodeNext(`/shop/checkout?package=${slug}`)}`);
   }
 
   // Paketi çek

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { encodeNext } from "@/lib/auth-next";
 
 export function LoginForm({ next = "/dashboard" }: { next?: string }) {
   const [email, setEmail] = useState("");
@@ -15,12 +16,13 @@ export function LoginForm({ next = "/dashboard" }: { next?: string }) {
     setLoading(true);
 
     const supabase = createSupabaseBrowserClient();
-    // next path'ini callback'e ilet ki giriş sonrası doğru sayfaya gitsin
-    const encodedNext = encodeURIComponent(next);
+    // next path'ini base64url ile encode ediyoruz — Supabase magic-link chain'inde
+    // ? ve = karakterleri sorun çıkarıyordu, base64url URL-safe.
+    const encoded = encodeNext(next);
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodedNext}`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encoded}`,
       },
     });
 

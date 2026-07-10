@@ -8,6 +8,7 @@
  */
 import { LoginForm } from "./login-form";
 import { Logo } from "@/components/logo";
+import { decodeNext } from "@/lib/auth-next";
 
 export const metadata = {
   title: "Giriş Yap",
@@ -22,9 +23,11 @@ export default async function LoginPage({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  // Whitelist: sadece kendi domain path'lerine yönlendir (open redirect koruması)
-  const rawNext = params.next ?? "/dashboard";
-  const next = rawNext.startsWith("/") ? rawNext : "/dashboard";
+  // next artık base64url encoded → decodeNext ile aç. Legacy plain path da destekleniyor.
+  const rawNext = params.next ?? "";
+  const decoded = decodeNext(rawNext);
+  // Legacy fallback: eğer decode başarısız olduysa ve rawNext doğrudan "/" ile başlıyorsa onu kullan
+  const next = decoded !== "/dashboard" ? decoded : rawNext.startsWith("/") ? rawNext : "/dashboard";
   const isAdminNext = next.startsWith("/admin");
 
   return (

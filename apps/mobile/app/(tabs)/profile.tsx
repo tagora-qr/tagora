@@ -338,7 +338,7 @@ export default function ProfileScreen() {
           style={{ marginTop: spacing.xl }}
         />
 
-        <Text style={styles.version}>Tagora v0.2.1</Text>
+        <Text style={styles.version}>Tagora v0.2.2</Text>
       </ScrollView>
     </Screen>
   );

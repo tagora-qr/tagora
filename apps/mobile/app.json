@@ -2,7 +2,7 @@
   "expo": {
     "name": "Tagora",
     "slug": "tagora",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "tagora",
@@ -15,9 +15,8 @@
       "resizeMode": "contain"
     },
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "app.tagora.mobile",
-      "buildNumber": "3",
       "associatedDomains": [
         "applinks:tagora.link",
         "applinks:www.tagora.link"
