@@ -175,6 +175,21 @@ export default async function CheckoutPage({
               KDV dahil. Ödeme iyzico güvenli ödeme altyapısıyla alınır. Kart bilgin
               Tagora sunucularına gelmez.
             </p>
+
+            {/* Güvenli ödeme logoları — iyzico onayı için gerekli */}
+            <div className="mt-3 flex items-center gap-2 border-t border-navy/10 pt-3">
+              <img
+                src="/payment/iyzico-ile-ode.svg"
+                alt="iyzico ile Öde"
+                style={{ height: 24, width: "auto" }}
+              />
+              <img src="/payment/visa.svg" alt="Visa" style={{ height: 24, width: "auto" }} />
+              <img
+                src="/payment/mastercard.svg"
+                alt="Mastercard"
+                style={{ height: 24, width: "auto" }}
+              />
+            </div>
           </aside>
         </div>
       </main>

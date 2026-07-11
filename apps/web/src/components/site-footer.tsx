@@ -5,6 +5,7 @@
  * Homepage'de olduğu gibi tüm public sayfalarda kullanılır.
  */
 import Link from "next/link";
+import Image from "next/image";
 import { Logo } from "@/components/logo";
 import { TAGORA } from "@tagora/shared";
 
@@ -156,7 +157,42 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 border-t border-white/10 pt-6 text-center text-xs text-white/40 space-y-1.5">
+        {/* Güvenli Ödeme — iyzico onayı için gerekli logolar */}
+        <div className="mt-10 flex flex-col items-center gap-3 border-t border-white/10 pt-8 sm:flex-row sm:justify-between">
+          <p className="text-xs font-semibold uppercase tracking-wider text-white/60">
+            Güvenli Ödeme
+          </p>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/payment/iyzico-ile-ode.svg"
+              alt="iyzico ile Öde"
+              width={110}
+              height={28}
+              style={{ height: 28, width: "auto" }}
+              className="rounded bg-white px-2 py-1"
+              unoptimized
+            />
+            <Image
+              src="/payment/visa.svg"
+              alt="Visa"
+              width={44}
+              height={28}
+              style={{ height: 28, width: "auto" }}
+              unoptimized
+            />
+            <Image
+              src="/payment/mastercard.svg"
+              alt="Mastercard"
+              width={44}
+              height={28}
+              style={{ height: 28, width: "auto" }}
+              className="rounded bg-white p-0.5"
+              unoptimized
+            />
+          </div>
+        </div>
+
+        <div className="mt-8 border-t border-white/10 pt-6 text-center text-xs text-white/40 space-y-1.5">
           <p>
             © {YEAR} <strong className="font-semibold text-white/60">DNS Bilgi Güvenliği Bilişim Teknoloji ve Danışmanlık Ltd. Şti.</strong> — Tagora markası
           </p>

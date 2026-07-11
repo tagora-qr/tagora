@@ -71,6 +71,33 @@ export default async function ShopPage() {
           </Info>
         </section>
 
+        {/* Güvenli Ödeme trust satırı — iyzico onayı için görünür yer */}
+        <section className="mt-8 flex flex-col items-center gap-3 rounded-2xl border border-navy/10 bg-white px-6 py-5 sm:flex-row sm:justify-between">
+          <div className="text-center sm:text-left">
+            <p className="text-sm font-semibold text-navy">Güvenli Ödeme</p>
+            <p className="text-xs text-charcoal/60">
+              Kart bilgin iyzico altyapısıyla korunur — Tagora sunucularına gelmez
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <img
+              src="/payment/iyzico-ile-ode.svg"
+              alt="iyzico ile Öde"
+              style={{ height: 32, width: "auto" }}
+            />
+            <img
+              src="/payment/visa.svg"
+              alt="Visa"
+              style={{ height: 32, width: "auto" }}
+            />
+            <img
+              src="/payment/mastercard.svg"
+              alt="Mastercard"
+              style={{ height: 32, width: "auto" }}
+            />
+          </div>
+        </section>
+
         {/* Sıkça sorulanlar */}
         <section className="mt-16">
           <h2 className="mb-6 text-center text-2xl font-bold text-navy">
