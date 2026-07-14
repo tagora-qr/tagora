@@ -91,8 +91,11 @@ Tagora'yı kullanırken **aşağıdakilere uymayı** kabul edersiniz:
 - Diğer kullanıcıların haklarına saygı göstermek
 - Ödeme yükümlülüklerini zamanında yerine getirmek
 
-### 5.2 Yasaklı Davranışlar
-Aşağıdaki davranışlar **kesinlikle yasaktır** ve derhal hesap askıya alınmasına yol açar:
+### 5.2 Yasaklı Davranışlar — Sıfır Tolerans Politikası
+
+Tagora, taciz edici davranışlara ve uygunsuz içeriğe (objectionable content) karşı **sıfır tolerans** politikası uygular. Uygulamayı kullanarak bu politikayı kabul ettiğinizi ve aşağıdaki davranışlardan hiçbirine katılmayacağınızı taahhüt edersiniz.
+
+Aşağıdaki davranışlar **kesinlikle yasaktır** ve derhal hesap askıya alınmasına, tespit edildiğinde ise mesajın anında kaldırılmasına ve kullanıcının hesabından çıkarılmasına yol açar:
 
 **a) İçerik İhlalleri**
 - Hakaret, taciz, tehdit, ayrımcı dil
@@ -135,11 +138,27 @@ Aşağıdaki davranışlar **kesinlikle yasaktır** ve derhal hesap askıya alı
 - Kötü niyetli davranış tespit edildiğinde cihazınız engellenebilir
 - Yasadışı içerik göndermeniz durumunda IP kayıtları yetkili makama teslim edilebilir
 
-### 6.3 Moderasyon
-Tagora, otomatik ve manuel moderasyon kullanarak:
-- Küfür, tehdit, phishing gibi içerikleri filtreler
-- Şüpheli mesajlarda hesap askıya alabilir
-- 24 saat içinde raporları inceler
+### 6.3 Moderasyon ve Kullanıcı Kontrolü
+
+Apple App Store ve Google Play kurallarına uygun olarak, kullanıcı üretimi içerik (mesajlar) için aşağıdaki mekanizmaları sağlarız:
+
+**Otomatik Filtreleme**  
+Küfür, hakaret, tehdit, nefret söylemi, cinsel içerik ve phishing linkleri içeren mesajlar sunucu tarafında **anahtar kelime filtresi** ile otomatik olarak tespit edilir. Nefret söylemi ve tehdit içeren mesajlar hiç iletilmez; küfür/hakaret içerenler ise alıcıya "flagged" olarak gizli gösterilir.
+
+**Şikayet Etme (Flag)**  
+Her sticker sahibi, gelen bir mesajı chat ekranından **basılı tutarak "Şikayet et"** seçeneğiyle Tagora'ya bildirebilir. Şikayet edilen mesaj **anında** kullanıcının feed'inden kaldırılır ve moderasyon ekibine bildirim gönderilir.
+
+**Kullanıcı Engelleme (Block)**  
+Sticker sahibi, taciz eden bir ziyaretçiyi (scanner) chat başlığından tek tıkla **engelleyebilir**. Engellenen ziyaretçi:
+- Aynı sticker'a bir daha yazamaz
+- Mevcut konuşma anında feed'den kaldırılır
+- Tagora'ya audit kaydı olarak düşer
+
+**24 Saat İçinde Aksiyon**  
+Şikayet edilen içerikler için Tagora, **24 saat içinde** inceleme ve aksiyon taahhüdü verir. Uygunsuz içerik tespit edildiğinde:
+- Mesaj kalıcı olarak silinir
+- İçeriği gönderen kullanıcı platformdan çıkarılır (banned)
+- Tekrar eden ihlaller için IP kaydı yasal makamlara iletilebilir
 
 ---
 

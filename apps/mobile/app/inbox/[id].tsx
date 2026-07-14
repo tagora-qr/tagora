@@ -127,6 +127,68 @@ export default function ChatScreen() {
     }
   }, [messages.length]);
 
+  /**
+   * Apple guideline 1.2 UGC — kullanıcı objectionable content'i flag'leyebilmeli.
+   * Endpoint: POST /api/messages/report → mesaj flagged=true + abuse_reports + admin email.
+   */
+  const handleReport = async (messageId: string) => {
+    Alert.alert(
+      "Şikayet gönderiliyor",
+      "Bu mesaj politikamıza uygun görünmüyor.",
+      [
+        { text: "Vazgeç", style: "cancel" },
+        {
+          text: "Onayla",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              const { data: { session } } = await supabase.auth.getSession();
+              if (!session?.access_token) {
+                Alert.alert("Giriş gerekli", "Lütfen tekrar giriş yap.");
+                return;
+              }
+              const APP_URL =
+                process.env.EXPO_PUBLIC_APP_URL ?? "https://tagora.com.tr";
+              const res = await fetch(APP_URL + "/api/messages/report", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({
+                  message_id: messageId,
+                  reason: "harassment",
+                }),
+              });
+              const json = await res.json();
+              if (!res.ok || !json.ok) {
+                Alert.alert(
+                  "Hata",
+                  json.error ?? "Şikayet gönderilemedi. Tekrar dene.",
+                );
+                return;
+              }
+              // UI'dan anında kaldır (mesaj flagged=true olarak güncellenir realtime'da da)
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === messageId
+                    ? ({ ...m, flagged: true } as Message)
+                    : m,
+                ),
+              );
+              Alert.alert(
+                "✓ Şikayet gönderildi",
+                "Mesajı gizledik ve incelemeye aldık. 24 saat içinde işleme alınacak.",
+              );
+            } catch (e) {
+              Alert.alert("Bağlantı hatası", (e as Error).message);
+            }
+          },
+        },
+      ],
+    );
+  };
+
   const send = async () => {
     const text = draft.trim();
     if (!text) return;
@@ -297,7 +359,11 @@ export default function ChatScreen() {
           keyExtractor={(m) => m.id}
           contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
-            <Bubble message={item} scannerName={scannerName} />
+            <Bubble
+              message={item}
+              scannerName={scannerName}
+              onReport={handleReport}
+            />
           )}
           ItemSeparatorComponent={() => <View style={{ height: 6 }} />}
           ListEmptyComponent={
@@ -353,12 +419,16 @@ export default function ChatScreen() {
 function Bubble({
   message,
   scannerName,
+  onReport,
 }: {
   message: Message;
   scannerName: string;
+  onReport: (messageId: string) => void;
 }) {
   const isMine = message.sender === "owner";
   const isSystem = message.sender === "system";
+  // Apple 1.2: flag'lenmiş içerik owner'ın feed'inden anında kaldırılmalı
+  const isFlagged = (message as { flagged?: boolean }).flagged === true;
 
   if (isSystem) {
     return (
@@ -370,8 +440,39 @@ function Bubble({
     );
   }
 
+  // Flag'lenmiş scanner mesajı — kaldırılmış olarak göster
+  if (isFlagged && !isMine) {
+    return (
+      <View style={[styles.bubbleWrap, styles.bubbleWrapTheirs]}>
+        <View style={[styles.bubble, styles.bubbleFlagged]}>
+          <Text style={styles.bubbleFlaggedText}>
+            🚫 Bu mesaj politikamızı ihlal ettiği için kaldırıldı
+          </Text>
+        </View>
+      </View>
+    );
+  }
+
+  const handleLongPress = () => {
+    if (isMine) return; // Kendi mesajını flag'leyemez
+    Alert.alert(
+      "Mesaj İşlemleri",
+      `"${message.body.slice(0, 60)}${message.body.length > 60 ? "…" : ""}"`,
+      [
+        { text: "Vazgeç", style: "cancel" },
+        {
+          text: "🚨 Şikayet et",
+          style: "destructive",
+          onPress: () => onReport(message.id),
+        },
+      ],
+    );
+  };
+
   return (
-    <View
+    <Pressable
+      onLongPress={handleLongPress}
+      delayLongPress={400}
       style={[
         styles.bubbleWrap,
         isMine ? styles.bubbleWrapMine : styles.bubbleWrapTheirs,
@@ -407,8 +508,13 @@ function Bubble({
         >
           {formatRelativeTime(message.sent_at)}
         </Text>
+        {!isMine && (
+          <Text style={styles.bubbleHint}>
+            Uygunsuz içerik? Basılı tut → Şikayet et
+          </Text>
+        )}
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -447,6 +553,24 @@ const styles = StyleSheet.create({
   bubbleTheirs: { backgroundColor: colors.navyMuted },
   bubbleText: { ...typography.body, lineHeight: 22 },
   bubbleTime: { ...typography.tiny, fontSize: 10, marginTop: 4 },
+  bubbleHint: {
+    ...typography.tiny,
+    fontSize: 9,
+    color: colors.muted,
+    marginTop: 6,
+    fontStyle: "italic",
+  },
+  bubbleFlagged: {
+    backgroundColor: "#FEE2E2",
+    borderWidth: 1,
+    borderColor: "#FCA5A5",
+    borderStyle: "dashed",
+  },
+  bubbleFlaggedText: {
+    ...typography.tiny,
+    color: colors.danger,
+    fontStyle: "italic",
+  },
   bubbleSender: { fontSize: 10, fontWeight: "700", letterSpacing: 1, marginBottom: 2 },
   systemWrap: { alignItems: "center" },
   systemBubble: {

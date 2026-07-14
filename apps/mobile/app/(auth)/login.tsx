@@ -19,6 +19,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Linking as RNLinking,
 } from "react-native";
 import { useRouter } from "expo-router";
 import * as Linking from "expo-linking";
@@ -38,8 +39,18 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
+  // Apple guideline 1.2 UGC gereği: kullanıcı Kullanım Şartları ve objectionable
+  // content politikasını explicit olarak kabul etmeli (link okuma yetmez).
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const sendCode = async () => {
+    if (!termsAccepted) {
+      Alert.alert(
+        "Kullanım Şartları",
+        "Devam etmek için Kullanım Şartları ve KVKK metnini kabul etmelisin.",
+      );
+      return;
+    }
     if (!email.includes("@")) {
       Alert.alert("Geçersiz e-posta", "Doğru bir e-posta adresi gir.");
       return;
@@ -168,13 +179,61 @@ export default function Login() {
                 style={styles.input}
               />
 
+              {/* Apple 1.2 UGC — explicit terms acceptance checkbox */}
+              <Pressable
+                onPress={() => setTermsAccepted((v) => !v)}
+                style={styles.termsRow}
+                hitSlop={8}
+              >
+                <View
+                  style={[
+                    styles.checkbox,
+                    termsAccepted && styles.checkboxChecked,
+                  ]}
+                >
+                  {termsAccepted && <Text style={styles.checkboxTick}>✓</Text>}
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.termsText}>
+                    <Text
+                      style={styles.termsLink}
+                      onPress={() =>
+                        RNLinking.openURL(
+                          (process.env.EXPO_PUBLIC_APP_URL ??
+                            "https://tagora.com.tr") + "/terms",
+                        )
+                      }
+                    >
+                      Kullanım Şartları
+                    </Text>
+                    {" ve "}
+                    <Text
+                      style={styles.termsLink}
+                      onPress={() =>
+                        RNLinking.openURL(
+                          (process.env.EXPO_PUBLIC_APP_URL ??
+                            "https://tagora.com.tr") + "/kvkk",
+                        )
+                      }
+                    >
+                      KVKK Aydınlatma
+                    </Text>
+                    {"'yı okudum ve kabul ediyorum. Uygunsuz içerik veya taciz için sıfır tolerans politikasını anladım."}
+                  </Text>
+                </View>
+              </Pressable>
+
               <Button
                 label={loading ? "Yolluyor…" : "Kodu Gönder"}
                 onPress={sendCode}
                 loading={loading}
                 size="lg"
                 fullWidth
-                style={{ marginTop: spacing.lg }}
+                disabled={!termsAccepted}
+                style={{
+                  marginTop: spacing.md,
+                  opacity: termsAccepted ? 1 : 0.4,
+                }}
               />
 
               {/* Dev shortcut — sadece development'ta görünür */}
@@ -196,10 +255,6 @@ export default function Login() {
                 </View>
               )}
 
-              <Text style={styles.consent}>
-                Devam ederek Kullanım Şartları ve KVKK Aydınlatma&apos;yı kabul
-                etmiş olursun.
-              </Text>
             </>
           ) : (
             <>
@@ -290,6 +345,46 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "monospace",
     fontWeight: "700",
+  },
+  // Terms acceptance checkbox — Apple guideline 1.2 UGC gereği
+  termsRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: spacing.md,
+    marginTop: spacing.lg,
+    paddingVertical: spacing.sm,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: colors.navyBorder,
+    backgroundColor: colors.bg,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: colors.navy,
+    borderColor: colors.navy,
+  },
+  checkboxTick: {
+    color: colors.accent,
+    fontSize: 14,
+    fontWeight: "700",
+    lineHeight: 16,
+  },
+  termsText: {
+    ...typography.tiny,
+    fontSize: 12,
+    color: colors.muted,
+    lineHeight: 18,
+  },
+  termsLink: {
+    color: colors.navy,
+    fontWeight: "600",
+    textDecorationLine: "underline",
   },
   consent: {
     ...typography.tiny,
