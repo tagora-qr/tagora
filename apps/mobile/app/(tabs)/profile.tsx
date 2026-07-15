@@ -200,41 +200,10 @@ export default function ProfileScreen() {
           </Pressable>
         </View>
 
-        {/* Subscription CTA — durum bazlı */}
-        <SubscriptionCard
-          subscription={subscription}
-          onRenew={() => openWebPage("/dashboard/subscription")}
-        />
-
-        {/* Shop CTA */}
-        <View style={styles.card}>
-          <Text style={styles.cardHeader}>Satın al</Text>
-          <Pressable
-            onPress={() => openWebPage("/shop")}
-            style={styles.actionRow}
-          >
-            <Text style={styles.actionEmoji}>🏷️</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.actionLabel}>Yeni Sticker satın al</Text>
-              <Text style={styles.actionSub}>
-                4 tasarım · 5-50 adetlik paketler · kargoyla kapıya
-              </Text>
-            </View>
-            <Text style={styles.chev}>›</Text>
-          </Pressable>
-          <View style={styles.sep} />
-          <Pressable
-            onPress={() => openWebPage("/dashboard/orders")}
-            style={styles.actionRow}
-          >
-            <Text style={styles.actionEmoji}>📦</Text>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.actionLabel}>Siparişlerim</Text>
-              <Text style={styles.actionSub}>Sipariş durumu + takip numaraları</Text>
-            </View>
-            <Text style={styles.chev}>›</Text>
-          </Pressable>
-        </View>
+        {/* Subscription bilgi kartı — sadece durum gösterir, satın alma yok.
+            Yenileme + sticker satın alma tagora.com.tr üzerinden yapılır (fiziksel
+            sticker + backend hizmeti; App Store Guideline 3.1.5 fiziksel mal). */}
+        <SubscriptionCard subscription={subscription} />
 
         {/* KVKK */}
         <View style={styles.card}>
@@ -338,7 +307,7 @@ export default function ProfileScreen() {
           style={{ marginTop: spacing.xl }}
         />
 
-        <Text style={styles.version}>Tagora v0.3.0</Text>
+        <Text style={styles.version}>Tagora v0.4.0</Text>
       </ScrollView>
     </Screen>
   );
@@ -376,14 +345,15 @@ function getPlanLabel(
 }
 
 /**
- * Subscription kart — duruma göre renk + CTA + bilgi.
+ * Subscription bilgi kartı — sadece durum gösterir. Yenileme ve sticker satın alma
+ * uygulama içinden yapılamaz; kullanıcı tagora.com.tr web sitesinden yönetir.
+ * Bu yaklaşım App Store Review guideline 3.1.5 (fiziksel mal + backend hizmeti)
+ * kapsamında olduğumuzu netleştiriyor.
  */
 function SubscriptionCard({
   subscription,
-  onRenew,
 }: {
   subscription: ReturnType<typeof computeSubscription>;
-  onRenew: () => void;
 }) {
   const sub = subscription;
 
@@ -391,9 +361,10 @@ function SubscriptionCard({
   if (sub.state === "none") {
     return (
       <View style={[styles.card, styles.subInfo]}>
-        <Text style={styles.cardHeader}>Abonelik</Text>
+        <Text style={styles.cardHeader}>Hesap durumu</Text>
         <Text style={styles.subBody}>
-          İlk sticker'ını claim et — 1 yıl ücretsiz deneme otomatik başlar. 🎁
+          Fiziksel sticker'ını taratıp hesabına eşleyince kullanmaya
+          başlayabilirsin.
         </Text>
       </View>
     );
@@ -406,20 +377,17 @@ function SubscriptionCard({
         <View style={styles.subHeaderRow}>
           <Text style={styles.subEmoji}>✓</Text>
           <View style={{ flex: 1 }}>
-            <Text style={styles.subTitle}>Abonelik aktif</Text>
+            <Text style={styles.subTitle}>Hesap aktif</Text>
             <Text style={styles.subBody}>
-              {sub.daysRemaining} gün sonra yenilenmesi gerekiyor.
+              Süren {sub.daysRemaining} gün daha devam ediyor.
             </Text>
           </View>
         </View>
-        <Pressable onPress={onRenew} style={styles.subCtaSecondary}>
-          <Text style={styles.subCtaSecondaryText}>Şimdi yenile — 99 TL</Text>
-        </Pressable>
       </View>
     );
   }
 
-  // Warning / grace / readonly → renkli CTA
+  // Warning / grace / readonly → renkli bilgi (buton yok)
   const palette = getPalette(sub.state);
 
   return (
@@ -440,12 +408,6 @@ function SubscriptionCard({
           </Text>
         </View>
       </View>
-      <Pressable
-        onPress={onRenew}
-        style={[styles.subCta, { backgroundColor: palette.cta }]}
-      >
-        <Text style={styles.subCtaText}>Yenile — 99 TL/yıl →</Text>
-      </Pressable>
     </View>
   );
 }
@@ -490,9 +452,9 @@ function getPalette(state: string) {
 function getStateTitle(sub: ReturnType<typeof computeSubscription>): string {
   switch (sub.state) {
     case "warning":
-      return `${sub.daysRemaining} gün sonra bitiyor`;
+      return `${sub.daysRemaining} gün sonra süren doluyor`;
     case "grace":
-      return "Aboneliğin sona erdi";
+      return "Süren doldu";
     case "readonly":
       return "Cevap yazma kapalı";
     default:
@@ -503,11 +465,11 @@ function getStateTitle(sub: ReturnType<typeof computeSubscription>): string {
 function getStateBody(sub: ReturnType<typeof computeSubscription>): string {
   switch (sub.state) {
     case "warning":
-      return "Kesintisiz kullanım için hemen yenile.";
+      return "tagora.com.tr üzerinden hesabını yönetebilirsin.";
     case "grace":
       return `${sub.daysUntilReadonly} gün ek süren var. Ondan sonra cevap yazma kapatılacak.`;
     case "readonly":
-      return "Yenile ve sisteme tam özelliklerle devam et.";
+      return "Hesap yönetimi tagora.com.tr üzerinden yapılıyor.";
     default:
       return "";
   }

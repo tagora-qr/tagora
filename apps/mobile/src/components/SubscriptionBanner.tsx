@@ -1,16 +1,16 @@
 /**
- * SubscriptionBanner — abonelik durumuna göre uyarı barı.
+ * SubscriptionBanner — abonelik durumuna göre bilgi barı.
+ *
+ * Sadece durum bilgisi gösterir; satın alma / yenileme akışı MOBİLDE YOK.
+ * Kullanıcı hesap yönetimini tagora.com.tr üzerinden yapar (fiziksel sticker
+ * + backend hizmeti — App Store Guideline 3.1.5 kapsamında).
  *
  * "compact" prop'u kısa versiyon için — chat ekranı gibi az yerin olduğu
  * sayfalarda kullanılır.
- *
- * Yenile CTA → web dashboard'a yönlendirir (mobil'de payment akışı yok).
  */
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { colors, radius, spacing, typography } from "@/lib/theme";
 import type { SubscriptionInfo } from "@/lib/subscription";
-
-const RENEW_URL = "https://tagora.com.tr/dashboard/subscription";
 
 interface Props {
   info: SubscriptionInfo;
@@ -23,12 +23,6 @@ export function SubscriptionBanner({ info, compact = false }: Props) {
   const style = getStyleForState(info.state);
   const message = getMessage(info, compact);
 
-  const openRenew = () => {
-    Linking.openURL(RENEW_URL).catch(() => {
-      // Sessizce yut — kullanıcı sonra tekrar deneyecek
-    });
-  };
-
   return (
     <View style={[styles.banner, style.container, compact && styles.compact]}>
       <View style={styles.textCol}>
@@ -39,15 +33,6 @@ export function SubscriptionBanner({ info, compact = false }: Props) {
           <Text style={[styles.body, style.body]}>{message.body}</Text>
         )}
       </View>
-      <Pressable
-        onPress={openRenew}
-        style={[styles.cta, style.cta]}
-        hitSlop={8}
-      >
-        <Text style={[styles.ctaText, style.ctaText]}>
-          {compact ? "Yenile" : "Yenile →"}
-        </Text>
-      </Pressable>
     </View>
   );
 }
@@ -57,19 +42,19 @@ function getMessage(info: SubscriptionInfo, compact: boolean) {
     case "warning":
       return {
         title: compact
-          ? `Aboneliğin ${info.daysRemaining} gün sonra bitiyor`
-          : `Aboneliğin ${info.daysRemaining} gün sonra bitiyor`,
-        body: "Kesintisiz kullanım için hemen yenile — 99 TL/yıl.",
+          ? `Süren ${info.daysRemaining} gün sonra doluyor`
+          : `Süren ${info.daysRemaining} gün sonra doluyor`,
+        body: "Hesap yönetimi tagora.com.tr üzerinden yapılır.",
       };
     case "grace":
       return {
-        title: "Aboneliğin sona erdi",
+        title: "Süren doldu",
         body: `${info.daysUntilReadonly} gün ek süren var. Ondan sonra cevap yazma kapatılacak.`,
       };
     case "readonly":
       return {
         title: "🔒 Cevap yazma kapalı",
-        body: "Aboneliğini yenile — sadece 99 TL/yıl.",
+        body: "Hesap yönetimi tagora.com.tr üzerinden yapılır.",
       };
     default:
       return { title: "", body: "" };
@@ -83,32 +68,24 @@ function getStyleForState(state: SubscriptionInfo["state"]) {
         container: { backgroundColor: "#FEF3C7", borderColor: colors.warning },
         title: { color: "#78350F" },
         body: { color: "#78350F" },
-        cta: { backgroundColor: colors.warning },
-        ctaText: { color: "#FFFFFF" },
       };
     case "grace":
       return {
         container: { backgroundColor: "#FED7AA", borderColor: "#EA580C" },
         title: { color: "#7C2D12" },
         body: { color: "#7C2D12" },
-        cta: { backgroundColor: "#EA580C" },
-        ctaText: { color: "#FFFFFF" },
       };
     case "readonly":
       return {
         container: { backgroundColor: "#FEE2E2", borderColor: colors.danger },
         title: { color: "#7F1D1D" },
         body: { color: "#7F1D1D" },
-        cta: { backgroundColor: colors.danger },
-        ctaText: { color: "#FFFFFF" },
       };
     default:
       return {
         container: { backgroundColor: colors.bgSubtle, borderColor: colors.navyBorder },
         title: { color: colors.navy },
         body: { color: colors.charcoal },
-        cta: { backgroundColor: colors.navy },
-        ctaText: { color: colors.accent },
       };
   }
 }
@@ -150,15 +127,5 @@ const styles = StyleSheet.create({
     ...typography.caption,
     fontSize: 13,
     lineHeight: 18,
-  },
-  cta: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: radius.md,
-  },
-  ctaText: {
-    ...typography.tiny,
-    fontSize: 12,
-    fontWeight: "700",
   },
 });

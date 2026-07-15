@@ -195,7 +195,7 @@ export default function ChatScreen() {
     if (!subscription.canReply) {
       Alert.alert(
         "Cevap yazma kapalı",
-        "Aboneliğin sona erdiği için mesaj gönderemiyorsun. Yenilemek için tagora.com.tr/dashboard/subscription adresine git.",
+        "Hesap sürenin dolduğu için mesaj gönderemiyorsun. Hesap yönetimi tagora.com.tr üzerinden yapılıyor.",
       );
       return;
     }
@@ -387,7 +387,7 @@ export default function ChatScreen() {
             placeholder={
               subscription.canReply
                 ? "Cevap yaz…"
-                : "🔒 Aboneliğini yenile — cevap yazma kapalı"
+                : "🔒 Cevap yazma kapalı"
             }
             placeholderTextColor={colors.muted}
             style={[

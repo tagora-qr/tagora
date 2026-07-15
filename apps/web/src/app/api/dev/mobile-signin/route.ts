@@ -9,6 +9,9 @@
  *
  * Guards:
  * - NODE_ENV === 'development' zorunlu (prod'da 403)
+ * - EXCEPTION: APPLE_REVIEW_EMAIL için production'da da izinli — Apple review
+ *   reviewer'ları OTP email'ini alamadığı için (throwaway apple.com email)
+ *   demo account'a bu endpoint üzerinden erişilir.
  * - CORS: sadece localhost + expo dev URL'lerden
  *
  * Ne yapıyor:
@@ -23,20 +26,16 @@ import { createSupabaseServiceClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
+// Apple App Store Review'ün demo account'ı — production'da bu email için
+// endpoint erişilebilir kalmalı. Reviewer OTP mail'ini alamıyor.
+const APPLE_REVIEW_EMAIL = "apple.review@tagora.com.tr";
+
 interface Body {
   email: string;
 }
 
 export async function POST(req: NextRequest) {
-  // Guard 1: dev-only
-  if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json(
-      { ok: false, error: "This endpoint is disabled in production." },
-      { status: 403 },
-    );
-  }
-
-  // Payload
+  // Payload'ı önce parse et — guard email'e göre karar veriyor
   let payload: Body;
   try {
     payload = (await req.json()) as Body;
@@ -44,7 +43,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "Invalid JSON body." }, { status: 400 });
   }
 
-  const email = (payload.email ?? "").trim().toLowerCase();
+  const emailNormalized = (payload.email ?? "").trim().toLowerCase();
+
+  // Guard: dev-only, EXCEPT Apple Review demo account
+  const isReviewer = emailNormalized === APPLE_REVIEW_EMAIL;
+  if (process.env.NODE_ENV !== "development" && !isReviewer) {
+    return NextResponse.json(
+      { ok: false, error: "This endpoint is disabled in production." },
+      { status: 403 },
+    );
+  }
+
+  // Email zaten yukarıda normalize edildi (guard için)
+  const email = emailNormalized;
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json(
       { ok: false, error: "Valid email required." },

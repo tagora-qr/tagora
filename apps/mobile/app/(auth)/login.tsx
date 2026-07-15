@@ -33,6 +33,10 @@ type Phase = "email" | "code";
 
 const APP_URL = process.env.EXPO_PUBLIC_APP_URL ?? "http://localhost:3000";
 
+// Apple App Store Review demo account — reviewer'lar OTP mail'ini alamaz,
+// bu email için özel dev shortcut butonu her build'de görünür.
+const APPLE_REVIEW_EMAIL = "apple.review@tagora.com.tr";
+
 export default function Login() {
   const router = useRouter();
   const [phase, setPhase] = useState<Phase>("email");
@@ -236,16 +240,20 @@ export default function Login() {
                 }}
               />
 
-              {/* Dev shortcut — sadece development'ta görünür */}
-              {__DEV__ && (
+              {/* Dev shortcut — development'ta veya Apple review email için görünür */}
+              {(__DEV__ ||
+                email.trim().toLowerCase() === APPLE_REVIEW_EMAIL) && (
                 <View style={styles.devBox}>
-                  <Text style={styles.devLabel}>⚡ Dev Modu</Text>
+                  <Text style={styles.devLabel}>
+                    {__DEV__ ? "⚡ Dev Modu" : "🍎 Apple Review Girişi"}
+                  </Text>
                   <Text style={styles.devHint}>
-                    E-mail beklemeden doğrudan giriş yap (SMTP template
-                    debug&apos;i sürerken kullanılır).
+                    {__DEV__
+                      ? "E-mail beklemeden doğrudan giriş yap (SMTP template debug'i sürerken kullanılır)."
+                      : "App Store Review reviewer'lar için hazırlanmış demo account girişi."}
                   </Text>
                   <Button
-                    label="Dev: Direkt Giriş"
+                    label={__DEV__ ? "Dev: Direkt Giriş" : "Reviewer: Direkt Giriş"}
                     onPress={devShortcutSignIn}
                     variant="secondary"
                     size="md"
