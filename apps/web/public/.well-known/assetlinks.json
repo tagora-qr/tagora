@@ -5,7 +5,8 @@
       "namespace": "android_app",
       "package_name": "app.tagora.mobile",
       "sha256_cert_fingerprints": [
-        "REPLACE_WITH_ANDROID_SIGNING_CERT_SHA256"
+        "50:C8:89:62:9B:7F:FF:65:90:68:8F:8A:4F:12:49:FC:12:76:DE:B4:DA:BD:FA:FA:54:60:A2:31:46:18:B0:98",
+        "9A:0B:FF:CB:17:48:D0:B2:15:BB:33:D4:DE:F5:0C:3A:47:2B:8B:C7:1B:43:7E:C1:DE:72:C1:15:92:7D:E3:EB"
       ]
     }
   }
